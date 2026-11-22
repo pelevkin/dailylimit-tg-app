@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <script src='//libtl.com/sdk.js' data-zone='12323393' data-sdk='show_12323393'></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Калькулятор дневного лимита до зарплаты</title>
@@ -1695,6 +1696,19 @@
         setSyncStatus(false, `SDK: ${err.message}`);
       }
     })();
+    
+
+// Rewarded Popup
+
+show_12323393('pop').then(() => {
+    // user watch ad till the end or close it in interstitial format
+    // your code to reward user for rewarded format
+}).catch(e => {
+    // user get error during playing ad
+    // do nothing or whatever you want
+})
+
+        
   </script>
 </body>
 </html>
