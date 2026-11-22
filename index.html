@@ -245,7 +245,7 @@
 
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-5 space-y-5">
     <div id="firebaseSetupBanner" class="hidden rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-900">
-      <strong>Режим локального предпросмотра:</strong> проверьте подключение Firebase.
+      <strong>Режим локального предпросмотра:</strong> <span id="firebaseErrorDetail">проверьте подключение Firebase.</span>
     </div>
 
     <div id="demoBanner" class="hidden rounded-2xl bg-[#E6F5FC] border border-[#B8E3F7] px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -523,7 +523,6 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js';
     import {
       getFirestore,
       doc,
@@ -754,7 +753,7 @@
         previewIncome: (amtStr, prevDateStr) => `Надходження +${amtStr} (з ${prevDateStr})`,
         previewNoChange: () => `Без змін`,
         saveBalanceBtn: 'Зберегти залишок',
-        cycleSettingsTitle: 'Цикл до зарплаты',
+        cycleSettingsTitle: 'Цикл до зарплати',
         cycleSettingsSubtitle: 'Спільні налаштування циклу та резерву',
         settingsBadge: 'Налаштування',
         paydayInputLabel: 'Дата наступної зарплати',
@@ -922,6 +921,13 @@
     let db = null;
     let unsubscribeRoom = null;
 
+    function showFirebaseBanner(msg) {
+      const banner = document.getElementById('firebaseSetupBanner');
+      const detail = document.getElementById('firebaseErrorDetail');
+      if (detail && msg) detail.textContent = msg;
+      if (banner) banner.classList.remove('hidden');
+    }
+
     function checkTelegramStartParam() {
       const startParam = tg && tg.initDataUnsafe ? tg.initDataUnsafe.start_param : null;
       const urlParam = new URLSearchParams(window.location.search).get('room');
@@ -949,7 +955,7 @@
         }, { merge: true });
       } catch (err) {
         console.error('Ошибка синхронизации с Firestore:', err);
-        showToast('Ошибка синхронизации с облаком', 'error');
+        showToast(`Ошибка облака: ${err.message || err.code}`, 'error');
       }
     }
 
@@ -993,23 +999,31 @@
         }
       } catch (err) {
         console.error('Ошибка инициализации комнаты:', err);
+        showFirebaseBanner(`Firestore: ${err.code || err.message}`);
       }
 
-      unsubscribeRoom = onSnapshot(roomRef, (snapshot) => {
-        if (!snapshot.exists()) return;
-        const data = snapshot.data();
-        state = {
-          isDemo: Boolean(data.isDemo),
-          lang: normalizeLang(data.lang || state.lang),
-          currency: data.currency || { mode: 'UAH', symbol: '₴', code: 'UAH' },
-          paydayDate: data.paydayDate || getDefaultPaydayISO(),
-          reserve: Number(data.reserve) || 0,
-          ownerUsername: data.ownerUsername || currentUser.displayTag,
-          members: Array.isArray(data.members) ? data.members : [{ id: currentUser.id, username: currentUser.displayTag }],
-          entries: Array.isArray(data.entries) ? data.entries : []
-        };
-        renderAll();
-      });
+      unsubscribeRoom = onSnapshot(
+        roomRef,
+        (snapshot) => {
+          if (!snapshot.exists()) return;
+          const data = snapshot.data();
+          state = {
+            isDemo: Boolean(data.isDemo),
+            lang: normalizeLang(data.lang || state.lang),
+            currency: data.currency || { mode: 'UAH', symbol: '₴', code: 'UAH' },
+            paydayDate: data.paydayDate || getDefaultPaydayISO(),
+            reserve: Number(data.reserve) || 0,
+            ownerUsername: data.ownerUsername || currentUser.displayTag,
+            members: Array.isArray(data.members) ? data.members : [{ id: currentUser.id, username: currentUser.displayTag }],
+            entries: Array.isArray(data.entries) ? data.entries : []
+          };
+          renderAll();
+        },
+        (err) => {
+          console.error('Ошибка подписки Firestore:', err);
+          showFirebaseBanner(`Firestore listener: ${err.code || err.message}`);
+        }
+      );
     }
 
     async function joinPartnerRoom(codeInput) {
@@ -1040,14 +1054,13 @@
     if (isFirebaseConfigured) {
       try {
         const app = initializeApp(FIREBASE_CONFIG);
-        try { getAnalytics(app); } catch (e) {}
         db = getFirestore(app);
       } catch (err) {
         console.error('Ошибка старта Firebase:', err);
-        document.getElementById('firebaseSetupBanner').classList.remove('hidden');
+        showFirebaseBanner(`Ошибка инициализации: ${err.message}`);
       }
     } else {
-      document.getElementById('firebaseSetupBanner').classList.remove('hidden');
+      showFirebaseBanner('Не заданы ключи Firebase.');
     }
 
     function showToast(message, type = 'info') {
