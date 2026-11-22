@@ -84,6 +84,19 @@
         >
           Сброс
         </button>
+
+        <a
+          id="btnDeveloperLink"
+          href="https://t.me/pelevkin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-2.5 py-1.5 text-xs font-medium rounded-xl border border-[#CFE0D7] bg-[#FAFDFB] text-[#1B4332] hover:bg-[#EBF5F0] transition inline-flex items-center gap-1 cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5 text-[#009bde]" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+          <span data-i18n="btnDeveloper">Разработчик</span>
+        </a>
       </div>
     </div>
   </header>
@@ -168,8 +181,8 @@
       <strong data-i18n="cloudErrorPrefix">Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
     </div>
 
-    <!-- Переключатель режимов: Общий / Мой / Партнёр -->
-    <div class="bg-white rounded-2xl border border-[#DCE9E2] p-1.5 shadow-sm inline-flex flex-wrap gap-1 w-full sm:w-auto">
+    <!-- Переключатель режимов: Общий / Мой / Партнёр (только когда есть партнёр) -->
+    <div id="viewModeSwitcher" class="hidden bg-white rounded-2xl border border-[#DCE9E2] p-1.5 shadow-sm flex-wrap gap-1 w-full sm:w-auto">
       <button
         type="button"
         data-view-mode="shared"
@@ -236,7 +249,7 @@
     </section>
 
     <!-- СВОДКА ВДВОЁМ -->
-    <section id="pairBreakdownCard" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <section id="pairBreakdownCard" class="hidden grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
         <div class="min-w-0">
           <span data-i18n="cardMyContributionTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] block">Мой личный вклад</span>
@@ -404,6 +417,7 @@
     };
 
     const TELEGRAM_BOT_USERNAME = "dailylim_bot";
+    const DEVELOPER_TG_URL = "https://t.me/pelevkin";
 
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) {
@@ -480,6 +494,7 @@
         appTitle: 'Дневной лимит до ЗП',
         btnSharePartner: 'Для двоих',
         btnClearAll: 'Сброс',
+        btnDeveloper: 'Разработчик',
         syncOnline: 'Онлайн',
         syncLocal: 'Локально',
         cloudErrorPrefix: 'Ошибка синхронизации с облаком:',
@@ -494,6 +509,7 @@
         btnCopyCode: 'Скопировать ключ',
         btnSendTgInvite: 'Отправить в Telegram',
         participantsLabel: 'Участники комнаты:',
+        btnRemovePartner: 'Убрать из комнаты',
         joinPartnerLabel: 'Подключиться к комнате партнёра (введите ключ):',
         btnJoinRoom: 'Войти',
         btnReturnOwnRoom: 'Вернуться в свою личную комнату',
@@ -503,15 +519,12 @@
         confirmClearBtn: 'Да, очистить',
         heroSharedHeadline: 'Можно потратить завтра на двоих (сумма лимитов по циклам)',
         heroSharedSubWithPartner: (me, partner) => `Учтены ${me} и ${partner}`,
-        heroSharedSubSolo: (me) => `Пока учтён только ваш бюджет (${me})`,
-        heroSharedAdviceWithPartner: 'Каждый вносит остаток по своим счетам — дневной лимит складывается с учётом даты выплаты каждого.',
-        heroSharedAdviceSolo: 'Подключите второго участника через кнопку «Для двоих», чтобы его лимит добавлялся сюда автоматически.',
         heroMineHeadline: 'Можно потратить завтра по вашему личному циклу',
         heroPartnerHeadline: (who) => `Можно потратить завтра по циклу (${who})`,
         heroSubEntry: (date, bal) => `Остаток за ${date}: ${bal}`,
         heroSubEmpty: 'Нет сохранённых записей',
+        heroAdviceSolo: 'Резерв вычитается из остатка, остаток делится на дни до зарплаты. Чтобы объединить лимиты вдвоём — нажмите «Для двоих».',
         heroAdviceMember: (who) => `Личный цикл участника ${who}: резерв вычитается из остатка, остаток делится на дни до выплаты.`,
-        heroAdviceNoPartner: 'Партнёр ещё не присоединился к комнате.',
         exactPerDay: (val) => `точно: ${val} / дн.`,
         availableSpendLabel: 'Доступно на повседневные траты',
         reserveBreakdown: (bal, res) => `Остатки ${bal} − резервы ${res}`,
@@ -523,11 +536,9 @@
         cardPartnerContributionTitle: 'Вклад партнёра',
         cardLimitPerDayLabel: 'Лимит / дн.',
         cardDetailsText: (bal, days) => `Остаток: ${bal} · До ЗП: ${days} дн.`,
-        partnerNotConnectedName: 'Не подключён',
-        partnerNotConnectedDesc: 'Нажмите «Для двоих» и передайте ключ',
         partnerDefaultName: 'Партнёр',
         eveningEntryTitle: 'Мой вечерний ввод остатка',
-        eveningEntrySubtitle: 'Впишите остаток по своим счетам — общий лимит пересчитается сам',
+        eveningEntrySubtitle: 'Впишите остаток по своим счетам — лимит пересчитается сам',
         balanceInputLabel: 'Мой остаток на конец дня *',
         balancePlaceholder: 'Например, 13400',
         presetJob1: '+ ЗП работа 1',
@@ -582,6 +593,7 @@
         toastCleared: 'Ваш журнал очищен',
         toastCodeCopied: 'Секретный ключ комнаты скопирован!',
         toastJoinedRoom: 'Вы подключились к комнате партнёра',
+        toastRemovedPartner: 'Партнёр убран из комнаты, его данные сохранены',
         toastRoomNotFound: 'Комната с таким ключом не найдена',
         toastNoCloud: 'Нет подключения к облаку',
         inviteShareText: (code) => `Давай вести общий дневной лимит до зарплаты вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${code}`
@@ -590,6 +602,7 @@
         appTitle: 'Денний ліміт до ЗП',
         btnSharePartner: 'Для двох',
         btnClearAll: 'Скинути',
+        btnDeveloper: 'Розробник',
         syncOnline: 'Онлайн',
         syncLocal: 'Локально',
         cloudErrorPrefix: 'Помилка синхронізації з хмарою:',
@@ -604,6 +617,7 @@
         btnCopyCode: 'Скопіювати ключ',
         btnSendTgInvite: 'Надіслати в Telegram',
         participantsLabel: 'Учасники кімнати:',
+        btnRemovePartner: 'Прибрати з кімнати',
         joinPartnerLabel: 'Підключитися до кімнати партнера (введіть ключ):',
         btnJoinRoom: 'Увійти',
         btnReturnOwnRoom: 'Повернутися у свою особисту кімнату',
@@ -613,15 +627,12 @@
         confirmClearBtn: 'Так, очистити',
         heroSharedHeadline: 'Можна витратити завтра на двох (сума лімітів за циклами)',
         heroSharedSubWithPartner: (me, partner) => `Враховано ${me} та ${partner}`,
-        heroSharedSubSolo: (me) => `Поки враховано лише ваш бюджет (${me})`,
-        heroSharedAdviceWithPartner: 'Кожен вносить залишок за своїми рахунками — денний ліміт додається з урахуванням дати виплати кожного.',
-        heroSharedAdviceSolo: 'Підключіть другого учасника через кнопку «Для двох», щоб його ліміт додавався сюди автоматично.',
         heroMineHeadline: 'Можна витратити завтра за вашим особистим циклом',
         heroPartnerHeadline: (who) => `Можна витратити завтра за циклом (${who})`,
         heroSubEntry: (date, bal) => `Залишок за ${date}: ${bal}`,
         heroSubEmpty: 'Немає збережених записів',
+        heroAdviceSolo: 'Резерв віднімається від залишку, залишок ділиться на дні до зарплати. Щоб об’єднати ліміти вдвох — натисніть «Для двох».',
         heroAdviceMember: (who) => `Особистий цикл учасника ${who}: резерв віднімається від залишку, залишок ділиться на дні до виплати.`,
-        heroAdviceNoPartner: 'Партнер ще не приєднався до кімнати.',
         exactPerDay: (val) => `точно: ${val} / дн.`,
         availableSpendLabel: 'Доступно на повсякденні витрати',
         reserveBreakdown: (bal, res) => `Залишки ${bal} − резерви ${res}`,
@@ -633,11 +644,9 @@
         cardPartnerContributionTitle: 'Внесок партнера',
         cardLimitPerDayLabel: 'Ліміт / дн.',
         cardDetailsText: (bal, days) => `Залишок: ${bal} · До ЗП: ${days} дн.`,
-        partnerNotConnectedName: 'Не підключено',
-        partnerNotConnectedDesc: 'Натисніть «Для двох» і передайте ключ',
         partnerDefaultName: 'Партнер',
         eveningEntryTitle: 'Мій вечірній ввід залишку',
-        eveningEntrySubtitle: 'Впишіть залишок за своїми рахунками — спільний ліміт перерахується сам',
+        eveningEntrySubtitle: 'Впишіть залишок за своїми рахунками — ліміт перерахується сам',
         balanceInputLabel: 'Мій залишок на кінець дня *',
         balancePlaceholder: 'Наприклад, 13400',
         presetJob1: '+ ЗП робота 1',
@@ -692,6 +701,7 @@
         toastCleared: 'Ваш журнал очищено',
         toastCodeCopied: 'Секретний ключ кімнати скопійовано!',
         toastJoinedRoom: 'Ви підключилися до кімнати партнера',
+        toastRemovedPartner: 'Партнера прибрано з кімнати, його дані збережено',
         toastRoomNotFound: 'Кімнату з таким ключем не знайдено',
         toastNoCloud: 'Немає підключення до хмари',
         inviteShareText: (code) => `Давай вести спільний денний ліміт до зарплати разом (кожен зі своїм циклом і залишком)! Ключ кімнати: ${code}`
@@ -700,6 +710,7 @@
         appTitle: 'Daily Payday Limit',
         btnSharePartner: 'For Two',
         btnClearAll: 'Reset',
+        btnDeveloper: 'Developer',
         syncOnline: 'Online',
         syncLocal: 'Local',
         cloudErrorPrefix: 'Cloud sync error:',
@@ -714,6 +725,7 @@
         btnCopyCode: 'Copy key',
         btnSendTgInvite: 'Share in Telegram',
         participantsLabel: 'Room members:',
+        btnRemovePartner: 'Remove from room',
         joinPartnerLabel: 'Join partner’s room (enter key):',
         btnJoinRoom: 'Join',
         btnReturnOwnRoom: 'Return to my personal room',
@@ -723,15 +735,12 @@
         confirmClearBtn: 'Yes, clear',
         heroSharedHeadline: 'Available to spend tomorrow together (sum of cycle limits)',
         heroSharedSubWithPartner: (me, partner) => `Includes ${me} and ${partner}`,
-        heroSharedSubSolo: (me) => `Showing only your budget so far (${me})`,
-        heroSharedAdviceWithPartner: 'Each person enters their own balance — daily limits add up using each person’s payday date.',
-        heroSharedAdviceSolo: 'Connect a second member via «For Two» so their limit is added automatically.',
         heroMineHeadline: 'Available to spend tomorrow on your personal cycle',
         heroPartnerHeadline: (who) => `Available to spend tomorrow on ${who}’s cycle`,
         heroSubEntry: (date, bal) => `Balance on ${date}: ${bal}`,
         heroSubEmpty: 'No saved entries yet',
+        heroAdviceSolo: 'Reserve is subtracted from balance, then divided by days left until payday. Tap «For Two» to combine limits with a partner.',
         heroAdviceMember: (who) => `Personal cycle for ${who}: reserve is subtracted from balance, then divided by days left.`,
-        heroAdviceNoPartner: 'Your partner hasn’t joined the room yet.',
         exactPerDay: (val) => `exact: ${val} / day`,
         availableSpendLabel: 'Available for everyday spending',
         reserveBreakdown: (bal, res) => `Balances ${bal} − reserves ${res}`,
@@ -743,11 +752,9 @@
         cardPartnerContributionTitle: 'Partner’s share',
         cardLimitPerDayLabel: 'Limit / day',
         cardDetailsText: (bal, days) => `Balance: ${bal} · Payday in: ${days} d`,
-        partnerNotConnectedName: 'Not connected',
-        partnerNotConnectedDesc: 'Tap «For Two» and share your key',
         partnerDefaultName: 'Partner',
         eveningEntryTitle: 'My evening balance entry',
-        eveningEntrySubtitle: 'Enter your own balance — the shared daily limit updates automatically',
+        eveningEntrySubtitle: 'Enter your own balance — the daily limit updates automatically',
         balanceInputLabel: 'My end-of-day balance *',
         balancePlaceholder: 'e.g. 13400',
         presetJob1: '+ Job 1 pay',
@@ -802,6 +809,7 @@
         toastCleared: 'Your log cleared',
         toastCodeCopied: 'Secret room key copied!',
         toastJoinedRoom: 'Connected to partner’s room',
+        toastRemovedPartner: 'Partner removed from room, their data is preserved',
         toastRoomNotFound: 'Room with this key was not found',
         toastNoCloud: 'No cloud connection',
         inviteShareText: (code) => `Let’s track our shared daily payday limit together (each with our own cycle and balance)! Room key: ${code}`
@@ -848,7 +856,7 @@
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
     }
 
-    let viewMode = 'shared';
+    let viewMode = 'mine';
     let lastSyncOnline = false;
     let lastSyncError = '';
 
@@ -1010,19 +1018,37 @@
     }
 
     function getPartnerProfile() {
+      const members = Array.isArray(state.members) ? state.members : [];
+      const partnerMember = members.find(m => m && m.id !== currentUser.id);
+      if (!partnerMember) return null;
+
       const profiles = state.profiles || {};
-      const partnerId = Object.keys(profiles).find(id => id !== currentUser.id);
-      if (partnerId) return profiles[partnerId];
-      const member = (state.members || []).find(m => m.id !== currentUser.id);
-      if (member) return { id: member.id, username: member.username, paydayDate: getDefaultPaydayISO(), reserve: 0, entries: [] };
-      return null;
+      const pData = profiles[partnerMember.id];
+      return {
+        id: partnerMember.id,
+        username: (pData && pData.username) ? pData.username : (partnerMember.username || t('partnerDefaultName')),
+        paydayDate: (pData && pData.paydayDate) ? pData.paydayDate : getDefaultPaydayISO(),
+        reserve: pData ? (Number(pData.reserve) || 0) : 0,
+        entries: (pData && Array.isArray(pData.entries)) ? pData.entries : []
+      };
     }
 
     function escapeHtml(str) {
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function renderViewModeTabs() {
+    function renderViewModeTabs(hasPartner) {
+      const switcher = document.getElementById('viewModeSwitcher');
+      if (!hasPartner) {
+        viewMode = 'mine';
+        switcher.classList.add('hidden');
+        switcher.classList.remove('inline-flex');
+        return;
+      }
+
+      switcher.classList.remove('hidden');
+      switcher.classList.add('inline-flex');
+
       document.querySelectorAll('.view-mode-btn').forEach(btn => {
         const mode = btn.getAttribute('data-view-mode');
         const active = mode === viewMode;
@@ -1032,9 +1058,36 @@
       });
     }
 
+    function renderParticipantsModal() {
+      const members = Array.isArray(state.members) ? state.members : [];
+      document.getElementById('membersCountPill').textContent = String(members.length || 1);
+      document.getElementById('roomCodeBadge').textContent = activeRoomId;
+      document.getElementById('btnLeaveSharedRoom').classList.toggle('hidden', activeRoomId === OWN_ROOM_ID);
+
+      const container = document.getElementById('participantsList');
+      container.innerHTML = members.map(m => {
+        const isPartner = m.id !== currentUser.id;
+        const removeBtnHtml = isPartner
+          ? `<button type="button" data-remove-partner-id="${escapeHtml(m.id)}" class="remove-partner-btn ml-1 px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-700 hover:bg-rose-200 text-[10px] font-bold transition cursor-pointer" title="${escapeHtml(t('btnRemovePartner'))}">✕</button>`
+          : '';
+        return `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#EBF5F0] text-[#1B4332] text-xs font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#2D6A4F]"></span>
+            ${escapeHtml(m.username || m.id)}
+            ${removeBtnHtml}
+          </span>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.remove-partner-btn').forEach(btn => {
+        btn.addEventListener('click', () => removePartnerFromRoom(btn.getAttribute('data-remove-partner-id')));
+      });
+    }
+
     function renderAll() {
       const myProfile = ensureMyProfile(state);
       const partnerProfile = getPartnerProfile();
+      const hasPartner = Boolean(partnerProfile);
       const myStats = getProfileStats(myProfile);
       const partnerStats = getProfileStats(partnerProfile);
 
@@ -1052,24 +1105,14 @@
       });
 
       applySyncStatusUI();
-      renderViewModeTabs();
+      renderViewModeTabs(hasPartner);
+      renderParticipantsModal();
 
       const isPartnerRoom = activeRoomId !== OWN_ROOM_ID;
       document.getElementById('tgUserDisplay').textContent = isPartnerRoom
         ? t('userRolePartnerRoom', currentUser.displayTag)
         : t('userRoleOwnRoom', currentUser.displayTag);
       document.getElementById('authorBadge').textContent = currentUser.displayTag;
-
-      const members = Array.isArray(state.members) ? state.members : [];
-      document.getElementById('membersCountPill').textContent = String(members.length || 1);
-      document.getElementById('roomCodeBadge').textContent = activeRoomId;
-      document.getElementById('participantsList').innerHTML = members.map(m => `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#EBF5F0] text-[#1B4332] text-xs font-semibold">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#2D6A4F]"></span>
-          ${escapeHtml(m.username || m.id)}
-        </span>
-      `).join('');
-      document.getElementById('btnLeaveSharedRoom').classList.toggle('hidden', activeRoomId === OWN_ROOM_ID);
 
       const headerLangSelect = document.getElementById('headerLangSelect');
       if (document.activeElement !== headerLangSelect) headerLangSelect.value = normalizeLang(state.lang);
@@ -1083,7 +1126,9 @@
       if (document.activeElement !== reserveInput) reserveInput.value = myProfile.reserve > 0 ? String(myProfile.reserve) : '';
 
       const pairCard = document.getElementById('pairBreakdownCard');
-      pairCard.classList.toggle('hidden', viewMode !== 'shared');
+      const showPairCard = hasPartner && viewMode === 'shared';
+      pairCard.classList.toggle('hidden', !showPairCard);
+      pairCard.classList.toggle('grid', showPairCard);
 
       const partnerDisplayName = (partnerProfile && partnerProfile.username) ? partnerProfile.username : t('partnerDefaultName');
 
@@ -1091,14 +1136,10 @@
       document.getElementById('cardMyDetails').textContent = t('cardDetailsText', formatMoney(myStats.balance), myStats.daysLeft);
       document.getElementById('cardMyDailyLimit').textContent = formatMoney(Math.floor(myStats.dailyLimit));
 
-      if (partnerProfile) {
+      if (hasPartner) {
         document.getElementById('cardPartnerName').textContent = partnerDisplayName;
         document.getElementById('cardPartnerDetails').textContent = t('cardDetailsText', formatMoney(partnerStats.balance), partnerStats.daysLeft);
         document.getElementById('cardPartnerDailyLimit').textContent = formatMoney(Math.floor(partnerStats.dailyLimit));
-      } else {
-        document.getElementById('cardPartnerName').textContent = t('partnerNotConnectedName');
-        document.getElementById('cardPartnerDetails').textContent = t('partnerNotConnectedDesc');
-        document.getElementById('cardPartnerDailyLimit').textContent = formatMoney(0);
       }
 
       const heroLimitEl = document.getElementById('dailyLimitValue');
@@ -1112,20 +1153,18 @@
       const daysBadgeEl = document.getElementById('daysBadgeNumber');
       const paydayLabelEl = document.getElementById('paydayDateLabel');
 
-      if (viewMode === 'shared') {
+      if (hasPartner && viewMode === 'shared') {
         const totalDaily = myStats.dailyLimit + partnerStats.dailyLimit;
         const totalBalance = myStats.balance + partnerStats.balance;
         const totalReserve = myStats.reserve + partnerStats.reserve;
         const totalAvailable = Math.max(0, totalBalance - totalReserve);
-        const minDays = partnerProfile ? Math.min(myStats.daysLeft, partnerStats.daysLeft) : myStats.daysLeft;
-        const nearestPayday = partnerProfile && partnerStats.paydayDate < myStats.paydayDate
+        const minDays = Math.min(myStats.daysLeft, partnerStats.daysLeft);
+        const nearestPayday = partnerStats.paydayDate < myStats.paydayDate
           ? partnerStats.paydayDate
           : myStats.paydayDate;
 
         heroHeadlineEl.textContent = t('heroSharedHeadline');
-        heroSubtitleEl.textContent = partnerProfile
-          ? t('heroSharedSubWithPartner', currentUser.displayTag, partnerDisplayName)
-          : t('heroSharedSubSolo', currentUser.displayTag);
+        heroSubtitleEl.textContent = t('heroSharedSubWithPartner', currentUser.displayTag, partnerDisplayName);
         heroLimitEl.textContent = formatMoney(Math.floor(totalDaily));
         const hasCents = Math.abs(totalDaily - Math.round(totalDaily)) > 0.01;
         heroExactEl.textContent = hasCents ? t('exactPerDay', formatMoney(totalDaily, true)) : '';
@@ -1134,17 +1173,15 @@
         daysLeftEl.textContent = t('daysUnit', minDays);
         daysBadgeEl.textContent = String(minDays);
         paydayLabelEl.textContent = t('nearestPaydayLabel', formatDateByLang(nearestPayday));
-        heroAdviceEl.textContent = partnerProfile
-          ? t('heroSharedAdviceWithPartner')
-          : t('heroSharedAdviceSolo');
+        heroAdviceEl.textContent = t('heroSharedAdviceWithPartner');
       } else {
-        const targetProfile = viewMode === 'mine' ? myProfile : partnerProfile;
-        const targetStats = viewMode === 'mine' ? myStats : partnerStats;
-        const whoLabel = viewMode === 'mine' ? currentUser.displayTag : partnerDisplayName;
+        const isPartnerTab = hasPartner && viewMode === 'partner';
+        const targetStats = isPartnerTab ? partnerStats : myStats;
+        const whoLabel = isPartnerTab ? partnerDisplayName : currentUser.displayTag;
 
-        heroHeadlineEl.textContent = viewMode === 'mine'
-          ? t('heroMineHeadline')
-          : t('heroPartnerHeadline', whoLabel);
+        heroHeadlineEl.textContent = isPartnerTab
+          ? t('heroPartnerHeadline', whoLabel)
+          : t('heroMineHeadline');
         heroSubtitleEl.textContent = targetStats.hasEntry
           ? t('heroSubEntry', formatDateByLang(targetStats.lastDate), formatMoney(targetStats.balance))
           : t('heroSubEmpty');
@@ -1156,19 +1193,19 @@
         daysLeftEl.textContent = t('daysUnit', targetStats.daysLeft);
         daysBadgeEl.textContent = String(targetStats.daysLeft);
         paydayLabelEl.textContent = t('paydayLabel', formatDateByLang(targetStats.paydayDate));
-        heroAdviceEl.textContent = targetProfile
+        heroAdviceEl.textContent = hasPartner
           ? t('heroAdviceMember', whoLabel)
-          : t('heroAdviceNoPartner');
+          : t('heroAdviceSolo');
       }
 
       document.getElementById('summaryLastBalance').textContent = formatMoney(myStats.balance);
       document.getElementById('summaryEntriesCount').textContent = t('entriesCountUnit', myStats.sortedAsc.length);
 
-      renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName);
+      renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName, hasPartner);
       updatePreviewDelta();
     }
 
-    function renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName) {
+    function renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName, hasPartner) {
       const journalTitleEl = document.getElementById('journalTitle');
       const journalSubtitleEl = document.getElementById('journalSubtitle');
       const emptyState = document.getElementById('emptyJournalState');
@@ -1178,7 +1215,7 @@
       let rowsSource = [];
       let canDelete = false;
 
-      if (viewMode === 'mine') {
+      if (!hasPartner || viewMode === 'mine') {
         journalTitleEl.textContent = t('journalMineTitle', currentUser.displayTag);
         journalSubtitleEl.textContent = t('journalMineSubtitle');
         canDelete = true;
@@ -1250,7 +1287,7 @@
 
         const safeNote = item.note ? escapeHtml(item.note) : `<span class="text-[#94ACA1] italic">${escapeHtml(t('noNoteText'))}</span>`;
         const authorTag = `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#E6F5FC] text-[#0077ab] text-xs font-medium">${escapeHtml(item.author)}</span>`;
-        const isMineEntry = item.ownerId === currentUser.id || viewMode === 'mine';
+        const isMineEntry = item.ownerId === currentUser.id || !hasPartner || viewMode === 'mine';
 
         const actionHtml = (canDelete && isMineEntry)
           ? `<button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
@@ -1344,6 +1381,44 @@
       }
     }
 
+    async function removePartnerFromRoom(partnerId) {
+      if (!partnerId || partnerId === currentUser.id) return;
+
+      const nextMembers = (Array.isArray(state.members) ? state.members : []).filter(m => m.id !== partnerId);
+      if (!nextMembers.some(m => m.id === currentUser.id)) {
+        nextMembers.unshift({ id: currentUser.id, username: currentUser.displayTag });
+      }
+
+      state = {
+        ...state,
+        members: nextMembers
+      };
+
+      if (viewMode === 'partner' || viewMode === 'shared') {
+        viewMode = 'mine';
+      }
+
+      renderAll();
+      showToast(t('toastRemovedPartner'), 'info');
+
+      try {
+        localStorage.setItem(LOCAL_CACHE_PREFIX + activeRoomId, JSON.stringify(state));
+      } catch (e) {}
+
+      if (!cloudApi) return;
+      try {
+        const { db, doc, updateDoc } = cloudApi;
+        await updateDoc(doc(db, 'shared_budgets', activeRoomId), {
+          members: nextMembers,
+          updatedAt: new Date().toISOString()
+        });
+        setSyncStatus(true);
+      } catch (err) {
+        console.error('Ошибка обновления участников в Firestore:', err);
+        setSyncStatus(false, `${err.code || err.message}`);
+      }
+    }
+
     async function connectRoom(roomId) {
       activeRoomId = roomId;
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
@@ -1389,17 +1464,26 @@
           const data = snapshot.data();
           const myLocal = ensureMyProfile(state);
           const remoteProfiles = (data.profiles && typeof data.profiles === 'object') ? data.profiles : {};
+          const remoteMembers = Array.isArray(data.members) && data.members.length > 0
+            ? data.members
+            : [{ id: currentUser.id, username: currentUser.displayTag }];
 
           state = {
             lang: normalizeLang(data.lang || state.lang),
             currency: data.currency || { mode: 'UAH', symbol: '₴', code: 'UAH' },
-            members: Array.isArray(data.members) ? data.members : [{ id: currentUser.id, username: currentUser.displayTag }],
+            members: remoteMembers,
             profiles: {
               ...remoteProfiles,
               [currentUser.id]: remoteProfiles[currentUser.id] || myLocal
             }
           };
           ensureMyProfile(state);
+
+          const hasPartnerNow = state.members.some(m => m.id !== currentUser.id);
+          if (!hasPartnerNow && (viewMode === 'partner' || viewMode === 'shared')) {
+            viewMode = 'mine';
+          }
+
           try {
             localStorage.setItem(LOCAL_CACHE_PREFIX + activeRoomId, JSON.stringify(state));
           } catch (e) {}
@@ -1413,9 +1497,16 @@
 
     document.querySelectorAll('.view-mode-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        viewMode = btn.getAttribute('data-view-mode') || 'shared';
+        viewMode = btn.getAttribute('data-view-mode') || 'mine';
         renderAll();
       });
+    });
+
+    document.getElementById('btnDeveloperLink').addEventListener('click', (e) => {
+      if (tg && tg.openTelegramLink) {
+        e.preventDefault();
+        tg.openTelegramLink(DEVELOPER_TG_URL);
+      }
     });
 
     document.getElementById('dateInput').value = TODAY_ISO;
