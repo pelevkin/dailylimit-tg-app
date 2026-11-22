@@ -97,7 +97,7 @@
         <div>
           <h2 data-i18n="shareModalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Совместный бюджет для двоих</h2>
           <p data-i18n="shareModalSubtitle" class="text-xs text-[#527365] mt-0.5">
-            Оба партнёра видят общий лимит и могут вносить вечерние остатки
+            У каждого свой остаток и цикл до ЗП, а сверху считается общий лимит
           </p>
         </div>
         <button id="closeShareModalBtn" type="button" class="p-1.5 rounded-xl text-[#527365] hover:bg-[#EBF5F0] cursor-pointer">✕</button>
@@ -105,7 +105,7 @@
 
       <div class="rounded-2xl bg-[#F4F8F6] border border-[#DCE9E2] p-4 space-y-2.5">
         <div class="flex items-center justify-between gap-2">
-          <span data-i18n="yourRoomCodeLabel" class="text-xs font-semibold text-[#527365]">Секретный ключ бюджета:</span>
+          <span data-i18n="yourRoomCodeLabel" class="text-xs font-semibold text-[#527365]">Секретный ключ комнаты:</span>
           <span id="roomCodeBadge" class="font-mono text-xs sm:text-sm font-extrabold tracking-wider text-[#1B4332] bg-white px-2.5 py-1 rounded-lg border border-[#CFE0D7] select-all">—</span>
         </div>
 
@@ -120,7 +120,7 @@
       </div>
 
       <div>
-        <p data-i18n="participantsLabel" class="text-xs font-semibold text-[#1B4332] mb-2">Участники бюджета:</p>
+        <p data-i18n="participantsLabel" class="text-xs font-semibold text-[#1B4332] mb-2">Участники комнаты:</p>
         <div id="participantsList" class="flex flex-wrap gap-1.5"></div>
       </div>
 
@@ -128,7 +128,7 @@
 
       <form id="joinRoomForm" class="space-y-2.5">
         <label for="partnerRoomInput" data-i18n="joinPartnerLabel" class="block text-xs font-semibold text-[#1B4332]">
-          Подключиться к бюджету партнёра (введите ключ):
+          Подключиться к комнате партнёра (введите ключ):
         </label>
         <div class="flex gap-2">
           <input
@@ -143,7 +143,7 @@
           </button>
         </div>
         <button id="btnLeaveSharedRoom" type="button" data-i18n="btnReturnOwnRoom" class="hidden text-[11px] text-[#0086c2] hover:underline pt-1 cursor-pointer">
-          Вернуться в свой личный бюджет
+          Вернуться в свою личную комнату
         </button>
       </form>
     </div>
@@ -152,9 +152,9 @@
   <!-- МОДАЛЬНОЕ ОКНО: ОЧИСТКА -->
   <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/40 backdrop-blur-[2px] p-4">
     <div class="bg-white rounded-2xl border border-[#DCE9E2] shadow-xl max-w-md w-full p-6">
-      <h2 data-i18n="clearModalTitle" class="text-base font-bold text-[#1B4332]">Очистить журнал и начать с нуля?</h2>
+      <h2 data-i18n="clearModalTitle" class="text-base font-bold text-[#1B4332]">Очистить ваш журнал?</h2>
       <p data-i18n="clearModalDesc" class="mt-2 text-sm text-[#4A685B] leading-relaxed">
-        Все сохранённые записи остатков в этом бюджете будут удалены у обоих участников.
+        Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.
       </p>
       <div class="mt-5 flex items-center justify-end gap-2.5">
         <button id="cancelClearBtn" type="button" data-i18n="cancelBtn" class="px-4 py-2 text-sm font-medium rounded-xl border border-[#CFE0D7] text-[#2D6A4F] hover:bg-[#EBF5F0] cursor-pointer">Отмена</button>
@@ -168,13 +168,28 @@
       <strong>Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
     </div>
 
-    <div id="demoBanner" class="hidden rounded-2xl bg-[#E6F5FC] border border-[#B8E3F7] px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="text-xs sm:text-sm text-[#0A4D6E]">
-        <span data-i18n="demoBannerPrefix" class="font-semibold">Загружен пример расчёта:</span>
-        <span id="demoBannerBody">введите свой вечерний остаток ниже или нажмите «Сброс», чтобы начать с чистого листа.</span>
-      </div>
-      <button id="btnResetDemo" type="button" data-i18n="btnResetDemo" class="self-start sm:self-auto shrink-0 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white text-[#009bde] border border-[#B8E3F7] hover:bg-[#F2FAFE] cursor-pointer">
-        Вернуть пример
+    <!-- Переключатель режимов: Общий / Мой / Партнёр -->
+    <div class="bg-white rounded-2xl border border-[#DCE9E2] p-1.5 shadow-sm inline-flex flex-wrap gap-1 w-full sm:w-auto">
+      <button
+        type="button"
+        data-view-mode="shared"
+        class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-[#1B4332] text-white shadow-sm"
+      >
+        <span data-i18n="tabShared">Общий</span>
+      </button>
+      <button
+        type="button"
+        data-view-mode="mine"
+        class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-[#3B5B4D] hover:bg-[#EBF5F0]"
+      >
+        <span data-i18n="tabMine">Мой</span>
+      </button>
+      <button
+        type="button"
+        data-view-mode="partner"
+        class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-[#3B5B4D] hover:bg-[#EBF5F0]"
+      >
+        <span data-i18n="tabPartner">Партнёр</span>
       </button>
     </div>
 
@@ -184,11 +199,11 @@
         <div class="lg:col-span-7 space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium text-emerald-100">
             <span class="w-2 h-2 rounded-full bg-[#38BDF8]"></span>
-            <span id="heroSubtitle">На основе последнего введённого остатка</span>
+            <span id="heroSubtitle">Расчёт на основе актуальных остатков</span>
           </div>
 
-          <p data-i18n="dailyLimitHeadline" class="text-sm sm:text-base text-emerald-100/90 font-medium pt-1">
-            Можно потратить завтра (и в каждый оставшийся день до зарплаты)
+          <p id="dailyLimitHeadline" class="text-sm sm:text-base text-emerald-100/90 font-medium pt-1">
+            Можно потратить завтра на двоих (сумма лимитов по вашим циклам)
           </p>
 
           <div class="flex items-baseline gap-3 flex-wrap">
@@ -202,7 +217,7 @@
         <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
           <div class="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4 flex items-center justify-between gap-3">
             <div>
-              <p data-i18n="availableSpendLabel" class="text-xs text-emerald-100/80 font-medium">Доступно на повседневные траты</p>
+              <p id="availableSpendLabel" class="text-xs text-emerald-100/80 font-medium">Доступно на повседневные траты</p>
               <p id="availableSpendValue" class="text-xl sm:text-2xl font-bold tabular-nums text-white mt-0.5">0 ₴</p>
               <p id="reserveBreakdownText" class="text-[11px] text-emerald-200/75 tabular-nums mt-0.5">Остаток 0 ₴ − резерв 0 ₴</p>
             </div>
@@ -210,9 +225,9 @@
 
           <div class="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4 flex items-center justify-between gap-3">
             <div>
-              <p data-i18n="daysLeftLabel" class="text-xs text-emerald-100/80 font-medium">Дней до следующей ЗП</p>
+              <p id="daysLeftLabel" class="text-xs text-emerald-100/80 font-medium">Ближайшая выплата</p>
               <p id="daysLeftValue" class="text-xl sm:text-2xl font-bold tabular-nums text-white mt-0.5">0 дн.</p>
-              <p id="paydayDateLabel" class="text-[11px] text-emerald-200/75 mt-0.5">Ближайшая выплата: —</p>
+              <p id="paydayDateLabel" class="text-[11px] text-emerald-200/75 mt-0.5">Дата ЗП: —</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0 text-emerald-100 font-bold text-sm tabular-nums">
               <span id="daysBadgeNumber">0</span>
@@ -222,13 +237,40 @@
       </div>
     </section>
 
-    <!-- ФОРМА ВВОДА И НАСТРОЙКИ -->
+    <!-- СВОДКА ВДВОЁМ (показывается в режиме «Общий») -->
+    <section id="pairBreakdownCard" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] block">Мой личный вклад</span>
+          <p id="cardMyName" class="text-sm font-bold text-[#1B4332] truncate">@user</p>
+          <p id="cardMyDetails" class="text-xs text-[#527365] tabular-nums mt-0.5">Остаток: 0 ₴ · До ЗП: 0 дн.</p>
+        </div>
+        <div class="text-right shrink-0">
+          <span class="text-[11px] text-[#527365] block">Лимит / дн.</span>
+          <span id="cardMyDailyLimit" class="text-lg font-extrabold text-[#1B4332] tabular-nums">0 ₴</span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-[#0077ab] block">Вклад партнёра</span>
+          <p id="cardPartnerName" class="text-sm font-bold text-[#1B4332] truncate">Не подключён</p>
+          <p id="cardPartnerDetails" class="text-xs text-[#527365] tabular-nums mt-0.5">Нажмите «Для двоих» и передайте ключ</p>
+        </div>
+        <div class="text-right shrink-0">
+          <span class="text-[11px] text-[#527365] block">Лимит / дн.</span>
+          <span id="cardPartnerDailyLimit" class="text-lg font-extrabold text-[#0086c2] tabular-nums">0 ₴</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ФОРМА ВВОДА И НАСТРОЙКИ СВОЕГО ЦИКЛА -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
       <section class="lg:col-span-7 bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm">
         <div class="flex items-center justify-between gap-2 mb-4">
           <div>
-            <h2 data-i18n="eveningEntryTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Вечерний ввод остатка</h2>
-            <p data-i18n="eveningEntrySubtitle" class="text-xs text-[#527365]">Впишите сумму на конец дня — лимит обновится у обоих</p>
+            <h2 data-i18n="eveningEntryTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Мой вечерний ввод остатка</h2>
+            <p data-i18n="eveningEntrySubtitle" class="text-xs text-[#527365]">Впишите остаток по своим счетам — общий лимит пересчитается сам</p>
           </div>
           <span id="authorBadge" class="px-2.5 py-1 rounded-lg bg-[#EBF5F0] text-[#2D6A4F] text-xs font-semibold truncate max-w-[140px]">@user</span>
         </div>
@@ -236,7 +278,7 @@
         <form id="entryForm" class="space-y-4" novalidate>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="balanceInput" data-i18n="balanceInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Общий остаток на конец дня *</label>
+              <label for="balanceInput" data-i18n="balanceInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Мой остаток на конец дня *</label>
               <div class="relative">
                 <input
                   id="balanceInput"
@@ -265,7 +307,7 @@
 
           <div>
             <label for="noteInput" data-i18n="noteInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Заметка / источник</label>
-            <input id="noteInput" type="text" maxlength="120" placeholder="Например: ЗП работа 1, Продукты, Общие траты" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm text-[#102A20] focus:outline-none focus:border-[#009bde]" />
+            <input id="noteInput" type="text" maxlength="120" placeholder="Например: ЗП работа 1, Продукты, Моя карта" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm text-[#102A20] focus:outline-none focus:border-[#009bde]" />
           </div>
 
           <div class="rounded-2xl bg-[#F4F8F6] border border-[#E0ECE6] px-4 py-3 flex items-center justify-between gap-2 text-xs">
@@ -274,7 +316,7 @@
           </div>
 
           <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
-            <span data-i18n="saveBalanceBtn">Сохранить остаток</span>
+            <span data-i18n="saveBalanceBtn">Сохранить мой остаток</span>
           </button>
         </form>
       </section>
@@ -283,36 +325,36 @@
         <div>
           <div class="flex items-center justify-between gap-2 mb-4">
             <div>
-              <h2 data-i18n="cycleSettingsTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Цикл до зарплаты</h2>
-              <p data-i18n="cycleSettingsSubtitle" class="text-xs text-[#527365]">Общие настройки цикла и резерва</p>
+              <h2 data-i18n="cycleSettingsTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Мой цикл до зарплаты</h2>
+              <p data-i18n="cycleSettingsSubtitle" class="text-xs text-[#527365]">Ваша дата выплаты и ваш резерв</p>
             </div>
-            <span data-i18n="settingsBadge" class="px-2.5 py-1 rounded-lg bg-[#E6F5FC] text-[#0086c2] text-xs font-semibold">Настройки</span>
+            <span data-i18n="settingsBadge" class="px-2.5 py-1 rounded-lg bg-[#E6F5FC] text-[#0086c2] text-xs font-semibold">Мои настройки</span>
           </div>
 
           <div class="space-y-4">
             <div>
-              <label for="paydayInput" data-i18n="paydayInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Дата следующей зарплаты</label>
+              <label for="paydayInput" data-i18n="paydayInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Дата моей следующей зарплаты</label>
               <input id="paydayInput" type="date" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm font-medium text-[#102A20] focus:outline-none focus:border-[#009bde]" />
             </div>
 
             <div>
-              <label for="reserveInput" data-i18n="reserveInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Резерв на обязательные платежи</label>
+              <label for="reserveInput" data-i18n="reserveInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Мой резерв на обязательные платежи</label>
               <div class="relative">
                 <input id="reserveInput" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 pr-10 text-sm font-semibold text-[#102A20] tabular-nums focus:outline-none focus:border-[#009bde]" />
                 <span class="currency-suffix absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-[#527365]">₴</span>
               </div>
-              <p data-i18n="reserveHint" class="mt-1.5 text-[11px] text-[#527365]">Аренда, коммуналка, связь — вычитается из остатка, чтобы не потратить случайно.</p>
+              <p data-i18n="reserveHint" class="mt-1.5 text-[11px] text-[#527365]">Аренда, коммуналка, связь — вычитается из вашего остатка.</p>
             </div>
           </div>
         </div>
 
         <div class="mt-5 pt-4 border-t border-[#E6F0EB] grid grid-cols-2 gap-3 text-xs">
           <div class="rounded-2xl bg-[#F4F8F6] p-3">
-            <span data-i18n="summaryLastBalanceLabel" class="text-[#527365] block">Последний остаток</span>
+            <span data-i18n="summaryLastBalanceLabel" class="text-[#527365] block">Мой последний остаток</span>
             <span id="summaryLastBalance" class="text-sm font-bold text-[#1B4332] tabular-nums mt-0.5 block">0 ₴</span>
           </div>
           <div class="rounded-2xl bg-[#F4F8F6] p-3">
-            <span data-i18n="summaryEntriesCountLabel" class="text-[#527365] block">Записей в журнале</span>
+            <span data-i18n="summaryEntriesCountLabel" class="text-[#527365] block">Моих записей</span>
             <span id="summaryEntriesCount" class="text-sm font-bold text-[#1B4332] tabular-nums mt-0.5 block">0 дн.</span>
           </div>
         </div>
@@ -321,14 +363,16 @@
 
     <!-- ЖУРНАЛ ДНЕЙ -->
     <section class="bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm">
-      <div class="mb-4">
-        <h2 data-i18n="journalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Общий журнал дней</h2>
-        <p data-i18n="journalSubtitle" class="text-xs text-[#527365]">Видно остаток, изменение за день, лимит на завтра и кто из вас внёс запись</p>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 id="journalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Журнал дней</h2>
+          <p id="journalSubtitle" class="text-xs text-[#527365]">История остатков, изменений за день и дневного лимита</p>
+        </div>
       </div>
 
       <div id="emptyJournalState" class="hidden rounded-2xl border border-dashed border-[#C6DBD0] bg-[#FAFDFB] py-12 px-4 text-center">
-        <p data-i18n="emptyJournalTitle" class="text-sm font-semibold text-[#1B4332]">Записей пока нет</p>
-        <p data-i18n="emptyJournalDesc" class="text-xs text-[#527365] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — он сразу появится у вас и у вашей второй половинки.</p>
+        <p id="emptyJournalTitle" class="text-sm font-semibold text-[#1B4332]">Записей пока нет</p>
+        <p id="emptyJournalDesc" class="text-xs text-[#527365] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — расчёт обновится автоматически.</p>
       </div>
 
       <div id="journalTableWrapper" class="table-scroll overflow-x-auto">
@@ -339,7 +383,7 @@
               <th data-i18n="colBalance" class="py-3 px-3 text-right">Остаток</th>
               <th data-i18n="colDelta" class="py-3 px-3 text-right">Изменение</th>
               <th data-i18n="colNextLimit" class="py-3 px-3 text-right">Лимит на завтра</th>
-              <th data-i18n="colAuthor" class="py-3 px-3">Кто внёс</th>
+              <th data-i18n="colAuthor" class="py-3 px-3">Участник</th>
               <th data-i18n="colNote" class="py-3 px-3">Заметка</th>
               <th data-i18n="colAction" class="py-3 px-3 text-right">Действие</th>
             </tr>
@@ -362,7 +406,6 @@
 
     const TELEGRAM_BOT_USERNAME = "dailylim_bot";
 
-    // 1. Инициализация Telegram и отображаемого @username
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) {
       try {
@@ -393,7 +436,6 @@
 
     const currentUser = getTelegramUser();
 
-    // 2. Генерация случайного секретного ключа комнаты (НЕ связанного с @username)
     function getOrCreateSecretRoomId(userId) {
       const storageKey = `payday_secret_room_v2_${userId}`;
       let saved = localStorage.getItem(storageKey);
@@ -410,7 +452,7 @@
 
     const OWN_ROOM_ID = getOrCreateSecretRoomId(currentUser.id);
     const ACTIVE_ROOM_KEY = `payday_tg_active_room_v2_${currentUser.id}`;
-    const LOCAL_CACHE_PREFIX = 'payday_tg_cache_v2_';
+    const LOCAL_CACHE_PREFIX = 'payday_tg_cache_v3_';
 
     function getTodayISO() {
       const now = new Date();
@@ -439,70 +481,53 @@
         appTitle: 'Дневной лимит до ЗП',
         btnSharePartner: 'Для двоих',
         btnClearAll: 'Сброс',
+        tabShared: 'Общий',
+        tabMine: 'Мой',
+        tabPartner: 'Партнёр',
         shareModalTitle: 'Совместный бюджет для двоих',
-        shareModalSubtitle: 'Оба партнёра видят общий лимит и могут вносить вечерние остатки',
-        yourRoomCodeLabel: 'Секретный ключ бюджета:',
+        shareModalSubtitle: 'У каждого свой остаток и цикл до ЗП, а сверху считается общий лимит',
+        yourRoomCodeLabel: 'Секретный ключ комнаты:',
         btnCopyCode: 'Скопировать ключ',
         btnSendTgInvite: 'Отправить в Telegram',
-        participantsLabel: 'Участники бюджета:',
-        joinPartnerLabel: 'Подключиться к бюджету партнёра (введите ключ):',
+        participantsLabel: 'Участники комнаты:',
+        joinPartnerLabel: 'Подключиться к комнате партнёра (введите ключ):',
         btnJoinRoom: 'Войти',
-        btnReturnOwnRoom: 'Вернуться в свой личный бюджет',
-        clearModalTitle: 'Очистить журнал и начать с нуля?',
-        clearModalDesc: 'Все сохранённые записи остатков в этом бюджете будут удалены у обоих участников.',
+        btnReturnOwnRoom: 'Вернуться в свою личную комнату',
+        clearModalTitle: 'Очистить ваш журнал?',
+        clearModalDesc: 'Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.',
         cancelBtn: 'Отмена',
         confirmClearBtn: 'Да, очистить',
-        demoBannerPrefix: 'Загружен пример расчёта:',
-        demoBannerBody: 'введите свой вечерний остаток ниже или нажмите «Сброс», чтобы начать с чистого листа.',
-        btnResetDemo: 'Вернуть пример',
-        heroLastEntrySubtitle: (d, b) => `Остаток за ${d}: ${b}`,
-        heroEmptySubtitle: 'Введите первый вечерний остаток для расчёта',
-        dailyLimitHeadline: 'Можно потратить завтра (и в каждый оставшийся день до зарплаты)',
-        exactDailySuffix: (e) => `точно: ${e} / дн.`,
-        lowBalanceAdvice: (r, z) => `Внимание: текущий остаток меньше резерва (${r}). На повседневные траты доступно ${z}.`,
-        tightLimitAdvice: (p) => `Лимит плотный — сверяйтесь с ним перед покупками до зарплаты ${p}.`,
-        healthyLimitAdvice: 'Если сегодня потратить меньше лимита, завтра доступная сумма на день вырастет.',
-        emptyLimitAdvice: 'После сохранения остатка в форме ниже вы сразу увидите безопасный дневной лимит.',
-        availableSpendLabel: 'Доступно на повседневные траты',
-        reserveBreakdownText: (b, r) => `Остаток ${b} − резерв ${r}`,
-        daysLeftLabel: 'Дней до следующей ЗП',
-        daysUnit: (n) => `${n} дн.`,
-        paydayDateLabel: (d) => `Ближайшая выплата: ${d}`,
-        eveningEntryTitle: 'Вечерний ввод остатка',
-        eveningEntrySubtitle: 'Впишите сумму на конец дня — лимит обновится у обоих',
-        balanceInputLabel: 'Общий остаток на конец дня *',
+        eveningEntryTitle: 'Мой вечерний ввод остатка',
+        eveningEntrySubtitle: 'Впишите остаток по своим счетам — общий лимит пересчитается сам',
+        balanceInputLabel: 'Мой остаток на конец дня *',
         presetJob1: '+ ЗП работа 1',
         presetJob2: '+ ЗП работа 2',
         noteJob1: 'ЗП работа 1',
         noteJob2: 'ЗП работа 2',
         dateInputLabel: 'Дата записи',
         existingDateDefaultHint: 'Если на эту дату уже есть запись, она будет обновлена.',
-        existingDateFoundHint: (d, b) => `На ${d} уже есть запись (${b}) — она будет обновлена.`,
+        existingDateFoundHint: (d, b) => `На ${d} уже есть ваша запись (${b}) — она будет обновлена.`,
         noteInputLabel: 'Заметка / источник',
         previewDeltaLabel: 'Ожидаемое изменение к предыдущему дню:',
         previewInitialBalance: (b) => `Начальный остаток ${b}`,
         previewSpent: (a, p) => `Потрачено ${a} (с ${p})`,
         previewIncome: (a, p) => `Поступление +${a} (с ${p})`,
         previewNoChange: () => `Без изменений`,
-        saveBalanceBtn: 'Сохранить остаток',
-        cycleSettingsTitle: 'Цикл до зарплаты',
-        cycleSettingsSubtitle: 'Общие настройки цикла и резерва',
-        settingsBadge: 'Настройки',
-        paydayInputLabel: 'Дата следующей зарплаты',
-        reserveInputLabel: 'Резерв на обязательные платежи',
-        reserveHint: 'Аренда, коммуналка, связь — вычитается из остатка, чтобы не потратить случайно.',
-        summaryLastBalanceLabel: 'Последний остаток',
-        summaryEntriesCountLabel: 'Записей в журнале',
+        saveBalanceBtn: 'Сохранить мой остаток',
+        cycleSettingsTitle: 'Мой цикл до зарплаты',
+        cycleSettingsSubtitle: 'Ваша дата выплаты и ваш резерв',
+        settingsBadge: 'Мои настройки',
+        paydayInputLabel: 'Дата моей следующей зарплаты',
+        reserveInputLabel: 'Мой резерв на обязательные платежи',
+        reserveHint: 'Аренда, коммуналка, связь — вычитается из вашего остатка.',
+        summaryLastBalanceLabel: 'Мой последний остаток',
+        summaryEntriesCountLabel: 'Моих записей',
         entriesCountUnit: (n) => `${n} дн.`,
-        journalTitle: 'Общий журнал дней',
-        journalSubtitle: 'Видно остаток, изменение за день, лимит на завтра и кто из вас внёс запись',
-        emptyJournalTitle: 'Записей пока нет',
-        emptyJournalDesc: 'Введите остаток на конец дня в форме выше — он сразу появится у вас и у вашей второй половинки.',
         colDate: 'Дата',
         colBalance: 'Остаток',
         colDelta: 'Изменение',
         colNextLimit: 'Лимит на завтра',
-        colAuthor: 'Кто внёс',
+        colAuthor: 'Участник',
         colNote: 'Заметка',
         colAction: 'Действие',
         firstEntryBadge: 'Первая запись',
@@ -512,82 +537,65 @@
         perDaySuffix: (a) => `${a} / дн.`,
         deleteBtn: 'Удалить',
         toastInvalidBalance: 'Введите корректный остаток (0 или больше)',
-        toastSavedEntry: (d) => `Остаток за ${d} сохранён`,
-        toastUpdatedEntry: (d) => `Остаток за ${d} обновлён`,
+        toastSavedEntry: (d) => `Ваш остаток за ${d} сохранён`,
+        toastUpdatedEntry: (d) => `Ваш остаток за ${d} обновлён`,
         toastDeletedEntry: 'Запись удалена',
-        toastCleared: 'Журнал очищен',
-        toastCodeCopied: 'Секретный ключ бюджета скопирован!',
-        toastJoinedRoom: () => `Вы подключились к общему бюджету`,
-        toastRoomNotFound: 'Бюджет с таким ключом не найден'
+        toastCleared: 'Ваш журнал очищен',
+        toastCodeCopied: 'Секретный ключ комнаты скопирован!',
+        toastJoinedRoom: () => `Вы подключились к комнате партнёра`,
+        toastRoomNotFound: 'Комната с таким ключом не найдена'
       },
       uk: {
         appTitle: 'Денний ліміт до ЗП',
         btnSharePartner: 'Для двох',
         btnClearAll: 'Скинути',
+        tabShared: 'Спільний',
+        tabMine: 'Мій',
+        tabPartner: 'Партнер',
         shareModalTitle: 'Спільний бюджет для двох',
-        shareModalSubtitle: 'Обидва партнери бачать спільний ліміт і можуть вносити вечірні залишки',
-        yourRoomCodeLabel: 'Секретний ключ бюджету:',
+        shareModalSubtitle: 'У кожного свій залишок і цикл до ЗП, а зверху рахується спільний ліміт',
+        yourRoomCodeLabel: 'Секретний ключ кімнати:',
         btnCopyCode: 'Скопіювати ключ',
         btnSendTgInvite: 'Надіслати в Telegram',
-        participantsLabel: 'Учасники бюджету:',
-        joinPartnerLabel: 'Підключитися до бюджету партнера (введіть ключ):',
+        participantsLabel: 'Учасники кімнати:',
+        joinPartnerLabel: 'Підключитися до кімнати партнера (введіть ключ):',
         btnJoinRoom: 'Увійти',
-        btnReturnOwnRoom: 'Повернутися у свій особистий бюджет',
-        clearModalTitle: 'Очистити журнал і почати з нуля?',
-        clearModalDesc: 'Усі збережені записи залишків у цьому бюджеті будуть видалені в обох учасників.',
+        btnReturnOwnRoom: 'Повернутися у свою особисту кімнату',
+        clearModalTitle: 'Очистити ваш журнал?',
+        clearModalDesc: 'Будуть очищені лише ваші записи та резерв. Дані партнера в кімнаті залишаться без змін.',
         cancelBtn: 'Скасувати',
         confirmClearBtn: 'Так, очистити',
-        demoBannerPrefix: 'Завантажено приклад розрахунку:',
-        demoBannerBody: 'введіть свій вечірній залишок нижче або натисніть «Скинути», щоб почати з чистого аркуша.',
-        btnResetDemo: 'Повернути приклад',
-        heroLastEntrySubtitle: (d, b) => `Залишок за ${d}: ${b}`,
-        heroEmptySubtitle: 'Введіть перший вечірній залишок для розрахунку',
-        dailyLimitHeadline: 'Можна витратити завтра (і в кожен наступний день до зарплати)',
-        exactDailySuffix: (e) => `точно: ${e} / дн.`,
-        lowBalanceAdvice: (r, z) => `Увага: поточний залишок менший за резерв (${r}). На повсякденні витрати доступно ${z}.`,
-        tightLimitAdvice: (p) => `Ліміт щільний — звіряйтеся з ним перед покупками до зарплати ${p}.`,
-        healthyLimitAdvice: 'Якщо сьогодні витратити менше ліміту, завтра доступна сума на день зросте.',
-        emptyLimitAdvice: 'Після збереження залишку у формі нижче ви одразу побачите безпечний денний ліміт.',
-        availableSpendLabel: 'Доступно на повсякденні витрати',
-        reserveBreakdownText: (b, r) => `Залишок ${b} − резерв ${r}`,
-        daysLeftLabel: 'Днів до наступної ЗП',
-        daysUnit: (n) => `${n} дн.`,
-        paydayDateLabel: (d) => `Найближча виплата: ${d}`,
-        eveningEntryTitle: 'Вечірнє введення залишку',
-        eveningEntrySubtitle: 'Впишіть суму на кінець дня — ліміт оновиться в обох',
-        balanceInputLabel: 'Загальний залишок на кінець дня *',
+        eveningEntryTitle: 'Мій вечірній ввід залишку',
+        eveningEntrySubtitle: 'Впишіть залишок за своїми рахунками — спільний ліміт перерахується сам',
+        balanceInputLabel: 'Мій залишок на кінець дня *',
         presetJob1: '+ ЗП робота 1',
         presetJob2: '+ ЗП робота 2',
         noteJob1: 'ЗП робота 1',
         noteJob2: 'ЗП робота 2',
         dateInputLabel: 'Дата запису',
         existingDateDefaultHint: 'Якщо на цю дату вже є запис, його буде оновлено.',
-        existingDateFoundHint: (d, b) => `На ${d} уже є запис (${b}) — його буде оновлено.`,
+        existingDateFoundHint: (d, b) => `На ${d} уже є ваш запис (${b}) — його буде оновлено.`,
         noteInputLabel: 'Нотатка / джерело',
         previewDeltaLabel: 'Очікувана зміна відносно попереднього дня:',
         previewInitialBalance: (b) => `Початковий залишок ${b}`,
         previewSpent: (a, p) => `Витрачено ${a} (з ${p})`,
         previewIncome: (a, p) => `Надходження +${a} (з ${p})`,
         previewNoChange: () => `Без змін`,
-        saveBalanceBtn: 'Зберегти залишок',
-        cycleSettingsTitle: 'Цикл до зарплати',
-        cycleSettingsSubtitle: 'Спільні налаштування циклу та резерву',
-        settingsBadge: 'Налаштування',
-        paydayInputLabel: 'Дата наступної зарплати',
-        reserveInputLabel: 'Резерв на обов’язкові платежі',
-        reserveHint: 'Оренда, комуналка, зв’язок — віднімається від залишку, щоб не витратити випадково.',
-        summaryLastBalanceLabel: 'Останній залишок',
-        summaryEntriesCountLabel: 'Записів у журналі',
+        saveBalanceBtn: 'Зберегти мій залишок',
+        cycleSettingsTitle: 'Мій цикл до зарплати',
+        cycleSettingsSubtitle: 'Ваша дата виплати та ваш резерв',
+        settingsBadge: 'Мої налаштування',
+        paydayInputLabel: 'Дата моєї наступної зарплати',
+        reserveInputLabel: 'Мій резерв на обов’язкові платежі',
+        reserveHint: 'Оренда, комуналка, зв’язок — віднімається від вашого залишку.',
+        summaryLastBalanceLabel: 'Мій останній залишок',
+        summaryEntriesCountLabel: 'Моїх записів',
         entriesCountUnit: (n) => `${n} дн.`,
-        journalTitle: 'Спільний журнал днів',
-        journalSubtitle: 'Видно залишок, зміну за день, ліміт на завтра та хто з вас вніс запис',
-        emptyJournalTitle: 'Записів поки немає',
-        emptyJournalDesc: 'Введіть залишок на кінець дня у формі вище — він одразу з’явиться у вас та у вашої другої половинки.',
         colDate: 'Дата',
         colBalance: 'Залишок',
         colDelta: 'Зміна',
         colNextLimit: 'Ліміт на завтра',
-        colAuthor: 'Хто вніс',
+        colAuthor: 'Учасник',
         colNote: 'Нотатка',
         colAction: 'Дія',
         firstEntryBadge: 'Перший запис',
@@ -597,82 +605,65 @@
         perDaySuffix: (a) => `${a} / дн.`,
         deleteBtn: 'Видалити',
         toastInvalidBalance: 'Введіть коректний залишок (0 або більше)',
-        toastSavedEntry: (d) => `Залишок за ${d} збережено`,
-        toastUpdatedEntry: (d) => `Залишок за ${d} оновлено`,
+        toastSavedEntry: (d) => `Ваш залишок за ${d} збережено`,
+        toastUpdatedEntry: (d) => `Ваш залишок за ${d} оновлено`,
         toastDeletedEntry: 'Запис видалено',
-        toastCleared: 'Журнал очищено',
-        toastCodeCopied: 'Секретний ключ бюджету скопійовано!',
-        toastJoinedRoom: () => `Ви підключилися до спільного бюджету`,
-        toastRoomNotFound: 'Бюджет із таким ключем не знайдено'
+        toastCleared: 'Ваш журнал очищено',
+        toastCodeCopied: 'Секретний ключ кімнати скопійовано!',
+        toastJoinedRoom: () => `Ви підключилися до кімнати партнера`,
+        toastRoomNotFound: 'Кімнату з таким ключем не знайдено'
       },
       en: {
         appTitle: 'Daily Payday Limit',
         btnSharePartner: 'For Two',
         btnClearAll: 'Reset',
+        tabShared: 'Shared',
+        tabMine: 'Mine',
+        tabPartner: 'Partner',
         shareModalTitle: 'Shared Budget for Two',
-        shareModalSubtitle: 'Both partners see the shared daily limit and can log evening balances',
-        yourRoomCodeLabel: 'Secret budget key:',
+        shareModalSubtitle: 'Each partner has their own balance and payday cycle, combined into a shared limit',
+        yourRoomCodeLabel: 'Secret room key:',
         btnCopyCode: 'Copy key',
         btnSendTgInvite: 'Share in Telegram',
-        participantsLabel: 'Budget members:',
-        joinPartnerLabel: 'Join partner’s budget (enter key):',
+        participantsLabel: 'Room members:',
+        joinPartnerLabel: 'Join partner’s room (enter key):',
         btnJoinRoom: 'Join',
-        btnReturnOwnRoom: 'Return to my personal budget',
-        clearModalTitle: 'Clear log and start fresh?',
-        clearModalDesc: 'All saved entries in this shared budget will be deleted for both partners.',
+        btnReturnOwnRoom: 'Return to my personal room',
+        clearModalTitle: 'Clear your log?',
+        clearModalDesc: 'Only your entries and reserve will be cleared. Your partner’s data stays untouched.',
         cancelBtn: 'Cancel',
         confirmClearBtn: 'Yes, clear',
-        demoBannerPrefix: 'Sample loaded:',
-        demoBannerBody: 'enter your evening balance below or click "Reset" to start fresh.',
-        btnResetDemo: 'Restore sample',
-        heroLastEntrySubtitle: (d, b) => `Balance for ${d}: ${b}`,
-        heroEmptySubtitle: 'Enter your first evening balance to calculate',
-        dailyLimitHeadline: 'Safe to spend tomorrow (and each remaining day until payday)',
-        exactDailySuffix: (e) => `exact: ${e} / day`,
-        lowBalanceAdvice: (r, z) => `Heads up: balance is below reserve (${r}). Available right now: ${z}.`,
-        tightLimitAdvice: (p) => `Allowance is tight — check before spending until ${p}.`,
-        healthyLimitAdvice: 'Spend less than your limit today and tomorrow’s daily budget will grow.',
-        emptyLimitAdvice: 'Save your evening balance below to see your safe daily limit right away.',
-        availableSpendLabel: 'Available for everyday spending',
-        reserveBreakdownText: (b, r) => `Balance ${b} − reserve ${r}`,
-        daysLeftLabel: 'Days until next payday',
-        daysUnit: (n) => `${n} d`,
-        paydayDateLabel: (d) => `Next payday: ${d}`,
-        eveningEntryTitle: 'Evening balance entry',
-        eveningEntrySubtitle: 'Enter end-of-day total — updates for both partners immediately',
-        balanceInputLabel: 'Shared end-of-day balance *',
+        eveningEntryTitle: 'My evening balance entry',
+        eveningEntrySubtitle: 'Enter your own balance — the shared daily limit updates automatically',
+        balanceInputLabel: 'My end-of-day balance *',
         presetJob1: '+ Job 1 pay',
         presetJob2: '+ Job 2 pay',
         noteJob1: 'Job 1 pay',
         noteJob2: 'Job 2 pay',
         dateInputLabel: 'Entry date',
         existingDateDefaultHint: 'If an entry exists for this date, it will be updated.',
-        existingDateFoundHint: (d, b) => `Entry for ${d} exists (${b}) — will be updated.`,
+        existingDateFoundHint: (d, b) => `Your entry for ${d} exists (${b}) — will be updated.`,
         noteInputLabel: 'Note / source',
         previewDeltaLabel: 'Expected change vs. previous day:',
         previewInitialBalance: (b) => `Starting balance ${b}`,
         previewSpent: (a, p) => `Spent ${a} (since ${p})`,
         previewIncome: (a, p) => `Inflow +${a} (since ${p})`,
         previewNoChange: () => `No change`,
-        saveBalanceBtn: 'Save balance',
-        cycleSettingsTitle: 'Payday cycle',
-        cycleSettingsSubtitle: 'Shared cycle & reserve settings',
-        settingsBadge: 'Settings',
-        paydayInputLabel: 'Next payday date',
-        reserveInputLabel: 'Reserve for bills',
-        reserveHint: 'Rent, utilities, phone — subtracted from balance so you don’t spend it accidentally.',
-        summaryLastBalanceLabel: 'Latest balance',
-        summaryEntriesCountLabel: 'Logged days',
+        saveBalanceBtn: 'Save my balance',
+        cycleSettingsTitle: 'My payday cycle',
+        cycleSettingsSubtitle: 'Your payday date & reserve',
+        settingsBadge: 'My settings',
+        paydayInputLabel: 'My next payday date',
+        reserveInputLabel: 'My reserve for bills',
+        reserveHint: 'Rent, utilities, phone — subtracted from your balance.',
+        summaryLastBalanceLabel: 'My latest balance',
+        summaryEntriesCountLabel: 'My logged days',
         entriesCountUnit: (n) => `${n} d`,
-        journalTitle: 'Shared daily log',
-        journalSubtitle: 'Balance, daily change, tomorrow’s limit, and who logged each entry',
-        emptyJournalTitle: 'No entries yet',
-        emptyJournalDesc: 'Enter your end-of-day balance above — it will sync immediately for both of you.',
         colDate: 'Date',
         colBalance: 'Balance',
         colDelta: 'Change',
         colNextLimit: 'Tomorrow’s limit',
-        colAuthor: 'Added by',
+        colAuthor: 'Member',
         colNote: 'Note',
         colAction: 'Action',
         firstEntryBadge: 'First entry',
@@ -682,13 +673,13 @@
         perDaySuffix: (a) => `${a} / day`,
         deleteBtn: 'Delete',
         toastInvalidBalance: 'Enter a valid balance (0 or higher)',
-        toastSavedEntry: (d) => `Saved balance for ${d}`,
-        toastUpdatedEntry: (d) => `Updated balance for ${d}`,
+        toastSavedEntry: (d) => `Saved your balance for ${d}`,
+        toastUpdatedEntry: (d) => `Updated your balance for ${d}`,
         toastDeletedEntry: 'Entry deleted',
-        toastCleared: 'Log cleared',
-        toastCodeCopied: 'Secret budget key copied!',
-        toastJoinedRoom: () => `Connected to shared budget`,
-        toastRoomNotFound: 'Budget with this key was not found'
+        toastCleared: 'Your log cleared',
+        toastCodeCopied: 'Secret room key copied!',
+        toastJoinedRoom: () => `Connected to partner’s room`,
+        toastRoomNotFound: 'Room with this key was not found'
       }
     };
 
@@ -696,24 +687,33 @@
       return (raw === 'uk' || raw === 'en' || raw === 'ru') ? raw : 'ru';
     }
 
-    function createInitialState(lang = 'ru') {
+    function createUserProfile(lang = 'ru') {
       return {
-        isDemo: true,
-        lang: normalizeLang(lang),
-        currency: { mode: 'UAH', symbol: '₴', code: 'UAH' },
+        id: currentUser.id,
+        username: currentUser.displayTag,
         paydayDate: getDefaultPaydayISO(),
         reserve: 0,
-        ownerUsername: currentUser.displayTag,
-        members: [{ id: currentUser.id, username: currentUser.displayTag }],
         entries: [
           {
-            id: 'demo-1',
+            id: `init-${currentUser.id}-1`,
             date: TODAY_ISO,
             balance: 15000,
             note: lang === 'uk' ? 'Стартовий залишок' : (lang === 'en' ? 'Starting balance' : 'Стартовый остаток'),
             updatedBy: currentUser.displayTag
           }
         ]
+      };
+    }
+
+    function createInitialRoomState(lang = 'ru') {
+      const me = createUserProfile(lang);
+      return {
+        lang: normalizeLang(lang),
+        currency: { mode: 'UAH', symbol: '₴', code: 'UAH' },
+        members: [{ id: currentUser.id, username: currentUser.displayTag }],
+        profiles: {
+          [currentUser.id]: me
+        }
       };
     }
 
@@ -731,20 +731,46 @@
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
     }
 
-    function loadLocalState(roomId) {
+    let viewMode = 'shared'; // 'shared' | 'mine' | 'partner'
+
+    function ensureMyProfile(roomState) {
+      if (!roomState.profiles || typeof roomState.profiles !== 'object') {
+        roomState.profiles = {};
+      }
+      if (!roomState.profiles[currentUser.id]) {
+        roomState.profiles[currentUser.id] = createUserProfile(roomState.lang);
+      } else {
+        roomState.profiles[currentUser.id].username = currentUser.displayTag;
+        if (!Array.isArray(roomState.profiles[currentUser.id].entries)) {
+          roomState.profiles[currentUser.id].entries = [];
+        }
+        if (!roomState.profiles[currentUser.id].paydayDate) {
+          roomState.profiles[currentUser.id].paydayDate = getDefaultPaydayISO();
+        }
+        roomState.profiles[currentUser.id].reserve = Number(roomState.profiles[currentUser.id].reserve) || 0;
+      }
+      return roomState.profiles[currentUser.id];
+    }
+
+    function loadLocalRoomState(roomId) {
       try {
         const raw = localStorage.getItem(LOCAL_CACHE_PREFIX + roomId);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.entries)) return parsed;
+          if (parsed && typeof parsed === 'object') {
+            ensureMyProfile(parsed);
+            return parsed;
+          }
         }
       } catch (e) {}
-      return createInitialState(
+      const fresh = createInitialRoomState(
         tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code === 'uk' ? 'uk' : 'ru'
       );
+      ensureMyProfile(fresh);
+      return fresh;
     }
 
-    let state = loadLocalState(activeRoomId);
+    let state = loadLocalRoomState(activeRoomId);
 
     function t(key, ...args) {
       const lang = normalizeLang(state.lang);
@@ -817,35 +843,90 @@
       return Math.max(1, Math.round((Date.UTC(py, pm - 1, pd) - Date.UTC(ey, em - 1, ed)) / 86400000));
     }
 
-    function calcDailyLimit(balance, reserve, entryDateStr, paydayDateStr) {
-      const available = Math.max(0, (Number(balance) || 0) - (Number(reserve) || 0));
-      const daysLeft = calcDaysRemainingAfterDate(entryDateStr, paydayDateStr);
-      return { available, daysLeft, dailyLimit: available / daysLeft };
+    function getSortedAsc(entries) {
+      return [...(Array.isArray(entries) ? entries : [])].sort((a, b) => a.date.localeCompare(b.date));
     }
 
-    function getSortedAscEntries() {
-      return [...(state.entries || [])].sort((a, b) => a.date.localeCompare(b.date));
+    function getProfileStats(profile) {
+      if (!profile) {
+        return {
+          hasEntry: false,
+          balance: 0,
+          reserve: 0,
+          available: 0,
+          daysLeft: 1,
+          dailyLimit: 0,
+          paydayDate: getDefaultPaydayISO(),
+          lastDate: TODAY_ISO,
+          sortedAsc: []
+        };
+      }
+      const sortedAsc = getSortedAsc(profile.entries);
+      const latest = sortedAsc.length > 0 ? sortedAsc[sortedAsc.length - 1] : null;
+      const balance = latest ? (Number(latest.balance) || 0) : 0;
+      const reserve = Number(profile.reserve) || 0;
+      const paydayDate = profile.paydayDate || getDefaultPaydayISO();
+      const lastDate = latest ? latest.date : TODAY_ISO;
+      const available = Math.max(0, balance - reserve);
+      const daysLeft = calcDaysRemainingAfterDate(lastDate, paydayDate);
+      const dailyLimit = latest ? (available / daysLeft) : 0;
+
+      return {
+        hasEntry: Boolean(latest),
+        balance,
+        reserve,
+        available,
+        daysLeft,
+        dailyLimit,
+        paydayDate,
+        lastDate,
+        sortedAsc
+      };
+    }
+
+    function getPartnerProfile() {
+      const profiles = state.profiles || {};
+      const partnerId = Object.keys(profiles).find(id => id !== currentUser.id);
+      if (partnerId) return profiles[partnerId];
+      const member = (state.members || []).find(m => m.id !== currentUser.id);
+      if (member) return { id: member.id, username: member.username, paydayDate: getDefaultPaydayISO(), reserve: 0, entries: [] };
+      return null;
     }
 
     function escapeHtml(str) {
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    function renderViewModeTabs() {
+      document.querySelectorAll('.view-mode-btn').forEach(btn => {
+        const mode = btn.getAttribute('data-view-mode');
+        const active = mode === viewMode;
+        btn.className = active
+          ? 'view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-[#1B4332] text-white shadow-sm'
+          : 'view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-[#3B5B4D] hover:bg-[#EBF5F0]';
+      });
+    }
+
     function renderAll() {
+      const myProfile = ensureMyProfile(state);
+      const partnerProfile = getPartnerProfile();
+      const myStats = getProfileStats(myProfile);
+      const partnerStats = getProfileStats(partnerProfile);
+
       document.documentElement.lang = normalizeLang(state.lang);
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const val = t(el.getAttribute('data-i18n'));
         if (typeof val === 'string') el.textContent = val;
       });
-      const demoBody = document.getElementById('demoBannerBody');
-      if (demoBody) demoBody.textContent = t('demoBannerBody');
       document.querySelectorAll('.preset-note-btn').forEach(btn => {
         btn.textContent = btn.getAttribute('data-preset-key') === 'job2' ? t('presetJob2') : t('presetJob1');
       });
 
+      renderViewModeTabs();
+
       const isPartnerRoom = activeRoomId !== OWN_ROOM_ID;
       document.getElementById('tgUserDisplay').textContent = isPartnerRoom
-        ? `${currentUser.displayTag} · Общий бюджет партнёра`
+        ? `${currentUser.displayTag} · Комната партнёра`
         : `${currentUser.displayTag} · Личный / общий бюджет`;
       document.getElementById('authorBadge').textContent = currentUser.displayTag;
 
@@ -868,56 +949,162 @@
 
       const paydayInput = document.getElementById('paydayInput');
       const reserveInput = document.getElementById('reserveInput');
-      if (document.activeElement !== paydayInput) paydayInput.value = state.paydayDate;
-      if (document.activeElement !== reserveInput) reserveInput.value = state.reserve > 0 ? String(state.reserve) : '';
+      if (document.activeElement !== paydayInput) paydayInput.value = myProfile.paydayDate;
+      if (document.activeElement !== reserveInput) reserveInput.value = myProfile.reserve > 0 ? String(myProfile.reserve) : '';
 
-      document.getElementById('demoBanner').classList.toggle('hidden', !state.isDemo);
+      // Карточки раздельного вклада в режиме «Общий»
+      const pairCard = document.getElementById('pairBreakdownCard');
+      pairCard.classList.toggle('hidden', viewMode !== 'shared');
 
-      const sortedAsc = getSortedAscEntries();
-      const latestEntry = sortedAsc.length > 0 ? sortedAsc[sortedAsc.length - 1] : null;
-      const activeDate = latestEntry ? latestEntry.date : TODAY_ISO;
-      const activeBalance = latestEntry ? latestEntry.balance : 0;
+      document.getElementById('cardMyName').textContent = currentUser.displayTag;
+      document.getElementById('cardMyDetails').textContent = `Остаток: ${formatMoney(myStats.balance)} · До ЗП: ${myStats.daysLeft} дн.`;
+      document.getElementById('cardMyDailyLimit').textContent = formatMoney(Math.floor(myStats.dailyLimit));
 
-      const { available, daysLeft, dailyLimit } = calcDailyLimit(activeBalance, state.reserve, activeDate, state.paydayDate);
-
-      if (latestEntry) {
-        document.getElementById('dailyLimitValue').textContent = formatMoney(Math.floor(dailyLimit));
-        const hasCents = Math.abs(dailyLimit - Math.round(dailyLimit)) > 0.01;
-        document.getElementById('dailyLimitExact').textContent = hasCents ? t('exactDailySuffix', formatMoney(dailyLimit, true)) : '';
-        document.getElementById('availableSpendValue').textContent = formatMoney(available);
-        document.getElementById('reserveBreakdownText').textContent = t('reserveBreakdownText', formatMoney(activeBalance), formatMoney(state.reserve));
-        document.getElementById('daysLeftValue').textContent = t('daysUnit', daysLeft);
-        document.getElementById('daysBadgeNumber').textContent = String(daysLeft);
-        document.getElementById('paydayDateLabel').textContent = t('paydayDateLabel', formatDateByLang(state.paydayDate));
-        document.getElementById('heroSubtitle').textContent = t('heroLastEntrySubtitle', formatDateByLang(latestEntry.date), formatMoney(latestEntry.balance));
-        document.getElementById('dailyLimitAdvice').textContent = activeBalance < state.reserve
-          ? t('lowBalanceAdvice', formatMoney(state.reserve), formatMoney(0))
-          : (dailyLimit < 300 ? t('tightLimitAdvice', formatDateByLang(state.paydayDate)) : t('healthyLimitAdvice'));
+      if (partnerProfile) {
+        document.getElementById('cardPartnerName').textContent = partnerProfile.username || 'Партнёр';
+        document.getElementById('cardPartnerDetails').textContent = `Остаток: ${formatMoney(partnerStats.balance)} · До ЗП: ${partnerStats.daysLeft} дн.`;
+        document.getElementById('cardPartnerDailyLimit').textContent = formatMoney(Math.floor(partnerStats.dailyLimit));
       } else {
-        document.getElementById('dailyLimitValue').textContent = formatMoney(0);
-        document.getElementById('dailyLimitExact').textContent = '';
-        document.getElementById('availableSpendValue').textContent = formatMoney(0);
-        document.getElementById('reserveBreakdownText').textContent = t('reserveBreakdownText', formatMoney(0), formatMoney(state.reserve));
-        document.getElementById('daysLeftValue').textContent = t('daysUnit', daysLeft);
-        document.getElementById('daysBadgeNumber').textContent = String(daysLeft);
-        document.getElementById('paydayDateLabel').textContent = t('paydayDateLabel', formatDateByLang(state.paydayDate));
-        document.getElementById('heroSubtitle').textContent = t('heroEmptySubtitle');
-        document.getElementById('dailyLimitAdvice').textContent = t('emptyLimitAdvice');
+        document.getElementById('cardPartnerName').textContent = 'Не подключён';
+        document.getElementById('cardPartnerDetails').textContent = 'Нажмите «Для двоих» и передайте ключ';
+        document.getElementById('cardPartnerDailyLimit').textContent = formatMoney(0);
       }
 
-      document.getElementById('summaryLastBalance').textContent = latestEntry ? formatMoney(latestEntry.balance) : formatMoney(0);
-      document.getElementById('summaryEntriesCount').textContent = t('entriesCountUnit', sortedAsc.length);
+      // Главный герой-блок в зависимости от выбранной вкладки
+      const heroLimitEl = document.getElementById('dailyLimitValue');
+      const heroExactEl = document.getElementById('dailyLimitExact');
+      const heroHeadlineEl = document.getElementById('dailyLimitHeadline');
+      const heroSubtitleEl = document.getElementById('heroSubtitle');
+      const heroAdviceEl = document.getElementById('dailyLimitAdvice');
+      const availableSpendEl = document.getElementById('availableSpendValue');
+      const reserveBreakdownEl = document.getElementById('reserveBreakdownText');
+      const daysLeftEl = document.getElementById('daysLeftValue');
+      const daysBadgeEl = document.getElementById('daysBadgeNumber');
+      const paydayLabelEl = document.getElementById('paydayDateLabel');
 
-      renderJournal(sortedAsc);
+      if (viewMode === 'shared') {
+        const totalDaily = myStats.dailyLimit + partnerStats.dailyLimit;
+        const totalBalance = myStats.balance + partnerStats.balance;
+        const totalReserve = myStats.reserve + partnerStats.reserve;
+        const totalAvailable = Math.max(0, totalBalance - totalReserve);
+        const minDays = partnerProfile ? Math.min(myStats.daysLeft, partnerStats.daysLeft) : myStats.daysLeft;
+        const nearestPayday = partnerProfile && partnerStats.paydayDate < myStats.paydayDate
+          ? partnerStats.paydayDate
+          : myStats.paydayDate;
+
+        heroHeadlineEl.textContent = 'Можно потратить завтра на двоих (сумма лимитов по циклам)';
+        heroSubtitleEl.textContent = partnerProfile
+          ? `Учтены ${currentUser.displayTag} и ${partnerProfile.username || 'партнёр'}`
+          : `Пока учтён только ваш бюджет (${currentUser.displayTag})`;
+        heroLimitEl.textContent = formatMoney(Math.floor(totalDaily));
+        const hasCents = Math.abs(totalDaily - Math.round(totalDaily)) > 0.01;
+        heroExactEl.textContent = hasCents ? `точно: ${formatMoney(totalDaily, true)} / дн.` : '';
+        availableSpendEl.textContent = formatMoney(totalAvailable);
+        reserveBreakdownEl.textContent = `Остатки ${formatMoney(totalBalance)} − резервы ${formatMoney(totalReserve)}`;
+        daysLeftEl.textContent = `${minDays} дн.`;
+        daysBadgeEl.textContent = String(minDays);
+        paydayLabelEl.textContent = `Ближайшая ЗП: ${formatDateByLang(nearestPayday)}`;
+        heroAdviceEl.textContent = partnerProfile
+          ? 'Каждый вносит остаток по своим счетам — дневной лимит складывается с учётом даты выплаты каждого.'
+          : 'Подключите второго участника через кнопку «Для двоих», чтобы его лимит добавлялся сюда автоматически.';
+      } else {
+        const targetProfile = viewMode === 'mine' ? myProfile : partnerProfile;
+        const targetStats = viewMode === 'mine' ? myStats : partnerStats;
+        const whoLabel = viewMode === 'mine'
+          ? currentUser.displayTag
+          : (partnerProfile && partnerProfile.username ? partnerProfile.username : 'Партнёр');
+
+        heroHeadlineEl.textContent = viewMode === 'mine'
+          ? 'Можно потратить завтра по вашему личному циклу'
+          : `Можно потратить завтра по циклу (${whoLabel})`;
+        heroSubtitleEl.textContent = targetStats.hasEntry
+          ? `Остаток за ${formatDateByLang(targetStats.lastDate)}: ${formatMoney(targetStats.balance)}`
+          : 'Нет сохранённых записей';
+        heroLimitEl.textContent = formatMoney(Math.floor(targetStats.dailyLimit));
+        const hasCents = Math.abs(targetStats.dailyLimit - Math.round(targetStats.dailyLimit)) > 0.01;
+        heroExactEl.textContent = hasCents ? `точно: ${formatMoney(targetStats.dailyLimit, true)} / дн.` : '';
+        availableSpendEl.textContent = formatMoney(targetStats.available);
+        reserveBreakdownEl.textContent = `Остаток ${formatMoney(targetStats.balance)} − резерв ${formatMoney(targetStats.reserve)}`;
+        daysLeftEl.textContent = `${targetStats.daysLeft} дн.`;
+        daysBadgeEl.textContent = String(targetStats.daysLeft);
+        paydayLabelEl.textContent = `Дата ЗП: ${formatDateByLang(targetStats.paydayDate)}`;
+        heroAdviceEl.textContent = targetProfile
+          ? `Личный цикл участника ${whoLabel}: резерв вычитается из остатка, остаток делится на дни до выплаты.`
+          : 'Партнёр ещё не присоединился к комнате.';
+      }
+
+      document.getElementById('summaryLastBalance').textContent = formatMoney(myStats.balance);
+      document.getElementById('summaryEntriesCount').textContent = t('entriesCountUnit', myStats.sortedAsc.length);
+
+      renderJournal(myStats, partnerStats, partnerProfile);
       updatePreviewDelta();
     }
 
-    function renderJournal(sortedAsc) {
+    function renderJournal(myStats, partnerStats, partnerProfile) {
+      const journalTitleEl = document.getElementById('journalTitle');
+      const journalSubtitleEl = document.getElementById('journalSubtitle');
       const emptyState = document.getElementById('emptyJournalState');
       const tableWrapper = document.getElementById('journalTableWrapper');
       const tbody = document.getElementById('journalTableBody');
 
-      if (sortedAsc.length === 0) {
+      let rowsSource = [];
+      let canDelete = false;
+
+      if (viewMode === 'mine') {
+        journalTitleEl.textContent = `Мой журнал (${currentUser.displayTag})`;
+        journalSubtitleEl.textContent = 'Только ваши записи остатков и ваш личный лимит на завтра';
+        canDelete = true;
+        const asc = myStats.sortedAsc;
+        rowsSource = asc.map((entry, idx) => {
+          const prev = idx > 0 ? asc[idx - 1] : null;
+          const delta = prev ? entry.balance - prev.balance : null;
+          const days = calcDaysRemainingAfterDate(entry.date, myStats.paydayDate);
+          const nextLimit = Math.max(0, (Number(entry.balance) || 0) - myStats.reserve) / days;
+          return { ...entry, delta, nextLimit, author: currentUser.displayTag };
+        }).reverse();
+      } else if (viewMode === 'partner') {
+        const pName = partnerProfile && partnerProfile.username ? partnerProfile.username : 'Партнёр';
+        journalTitleEl.textContent = `Журнал партнёра (${pName})`;
+        journalSubtitleEl.textContent = 'Записи остатков и лимиты по циклу партнёра';
+        canDelete = false;
+        const asc = partnerStats.sortedAsc;
+        rowsSource = asc.map((entry, idx) => {
+          const prev = idx > 0 ? asc[idx - 1] : null;
+          const delta = prev ? entry.balance - prev.balance : null;
+          const days = calcDaysRemainingAfterDate(entry.date, partnerStats.paydayDate);
+          const nextLimit = Math.max(0, (Number(entry.balance) || 0) - partnerStats.reserve) / days;
+          return { ...entry, delta, nextLimit, author: pName };
+        }).reverse();
+      } else {
+        journalTitleEl.textContent = 'Общий журнал дней';
+        journalSubtitleEl.textContent = 'Записи обоих участников в комнате с указанием, кто внёс остаток';
+        canDelete = true;
+        const myRows = myStats.sortedAsc.map(e => ({
+          ...e,
+          ownerId: currentUser.id,
+          author: currentUser.displayTag,
+          paydayDate: myStats.paydayDate,
+          reserve: myStats.reserve
+        }));
+        const pName = partnerProfile && partnerProfile.username ? partnerProfile.username : 'Партнёр';
+        const partnerRows = partnerStats.sortedAsc.map(e => ({
+          ...e,
+          ownerId: partnerProfile ? partnerProfile.id : 'partner',
+          author: pName,
+          paydayDate: partnerStats.paydayDate,
+          reserve: partnerStats.reserve
+        }));
+        const combined = [...myRows, ...partnerRows].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+        rowsSource = combined.map((entry, idx) => {
+          const prevSameAuthor = [...combined.slice(0, idx)].reverse().find(x => x.author === entry.author);
+          const delta = prevSameAuthor ? entry.balance - prevSameAuthor.balance : null;
+          const days = calcDaysRemainingAfterDate(entry.date, entry.paydayDate);
+          const nextLimit = Math.max(0, (Number(entry.balance) || 0) - entry.reserve) / days;
+          return { ...entry, delta, nextLimit };
+        }).reverse();
+      }
+
+      if (rowsSource.length === 0) {
         emptyState.classList.remove('hidden');
         tableWrapper.classList.add('hidden');
         tbody.innerHTML = '';
@@ -927,14 +1114,7 @@
       emptyState.classList.add('hidden');
       tableWrapper.classList.remove('hidden');
 
-      const enriched = sortedAsc.map((entry, idx) => {
-        const prevEntry = idx > 0 ? sortedAsc[idx - 1] : null;
-        const delta = prevEntry ? entry.balance - prevEntry.balance : null;
-        const { dailyLimit } = calcDailyLimit(entry.balance, state.reserve, entry.date, state.paydayDate);
-        return { ...entry, delta, nextDayLimit: dailyLimit };
-      });
-
-      tbody.innerHTML = [...enriched].reverse().map(item => {
+      tbody.innerHTML = rowsSource.map(item => {
         let deltaHtml = `<span class="text-[#7A968A] text-xs">${escapeHtml(t('firstEntryBadge'))}</span>`;
         if (item.delta !== null) {
           if (item.delta < 0) deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 font-semibold text-xs tabular-nums">${escapeHtml(t('spentBadge', formatMoney(Math.abs(item.delta))))}</span>`;
@@ -943,38 +1123,41 @@
         }
 
         const safeNote = item.note ? escapeHtml(item.note) : `<span class="text-[#94ACA1] italic">${escapeHtml(t('noNoteText'))}</span>`;
-        const authorTag = item.updatedBy ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#E6F5FC] text-[#0077ab] text-xs font-medium">${escapeHtml(item.updatedBy)}</span>` : '—';
+        const authorTag = `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#E6F5FC] text-[#0077ab] text-xs font-medium">${escapeHtml(item.author)}</span>`;
+        const isMineEntry = item.ownerId === currentUser.id || viewMode === 'mine';
+
+        const actionHtml = (canDelete && isMineEntry)
+          ? `<button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
+          : `<span class="text-xs text-[#94ACA1]">—</span>`;
 
         return `
           <tr class="hover:bg-[#F7FBF9] transition">
             <td class="py-3.5 px-3 font-medium text-[#102A20] whitespace-nowrap tabular-nums">${escapeHtml(formatDateByLang(item.date))}</td>
             <td class="py-3.5 px-3 text-right font-bold text-[#1B4332] whitespace-nowrap tabular-nums">${escapeHtml(formatMoney(item.balance))}</td>
             <td class="py-3.5 px-3 text-right whitespace-nowrap">${deltaHtml}</td>
-            <td class="py-3.5 px-3 text-right font-semibold text-[#0086c2] whitespace-nowrap tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextDayLimit))))}</td>
+            <td class="py-3.5 px-3 text-right font-semibold text-[#0086c2] whitespace-nowrap tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextLimit))))}</td>
             <td class="py-3.5 px-3 whitespace-nowrap">${authorTag}</td>
             <td class="py-3.5 px-3 text-[#3B5B4D] max-w-[200px] truncate">${safeNote}</td>
-            <td class="py-3.5 px-3 text-right whitespace-nowrap">
-              <button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer">
-                ${escapeHtml(t('deleteBtn'))}
-              </button>
-            </td>
+            <td class="py-3.5 px-3 text-right whitespace-nowrap">${actionHtml}</td>
           </tr>
         `;
       }).join('');
 
       tbody.querySelectorAll('.delete-entry-btn').forEach(btn => {
-        btn.addEventListener('click', () => deleteEntry(btn.getAttribute('data-delete-id')));
+        btn.addEventListener('click', () => deleteMyEntry(btn.getAttribute('data-delete-id')));
       });
     }
 
     function updatePreviewDelta() {
+      const myProfile = ensureMyProfile(state);
+      const mySorted = getSortedAsc(myProfile.entries);
       const balanceInput = document.getElementById('balanceInput');
       const dateInput = document.getElementById('dateInput');
       const previewEl = document.getElementById('previewDeltaValue');
       const hintEl = document.getElementById('existingDateHint');
 
       const selectedDate = dateInput.value || TODAY_ISO;
-      const existingSameDate = (state.entries || []).find(e => e.date === selectedDate);
+      const existingSameDate = mySorted.find(e => e.date === selectedDate);
       hintEl.textContent = existingSameDate
         ? t('existingDateFoundHint', formatDateByLang(selectedDate), formatMoney(existingSameDate.balance))
         : t('existingDateDefaultHint');
@@ -987,7 +1170,7 @@
       }
 
       const newBalance = Math.max(0, Number(rawVal));
-      const priorEntries = getSortedAscEntries().filter(e => e.date < selectedDate);
+      const priorEntries = mySorted.filter(e => e.date < selectedDate);
       const prevEntry = priorEntries.length > 0 ? priorEntries[priorEntries.length - 1] : null;
 
       if (!prevEntry) {
@@ -1022,7 +1205,10 @@
       try {
         const { db, doc, setDoc } = cloudApi;
         await setDoc(doc(db, 'shared_budgets', activeRoomId), {
-          ...nextState,
+          lang: nextState.lang,
+          currency: nextState.currency,
+          members: nextState.members,
+          profiles: nextState.profiles,
           updatedAt: new Date().toISOString()
         }, { merge: true });
         setSyncStatus(true);
@@ -1035,7 +1221,7 @@
     async function connectRoom(roomId) {
       activeRoomId = roomId;
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
-      state = loadLocalState(activeRoomId);
+      state = loadLocalRoomState(activeRoomId);
       renderAll();
 
       if (!cloudApi) return;
@@ -1057,7 +1243,8 @@
           const members = Array.isArray(data.members) ? data.members : [];
           if (!members.some(m => m.id === currentUser.id)) {
             await updateDoc(roomRef, {
-              members: arrayUnion({ id: currentUser.id, username: currentUser.displayTag })
+              members: arrayUnion({ id: currentUser.id, username: currentUser.displayTag }),
+              [`profiles.${currentUser.id}`]: ensureMyProfile(state)
             });
           }
         }
@@ -1074,16 +1261,19 @@
           setSyncStatus(true);
           if (!snapshot.exists()) return;
           const data = snapshot.data();
+          const myLocal = ensureMyProfile(state);
+          const remoteProfiles = (data.profiles && typeof data.profiles === 'object') ? data.profiles : {};
+
           state = {
-            isDemo: Boolean(data.isDemo),
             lang: normalizeLang(data.lang || state.lang),
             currency: data.currency || { mode: 'UAH', symbol: '₴', code: 'UAH' },
-            paydayDate: data.paydayDate || getDefaultPaydayISO(),
-            reserve: Number(data.reserve) || 0,
-            ownerUsername: data.ownerUsername || currentUser.displayTag,
             members: Array.isArray(data.members) ? data.members : [{ id: currentUser.id, username: currentUser.displayTag }],
-            entries: Array.isArray(data.entries) ? data.entries : []
+            profiles: {
+              ...remoteProfiles,
+              [currentUser.id]: remoteProfiles[currentUser.id] || myLocal
+            }
           };
+          ensureMyProfile(state);
           try {
             localStorage.setItem(LOCAL_CACHE_PREFIX + activeRoomId, JSON.stringify(state));
           } catch (e) {}
@@ -1095,12 +1285,20 @@
       );
     }
 
+    document.querySelectorAll('.view-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        viewMode = btn.getAttribute('data-view-mode') || 'shared';
+        renderAll();
+      });
+    });
+
     document.getElementById('dateInput').value = TODAY_ISO;
     document.getElementById('dateInput').addEventListener('change', updatePreviewDelta);
     document.getElementById('balanceInput').addEventListener('input', updatePreviewDelta);
 
     document.getElementById('entryForm').addEventListener('submit', async (event) => {
       event.preventDefault();
+      const myProfile = ensureMyProfile(state);
       const balanceInput = document.getElementById('balanceInput');
       const dateInput = document.getElementById('dateInput');
       const noteInput = document.getElementById('noteInput');
@@ -1116,18 +1314,18 @@
         return;
       }
 
-      const existingIndex = state.entries.findIndex(item => item.date === dateVal);
+      const existingIndex = myProfile.entries.findIndex(item => item.date === dateVal);
       if (existingIndex >= 0) {
-        state.entries[existingIndex] = {
-          ...state.entries[existingIndex],
+        myProfile.entries[existingIndex] = {
+          ...myProfile.entries[existingIndex],
           balance: numBalance,
           note: noteVal,
           updatedBy: currentUser.displayTag
         };
         showToast(t('toastUpdatedEntry', formatDateByLang(dateVal)), 'success');
       } else {
-        state.entries.push({
-          id: `entry-${dateVal}-${Date.now()}`,
+        myProfile.entries.push({
+          id: `entry-${currentUser.id}-${dateVal}-${Date.now()}`,
           date: dateVal,
           balance: numBalance,
           note: noteVal,
@@ -1140,31 +1338,30 @@
         try { tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
       }
 
-      state.isDemo = false;
       balanceInput.value = '';
       noteInput.value = '';
       renderAll();
       await persistState(state);
     });
 
-    async function deleteEntry(id) {
+    async function deleteMyEntry(id) {
       if (!id) return;
-      state.entries = state.entries.filter(item => item.id !== id);
-      state.isDemo = false;
+      const myProfile = ensureMyProfile(state);
+      myProfile.entries = myProfile.entries.filter(item => item.id !== id);
       renderAll();
       showToast(t('toastDeletedEntry'), 'info');
       await persistState(state);
     }
 
     async function handleSettingsChange() {
+      const myProfile = ensureMyProfile(state);
       const paydayInput = document.getElementById('paydayInput');
       const reserveInput = document.getElementById('reserveInput');
-      if (paydayInput && /^\d{4}-\d{2}-\d{2}$/.test(paydayInput.value)) state.paydayDate = paydayInput.value;
+      if (paydayInput && /^\d{4}-\d{2}-\d{2}$/.test(paydayInput.value)) myProfile.paydayDate = paydayInput.value;
       if (reserveInput) {
         const resVal = Number(reserveInput.value);
-        state.reserve = Number.isFinite(resVal) && resVal >= 0 ? resVal : 0;
+        myProfile.reserve = Number.isFinite(resVal) && resVal >= 0 ? resVal : 0;
       }
-      state.isDemo = false;
       renderAll();
       await persistState(state);
     }
@@ -1207,7 +1404,7 @@
     });
     document.getElementById('btnShareTgLink').addEventListener('click', () => {
       const inviteUrl = `https://t.me/${TELEGRAM_BOT_USERNAME}?startapp=${encodeURIComponent(activeRoomId)}`;
-      const shareText = `Давай вести общий дневной лимит до зарплаты вместе! Ключ доступа: ${activeRoomId}`;
+      const shareText = `Давай вести общий дневной лимит до зарплаты вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${activeRoomId}`;
       const tgShareLink = `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(shareText)}`;
       if (tg && tg.openTelegramLink) tg.openTelegramLink(tgShareLink);
       else window.open(tgShareLink, '_blank');
@@ -1254,19 +1451,13 @@
       document.getElementById('confirmModal').classList.remove('flex');
     });
     document.getElementById('confirmClearBtn').addEventListener('click', async () => {
-      state.isDemo = false;
-      state.entries = [];
-      state.reserve = 0;
+      const myProfile = ensureMyProfile(state);
+      myProfile.entries = [];
+      myProfile.reserve = 0;
       document.getElementById('confirmModal').classList.add('hidden');
       document.getElementById('confirmModal').classList.remove('flex');
       renderAll();
       showToast(t('toastCleared'), 'info');
-      await persistState(state);
-    });
-
-    document.getElementById('btnResetDemo').addEventListener('click', async () => {
-      state = createInitialState(state.lang);
-      renderAll();
       await persistState(state);
     });
 
