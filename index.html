@@ -419,7 +419,7 @@
 
     const TELEGRAM_BOT_USERNAME = "dailylim_bot";
     const DEVELOPER_TG_URL = "https://t.me/pelevkin";
-    const DAILY_DIRECT_AD_URL = "https://uplcm.com/4/12323843";
+    const DIRECT_AD_URL = "https://uplcm.com/4/12323843";
 
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) {
@@ -482,16 +482,12 @@
 
     const TODAY_ISO = getTodayISO();
 
-    function triggerDailyDirectLinkOnce() {
+    function triggerDirectLinkOnSave() {
       try {
-        const storageKey = `daily_direct_ad_${currentUser.id}_${TODAY_ISO}`;
-        if (localStorage.getItem(storageKey)) return;
-        localStorage.setItem(storageKey, '1');
-
         if (tg && typeof tg.openLink === 'function') {
-          tg.openLink(DAILY_DIRECT_AD_URL);
+          tg.openLink(DIRECT_AD_URL);
         } else {
-          window.open(DAILY_DIRECT_AD_URL, '_blank', 'noopener,noreferrer');
+          window.open(DIRECT_AD_URL, '_blank', 'noopener,noreferrer');
         }
       } catch (e) {}
     }
@@ -1574,7 +1570,7 @@
       balanceInput.value = '';
       noteInput.value = '';
       renderAll();
-      triggerDailyDirectLinkOnce();
+      triggerDirectLinkOnSave();
       await persistState(state);
     });
 
