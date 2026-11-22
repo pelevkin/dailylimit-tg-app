@@ -61,7 +61,7 @@
         <div class="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[#CFE0D7] bg-[#FAFDFB]">
           <select id="headerLangSelect" class="bg-transparent text-xs font-bold text-[#1B4332] focus:outline-none cursor-pointer">
             <option value="ru">RU</option>
-            <option value="uk">UK</option>
+            <option value="uk">UA</option>
             <option value="en">EN</option>
           </select>
         </div>
@@ -431,6 +431,33 @@
       } catch (e) {}
     }
 
+    function mapLocaleToSupportedLang(rawLocale) {
+      if (!rawLocale || typeof rawLocale !== 'string') return null;
+      const code = rawLocale.toLowerCase().trim();
+      if (code === 'uk' || code.startsWith('uk-') || code.startsWith('uk_')) return 'uk';
+      if (code === 'ru' || code.startsWith('ru-') || code.startsWith('ru_')) return 'ru';
+      if (code === 'en' || code.startsWith('en-') || code.startsWith('en_')) return 'en';
+      return null;
+    }
+
+    function detectDeviceLang() {
+      const tgLang = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
+        ? mapLocaleToSupportedLang(tg.initDataUnsafe.user.language_code)
+        : null;
+      if (tgLang) return tgLang;
+
+      const candidates = [];
+      if (Array.isArray(navigator.languages)) candidates.push(...navigator.languages);
+      if (navigator.language) candidates.push(navigator.language);
+
+      for (const locale of candidates) {
+        const mapped = mapLocaleToSupportedLang(locale);
+        if (mapped) return mapped;
+      }
+
+      return 'ru';
+    }
+
     function getTelegramUser() {
       const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
       if (u) {
@@ -450,6 +477,7 @@
     }
 
     const currentUser = getTelegramUser();
+    const MANUAL_LANG_KEY = `payday_manual_lang_v1_${currentUser.id}`;
 
     function getOrCreateSecretRoomId(userId) {
       const storageKey = `payday_secret_room_v2_${userId}`;
@@ -832,6 +860,15 @@
       return (raw === 'uk' || raw === 'en' || raw === 'ru') ? raw : 'ru';
     }
 
+    function getResolvedPreferredLang(fallbackLang = null) {
+      const manual = localStorage.getItem(MANUAL_LANG_KEY);
+      if (manual === 'ru' || manual === 'uk' || manual === 'en') return manual;
+      const deviceLang = detectDeviceLang();
+      if (deviceLang) return deviceLang;
+      if (fallbackLang === 'ru' || fallbackLang === 'uk' || fallbackLang === 'en') return fallbackLang;
+      return 'ru';
+    }
+
     function createUserProfile() {
       return {
         id: currentUser.id,
@@ -842,7 +879,7 @@
       };
     }
 
-    function createInitialRoomState(lang = 'ru') {
+    function createInitialRoomState(lang = getResolvedPreferredLang()) {
       const me = createUserProfile();
       return {
         lang: normalizeLang(lang),
@@ -897,14 +934,13 @@
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') {
+            parsed.lang = getResolvedPreferredLang(parsed.lang);
             ensureMyProfile(parsed);
             return parsed;
           }
         }
       } catch (e) {}
-      const fresh = createInitialRoomState(
-        tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code === 'uk' ? 'uk' : 'ru'
-      );
+      const fresh = createInitialRoomState(getResolvedPreferredLang());
       ensureMyProfile(fresh);
       return fresh;
     }
@@ -1481,7 +1517,7 @@
             : [{ id: currentUser.id, username: currentUser.displayTag }];
 
           state = {
-            lang: normalizeLang(data.lang || state.lang),
+            lang: getResolvedPreferredLang(data.lang || state.lang),
             currency: data.currency || { mode: 'UAH', symbol: '₴', code: 'UAH' },
             members: remoteMembers,
             profiles: {
@@ -1600,7 +1636,9 @@
     document.getElementById('reserveInput').addEventListener('input', handleSettingsChange);
 
     document.getElementById('headerLangSelect').addEventListener('change', async (e) => {
-      state.lang = normalizeLang(e.target.value);
+      const chosen = normalizeLang(e.target.value);
+      localStorage.setItem(MANUAL_LANG_KEY, chosen);
+      state.lang = chosen;
       renderAll();
       await persistState(state);
     });
