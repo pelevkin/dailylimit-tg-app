@@ -104,14 +104,14 @@
       </div>
 
       <div class="rounded-2xl bg-[#F4F8F6] border border-[#DCE9E2] p-4 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <span data-i18n="yourRoomCodeLabel" class="text-xs font-semibold text-[#527365]">Код вашего общего бюджета:</span>
-          <span id="roomCodeBadge" class="font-mono text-sm font-extrabold tracking-wider text-[#1B4332] bg-white px-2.5 py-1 rounded-lg border border-[#CFE0D7]">—</span>
+        <div class="flex items-center justify-between gap-2">
+          <span data-i18n="yourRoomCodeLabel" class="text-xs font-semibold text-[#527365]">Секретный ключ бюджета:</span>
+          <span id="roomCodeBadge" class="font-mono text-xs sm:text-sm font-extrabold tracking-wider text-[#1B4332] bg-white px-2.5 py-1 rounded-lg border border-[#CFE0D7] select-all">—</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2 pt-1">
           <button id="btnCopyRoomCode" type="button" data-i18n="btnCopyCode" class="py-2 px-3 rounded-xl bg-white border border-[#CFE0D7] text-xs font-semibold text-[#1B4332] hover:bg-[#EBF5F0] transition cursor-pointer">
-            Скопировать код
+            Скопировать ключ
           </button>
           <button id="btnShareTgLink" type="button" data-i18n="btnSendTgInvite" class="py-2 px-3 rounded-xl bg-[#009bde] text-xs font-semibold text-white hover:bg-[#0086c2] transition cursor-pointer">
             Отправить в Telegram
@@ -128,15 +128,15 @@
 
       <form id="joinRoomForm" class="space-y-2.5">
         <label for="partnerRoomInput" data-i18n="joinPartnerLabel" class="block text-xs font-semibold text-[#1B4332]">
-          Подключиться к бюджету партнёра (введите код):
+          Подключиться к бюджету партнёра (введите ключ):
         </label>
         <div class="flex gap-2">
           <input
             id="partnerRoomInput"
             type="text"
-            maxlength="32"
-            placeholder="Например: FAM-PELEVKIN"
-            class="flex-1 rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3 py-2 text-sm font-mono uppercase text-[#102A20] focus:outline-none focus:border-[#009bde]"
+            maxlength="36"
+            placeholder="FAM-8K4P9X2M7Q1W5Z3R"
+            class="flex-1 rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3 py-2 text-xs sm:text-sm font-mono uppercase text-[#102A20] focus:outline-none focus:border-[#009bde]"
           />
           <button type="submit" data-i18n="btnJoinRoom" class="px-4 py-2 rounded-xl bg-[#1B4332] text-white text-xs font-semibold hover:bg-[#2D6A4F] transition cursor-pointer">
             Войти
@@ -164,7 +164,6 @@
   </div>
 
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-5 space-y-5">
-    <!-- Плашка ошибки Firebase (если возникнет) -->
     <div id="firebaseErrorBanner" class="hidden rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs text-rose-800">
       <strong>Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
     </div>
@@ -363,7 +362,7 @@
 
     const TELEGRAM_BOT_USERNAME = "dailylim_bot";
 
-    // 1. Инициализация Telegram
+    // 1. Инициализация Telegram и отображаемого @username
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) {
       try {
@@ -393,12 +392,25 @@
     }
 
     const currentUser = getTelegramUser();
-    const OWN_ROOM_ID = currentUser.username
-      ? `FAM-${currentUser.username.replace(/[^a-z0-9_]/gi, '').toUpperCase()}`
-      : `FAM-${currentUser.id}`;
 
-    const ACTIVE_ROOM_KEY = `payday_tg_active_room_${currentUser.id}`;
-    const LOCAL_CACHE_PREFIX = 'payday_tg_cache_';
+    // 2. Генерация случайного секретного ключа комнаты (НЕ связанного с @username)
+    function getOrCreateSecretRoomId(userId) {
+      const storageKey = `payday_secret_room_v2_${userId}`;
+      let saved = localStorage.getItem(storageKey);
+      if (saved && /^FAM-[A-Z0-9]{16,32}$/.test(saved)) return saved;
+
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const array = new Uint8Array(16);
+      crypto.getRandomValues(array);
+      const randomPart = Array.from(array, b => chars[b % chars.length]).join('');
+      saved = `FAM-${randomPart}`;
+      localStorage.setItem(storageKey, saved);
+      return saved;
+    }
+
+    const OWN_ROOM_ID = getOrCreateSecretRoomId(currentUser.id);
+    const ACTIVE_ROOM_KEY = `payday_tg_active_room_v2_${currentUser.id}`;
+    const LOCAL_CACHE_PREFIX = 'payday_tg_cache_v2_';
 
     function getTodayISO() {
       const now = new Date();
@@ -429,11 +441,11 @@
         btnClearAll: 'Сброс',
         shareModalTitle: 'Совместный бюджет для двоих',
         shareModalSubtitle: 'Оба партнёра видят общий лимит и могут вносить вечерние остатки',
-        yourRoomCodeLabel: 'Код вашего общего бюджета:',
-        btnCopyCode: 'Скопировать код',
+        yourRoomCodeLabel: 'Секретный ключ бюджета:',
+        btnCopyCode: 'Скопировать ключ',
         btnSendTgInvite: 'Отправить в Telegram',
         participantsLabel: 'Участники бюджета:',
-        joinPartnerLabel: 'Подключиться к бюджету партнёра (введите код):',
+        joinPartnerLabel: 'Подключиться к бюджету партнёра (введите ключ):',
         btnJoinRoom: 'Войти',
         btnReturnOwnRoom: 'Вернуться в свой личный бюджет',
         clearModalTitle: 'Очистить журнал и начать с нуля?',
@@ -504,9 +516,9 @@
         toastUpdatedEntry: (d) => `Остаток за ${d} обновлён`,
         toastDeletedEntry: 'Запись удалена',
         toastCleared: 'Журнал очищен',
-        toastCodeCopied: 'Код совместного бюджета скопирован!',
-        toastJoinedRoom: (c) => `Вы подключились к общему бюджету ${c}`,
-        toastRoomNotFound: 'Бюджет с таким кодом не найден'
+        toastCodeCopied: 'Секретный ключ бюджета скопирован!',
+        toastJoinedRoom: () => `Вы подключились к общему бюджету`,
+        toastRoomNotFound: 'Бюджет с таким ключом не найден'
       },
       uk: {
         appTitle: 'Денний ліміт до ЗП',
@@ -514,11 +526,11 @@
         btnClearAll: 'Скинути',
         shareModalTitle: 'Спільний бюджет для двох',
         shareModalSubtitle: 'Обидва партнери бачать спільний ліміт і можуть вносити вечірні залишки',
-        yourRoomCodeLabel: 'Код вашого спільного бюджету:',
-        btnCopyCode: 'Скопіювати код',
+        yourRoomCodeLabel: 'Секретний ключ бюджету:',
+        btnCopyCode: 'Скопіювати ключ',
         btnSendTgInvite: 'Надіслати в Telegram',
         participantsLabel: 'Учасники бюджету:',
-        joinPartnerLabel: 'Підключитися до бюджету партнера (введіть код):',
+        joinPartnerLabel: 'Підключитися до бюджету партнера (введіть ключ):',
         btnJoinRoom: 'Увійти',
         btnReturnOwnRoom: 'Повернутися у свій особистий бюджет',
         clearModalTitle: 'Очистити журнал і почати з нуля?',
@@ -589,9 +601,9 @@
         toastUpdatedEntry: (d) => `Залишок за ${d} оновлено`,
         toastDeletedEntry: 'Запис видалено',
         toastCleared: 'Журнал очищено',
-        toastCodeCopied: 'Код спільного бюджету скопійовано!',
-        toastJoinedRoom: (c) => `Ви підключилися до спільного бюджету ${c}`,
-        toastRoomNotFound: 'Бюджет із таким кодом не знайдено'
+        toastCodeCopied: 'Секретний ключ бюджету скопійовано!',
+        toastJoinedRoom: () => `Ви підключилися до спільного бюджету`,
+        toastRoomNotFound: 'Бюджет із таким ключем не знайдено'
       },
       en: {
         appTitle: 'Daily Payday Limit',
@@ -599,11 +611,11 @@
         btnClearAll: 'Reset',
         shareModalTitle: 'Shared Budget for Two',
         shareModalSubtitle: 'Both partners see the shared daily limit and can log evening balances',
-        yourRoomCodeLabel: 'Your shared budget code:',
-        btnCopyCode: 'Copy code',
+        yourRoomCodeLabel: 'Secret budget key:',
+        btnCopyCode: 'Copy key',
         btnSendTgInvite: 'Share in Telegram',
         participantsLabel: 'Budget members:',
-        joinPartnerLabel: 'Join partner’s budget (enter code):',
+        joinPartnerLabel: 'Join partner’s budget (enter key):',
         btnJoinRoom: 'Join',
         btnReturnOwnRoom: 'Return to my personal budget',
         clearModalTitle: 'Clear log and start fresh?',
@@ -674,9 +686,9 @@
         toastUpdatedEntry: (d) => `Updated balance for ${d}`,
         toastDeletedEntry: 'Entry deleted',
         toastCleared: 'Log cleared',
-        toastCodeCopied: 'Shared budget code copied!',
-        toastJoinedRoom: (c) => `Connected to shared budget ${c}`,
-        toastRoomNotFound: 'Budget with this code was not found'
+        toastCodeCopied: 'Secret budget key copied!',
+        toastJoinedRoom: () => `Connected to shared budget`,
+        toastRoomNotFound: 'Budget with this key was not found'
       }
     };
 
@@ -706,15 +718,19 @@
     }
 
     let activeRoomId = localStorage.getItem(ACTIVE_ROOM_KEY) || OWN_ROOM_ID;
+    if (!/^FAM-[A-Z0-9]{16,32}$/.test(activeRoomId)) {
+      activeRoomId = OWN_ROOM_ID;
+      localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
+    }
+
     const startParam = tg && tg.initDataUnsafe ? tg.initDataUnsafe.start_param : null;
     const urlParam = new URLSearchParams(window.location.search).get('room');
     const invitedRoom = (startParam || urlParam || '').trim().toUpperCase();
-    if (invitedRoom && invitedRoom.startsWith('FAM-')) {
+    if (/^FAM-[A-Z0-9]{16,32}$/.test(invitedRoom)) {
       activeRoomId = invitedRoom;
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
     }
 
-    // Загружаем локальный кэш сразу, чтобы интерфейс работал мгновенно
     function loadLocalState(roomId) {
       try {
         const raw = localStorage.getItem(LOCAL_CACHE_PREFIX + roomId);
@@ -774,7 +790,6 @@
       }
     }
 
-    // 2. Рендер и расчёты (не зависят от Firebase)
     function getCurrencySymbol() {
       return (state.currency && state.currency.symbol) ? state.currency.symbol : '₴';
     }
@@ -830,7 +845,7 @@
 
       const isPartnerRoom = activeRoomId !== OWN_ROOM_ID;
       document.getElementById('tgUserDisplay').textContent = isPartnerRoom
-        ? `${currentUser.displayTag} · Общий бюджет (${activeRoomId})`
+        ? `${currentUser.displayTag} · Общий бюджет партнёра`
         : `${currentUser.displayTag} · Личный / общий бюджет`;
       document.getElementById('authorBadge').textContent = currentUser.displayTag;
 
@@ -994,7 +1009,6 @@
       }
     }
 
-    // 3. Облачная синхронизация (Firebase Firestore)
     let cloudApi = null;
     let unsubscribeRoom = null;
 
@@ -1081,7 +1095,6 @@
       );
     }
 
-    // 4. Навешиваем все обработчики интерфейса СРАЗУ (до сети)
     document.getElementById('dateInput').value = TODAY_ISO;
     document.getElementById('dateInput').addEventListener('change', updatePreviewDelta);
     document.getElementById('balanceInput').addEventListener('input', updatePreviewDelta);
@@ -1194,7 +1207,7 @@
     });
     document.getElementById('btnShareTgLink').addEventListener('click', () => {
       const inviteUrl = `https://t.me/${TELEGRAM_BOT_USERNAME}?startapp=${encodeURIComponent(activeRoomId)}`;
-      const shareText = `Давай вести общий дневной лимит до зарплаты вместе! Код: ${activeRoomId}`;
+      const shareText = `Давай вести общий дневной лимит до зарплаты вместе! Ключ доступа: ${activeRoomId}`;
       const tgShareLink = `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(shareText)}`;
       if (tg && tg.openTelegramLink) tg.openTelegramLink(tgShareLink);
       else window.open(tgShareLink, '_blank');
@@ -1203,7 +1216,10 @@
     document.getElementById('joinRoomForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const cleanCode = String(document.getElementById('partnerRoomInput').value || '').trim().toUpperCase();
-      if (!cleanCode) return;
+      if (!/^FAM-[A-Z0-9]{16,32}$/.test(cleanCode)) {
+        showToast(t('toastRoomNotFound'), 'error');
+        return;
+      }
       if (!cloudApi) {
         showToast('Нет подключения к облаку', 'error');
         return;
@@ -1217,9 +1233,9 @@
         document.getElementById('shareModal').classList.add('hidden');
         document.getElementById('shareModal').classList.remove('flex');
         await connectRoom(cleanCode);
-        showToast(t('toastJoinedRoom', cleanCode), 'success');
+        showToast(t('toastJoinedRoom'), 'success');
       } catch (err) {
-        showToast(`Ошибка: ${err.message}`, 'error');
+        showToast(t('toastRoomNotFound'), 'error');
       }
     });
 
@@ -1254,10 +1270,8 @@
       await persistState(state);
     });
 
-    // Первый рендер интерфейса сразу при открытии
     renderAll();
 
-    // 5. Асинхронная загрузка Firebase SDK (чтобы не блокировать интерфейс при сбоях)
     (async () => {
       try {
         const [{ initializeApp }, { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion }] = await Promise.all([
