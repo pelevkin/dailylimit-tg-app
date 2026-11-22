@@ -419,6 +419,7 @@
 
     const TELEGRAM_BOT_USERNAME = "dailylim_bot";
     const DEVELOPER_TG_URL = "https://t.me/pelevkin";
+    const DAILY_DIRECT_AD_URL = "https://uplcm.com/4/12323843";
 
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) {
@@ -480,6 +481,20 @@
     }
 
     const TODAY_ISO = getTodayISO();
+
+    function triggerDailyDirectLinkOnce() {
+      try {
+        const storageKey = `daily_direct_ad_${currentUser.id}_${TODAY_ISO}`;
+        if (localStorage.getItem(storageKey)) return;
+        localStorage.setItem(storageKey, '1');
+
+        if (tg && typeof tg.openLink === 'function') {
+          tg.openLink(DAILY_DIRECT_AD_URL);
+        } else {
+          window.open(DAILY_DIRECT_AD_URL, '_blank', 'noopener,noreferrer');
+        }
+      } catch (e) {}
+    }
 
     const CURRENCY_PRESETS = {
       UAH: { code: 'UAH', symbol: '₴' },
@@ -1559,6 +1574,7 @@
       balanceInput.value = '';
       noteInput.value = '';
       renderAll();
+      triggerDailyDirectLinkOnce();
       await persistState(state);
     });
 
@@ -1696,19 +1712,6 @@
         setSyncStatus(false, `SDK: ${err.message}`);
       }
     })();
-    
-
-// Rewarded Popup
-
-show_12323393('pop').then(() => {
-    // user watch ad till the end or close it in interstitial format
-    // your code to reward user for rewarded format
-}).catch(e => {
-    // user get error during playing ad
-    // do nothing or whatever you want
-})
-
-        
   </script>
 </body>
 </html>
