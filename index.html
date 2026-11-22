@@ -37,10 +37,10 @@
             <h1 data-i18n="appTitle" class="text-sm sm:text-base font-bold text-[#1B4332] truncate">Дневной лимит до ЗП</h1>
             <span id="syncStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700">
               <span id="syncStatusDot" class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-              <span id="syncStatusText">Подключение...</span>
+              <span id="syncStatusText">...</span>
             </span>
           </div>
-          <p id="tgUserDisplay" class="text-[11px] text-[#527365] truncate">Профиль Telegram...</p>
+          <p id="tgUserDisplay" class="text-[11px] text-[#527365] truncate">...</p>
         </div>
       </div>
 
@@ -165,7 +165,7 @@
 
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-5 space-y-5">
     <div id="firebaseErrorBanner" class="hidden rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs text-rose-800">
-      <strong>Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
+      <strong data-i18n="cloudErrorPrefix">Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
     </div>
 
     <!-- Переключатель режимов: Общий / Мой / Партнёр -->
@@ -199,12 +199,10 @@
         <div class="lg:col-span-7 space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium text-emerald-100">
             <span class="w-2 h-2 rounded-full bg-[#38BDF8]"></span>
-            <span id="heroSubtitle">Расчёт на основе актуальных остатков</span>
+            <span id="heroSubtitle"></span>
           </div>
 
-          <p id="dailyLimitHeadline" class="text-sm sm:text-base text-emerald-100/90 font-medium pt-1">
-            Можно потратить завтра на двоих (сумма лимитов по вашим циклам)
-          </p>
+          <p id="dailyLimitHeadline" class="text-sm sm:text-base text-emerald-100/90 font-medium pt-1"></p>
 
           <div class="flex items-baseline gap-3 flex-wrap">
             <span id="dailyLimitValue" class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight tabular-nums text-white">0 ₴</span>
@@ -217,17 +215,17 @@
         <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
           <div class="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4 flex items-center justify-between gap-3">
             <div>
-              <p id="availableSpendLabel" class="text-xs text-emerald-100/80 font-medium">Доступно на повседневные траты</p>
+              <p data-i18n="availableSpendLabel" class="text-xs text-emerald-100/80 font-medium">Доступно на повседневные траты</p>
               <p id="availableSpendValue" class="text-xl sm:text-2xl font-bold tabular-nums text-white mt-0.5">0 ₴</p>
-              <p id="reserveBreakdownText" class="text-[11px] text-emerald-200/75 tabular-nums mt-0.5">Остаток 0 ₴ − резерв 0 ₴</p>
+              <p id="reserveBreakdownText" class="text-[11px] text-emerald-200/75 tabular-nums mt-0.5"></p>
             </div>
           </div>
 
           <div class="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4 flex items-center justify-between gap-3">
             <div>
-              <p id="daysLeftLabel" class="text-xs text-emerald-100/80 font-medium">Ближайшая выплата</p>
+              <p data-i18n="daysLeftLabel" class="text-xs text-emerald-100/80 font-medium">Ближайшая выплата</p>
               <p id="daysLeftValue" class="text-xl sm:text-2xl font-bold tabular-nums text-white mt-0.5">0 дн.</p>
-              <p id="paydayDateLabel" class="text-[11px] text-emerald-200/75 mt-0.5">Дата ЗП: —</p>
+              <p id="paydayDateLabel" class="text-[11px] text-emerald-200/75 mt-0.5"></p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0 text-emerald-100 font-bold text-sm tabular-nums">
               <span id="daysBadgeNumber">0</span>
@@ -237,28 +235,28 @@
       </div>
     </section>
 
-    <!-- СВОДКА ВДВОЁМ (показывается в режиме «Общий») -->
+    <!-- СВОДКА ВДВОЁМ -->
     <section id="pairBreakdownCard" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
         <div class="min-w-0">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] block">Мой личный вклад</span>
+          <span data-i18n="cardMyContributionTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] block">Мой личный вклад</span>
           <p id="cardMyName" class="text-sm font-bold text-[#1B4332] truncate">@user</p>
-          <p id="cardMyDetails" class="text-xs text-[#527365] tabular-nums mt-0.5">Остаток: 0 ₴ · До ЗП: 0 дн.</p>
+          <p id="cardMyDetails" class="text-xs text-[#527365] tabular-nums mt-0.5"></p>
         </div>
         <div class="text-right shrink-0">
-          <span class="text-[11px] text-[#527365] block">Лимит / дн.</span>
+          <span data-i18n="cardLimitPerDayLabel" class="text-[11px] text-[#527365] block">Лимит / дн.</span>
           <span id="cardMyDailyLimit" class="text-lg font-extrabold text-[#1B4332] tabular-nums">0 ₴</span>
         </div>
       </div>
 
       <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
         <div class="min-w-0">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-[#0077ab] block">Вклад партнёра</span>
-          <p id="cardPartnerName" class="text-sm font-bold text-[#1B4332] truncate">Не подключён</p>
-          <p id="cardPartnerDetails" class="text-xs text-[#527365] tabular-nums mt-0.5">Нажмите «Для двоих» и передайте ключ</p>
+          <span data-i18n="cardPartnerContributionTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#0077ab] block">Вклад партнёра</span>
+          <p id="cardPartnerName" class="text-sm font-bold text-[#1B4332] truncate"></p>
+          <p id="cardPartnerDetails" class="text-xs text-[#527365] tabular-nums mt-0.5"></p>
         </div>
         <div class="text-right shrink-0">
-          <span class="text-[11px] text-[#527365] block">Лимит / дн.</span>
+          <span data-i18n="cardLimitPerDayLabel" class="text-[11px] text-[#527365] block">Лимит / дн.</span>
           <span id="cardPartnerDailyLimit" class="text-lg font-extrabold text-[#0086c2] tabular-nums">0 ₴</span>
         </div>
       </div>
@@ -286,6 +284,7 @@
                   inputmode="decimal"
                   step="0.01"
                   min="0"
+                  data-i18n-placeholder="balancePlaceholder"
                   placeholder="Например, 13400"
                   required
                   class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 pr-10 text-base font-semibold text-[#102A20] tabular-nums focus:outline-none focus:border-[#009bde]"
@@ -307,7 +306,7 @@
 
           <div>
             <label for="noteInput" data-i18n="noteInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Заметка / источник</label>
-            <input id="noteInput" type="text" maxlength="120" placeholder="Например: ЗП работа 1, Продукты, Моя карта" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm text-[#102A20] focus:outline-none focus:border-[#009bde]" />
+            <input id="noteInput" type="text" maxlength="120" data-i18n-placeholder="notePlaceholder" placeholder="Например: ЗП работа 1, Продукты, Моя карта" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm text-[#102A20] focus:outline-none focus:border-[#009bde]" />
           </div>
 
           <div class="rounded-2xl bg-[#F4F8F6] border border-[#E0ECE6] px-4 py-3 flex items-center justify-between gap-2 text-xs">
@@ -365,14 +364,14 @@
     <section class="bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div>
-          <h2 id="journalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Журнал дней</h2>
-          <p id="journalSubtitle" class="text-xs text-[#527365]">История остатков, изменений за день и дневного лимита</p>
+          <h2 id="journalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]"></h2>
+          <p id="journalSubtitle" class="text-xs text-[#527365]"></p>
         </div>
       </div>
 
       <div id="emptyJournalState" class="hidden rounded-2xl border border-dashed border-[#C6DBD0] bg-[#FAFDFB] py-12 px-4 text-center">
-        <p id="emptyJournalTitle" class="text-sm font-semibold text-[#1B4332]">Записей пока нет</p>
-        <p id="emptyJournalDesc" class="text-xs text-[#527365] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — расчёт обновится автоматически.</p>
+        <p data-i18n="emptyJournalTitle" class="text-sm font-semibold text-[#1B4332]">Записей пока нет</p>
+        <p data-i18n="emptyJournalDesc" class="text-xs text-[#527365] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — расчёт обновится автоматически.</p>
       </div>
 
       <div id="journalTableWrapper" class="table-scroll overflow-x-auto">
@@ -481,6 +480,11 @@
         appTitle: 'Дневной лимит до ЗП',
         btnSharePartner: 'Для двоих',
         btnClearAll: 'Сброс',
+        syncOnline: 'Онлайн',
+        syncLocal: 'Локально',
+        cloudErrorPrefix: 'Ошибка синхронизации с облаком:',
+        userRolePartnerRoom: (tag) => `${tag} · Комната партнёра`,
+        userRoleOwnRoom: (tag) => `${tag} · Личный / общий бюджет`,
         tabShared: 'Общий',
         tabMine: 'Мой',
         tabPartner: 'Партнёр',
@@ -497,9 +501,35 @@
         clearModalDesc: 'Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.',
         cancelBtn: 'Отмена',
         confirmClearBtn: 'Да, очистить',
+        heroSharedHeadline: 'Можно потратить завтра на двоих (сумма лимитов по циклам)',
+        heroSharedSubWithPartner: (me, partner) => `Учтены ${me} и ${partner}`,
+        heroSharedSubSolo: (me) => `Пока учтён только ваш бюджет (${me})`,
+        heroSharedAdviceWithPartner: 'Каждый вносит остаток по своим счетам — дневной лимит складывается с учётом даты выплаты каждого.',
+        heroSharedAdviceSolo: 'Подключите второго участника через кнопку «Для двоих», чтобы его лимит добавлялся сюда автоматически.',
+        heroMineHeadline: 'Можно потратить завтра по вашему личному циклу',
+        heroPartnerHeadline: (who) => `Можно потратить завтра по циклу (${who})`,
+        heroSubEntry: (date, bal) => `Остаток за ${date}: ${bal}`,
+        heroSubEmpty: 'Нет сохранённых записей',
+        heroAdviceMember: (who) => `Личный цикл участника ${who}: резерв вычитается из остатка, остаток делится на дни до выплаты.`,
+        heroAdviceNoPartner: 'Партнёр ещё не присоединился к комнате.',
+        exactPerDay: (val) => `точно: ${val} / дн.`,
+        availableSpendLabel: 'Доступно на повседневные траты',
+        reserveBreakdown: (bal, res) => `Остатки ${bal} − резервы ${res}`,
+        daysLeftLabel: 'Ближайшая выплата',
+        daysUnit: (n) => `${n} дн.`,
+        paydayLabel: (d) => `Дата ЗП: ${d}`,
+        nearestPaydayLabel: (d) => `Ближайшая ЗП: ${d}`,
+        cardMyContributionTitle: 'Мой личный вклад',
+        cardPartnerContributionTitle: 'Вклад партнёра',
+        cardLimitPerDayLabel: 'Лимит / дн.',
+        cardDetailsText: (bal, days) => `Остаток: ${bal} · До ЗП: ${days} дн.`,
+        partnerNotConnectedName: 'Не подключён',
+        partnerNotConnectedDesc: 'Нажмите «Для двоих» и передайте ключ',
+        partnerDefaultName: 'Партнёр',
         eveningEntryTitle: 'Мой вечерний ввод остатка',
         eveningEntrySubtitle: 'Впишите остаток по своим счетам — общий лимит пересчитается сам',
         balanceInputLabel: 'Мой остаток на конец дня *',
+        balancePlaceholder: 'Например, 13400',
         presetJob1: '+ ЗП работа 1',
         presetJob2: '+ ЗП работа 2',
         noteJob1: 'ЗП работа 1',
@@ -508,6 +538,7 @@
         existingDateDefaultHint: 'Если на эту дату уже есть запись, она будет обновлена.',
         existingDateFoundHint: (d, b) => `На ${d} уже есть ваша запись (${b}) — она будет обновлена.`,
         noteInputLabel: 'Заметка / источник',
+        notePlaceholder: 'Например: ЗП работа 1, Продукты, Моя карта',
         previewDeltaLabel: 'Ожидаемое изменение к предыдущему дню:',
         previewInitialBalance: (b) => `Начальный остаток ${b}`,
         previewSpent: (a, p) => `Потрачено ${a} (с ${p})`,
@@ -523,6 +554,14 @@
         summaryLastBalanceLabel: 'Мой последний остаток',
         summaryEntriesCountLabel: 'Моих записей',
         entriesCountUnit: (n) => `${n} дн.`,
+        journalSharedTitle: 'Общий журнал дней',
+        journalSharedSubtitle: 'Записи обоих участников в комнате с указанием, кто внёс остаток',
+        journalMineTitle: (tag) => `Мой журнал (${tag})`,
+        journalMineSubtitle: 'Только ваши записи остатков и ваш личный лимит на завтра',
+        journalPartnerTitle: (name) => `Журнал партнёра (${name})`,
+        journalPartnerSubtitle: 'Записи остатков и лимиты по циклу партнёра',
+        emptyJournalTitle: 'Записей пока нет',
+        emptyJournalDesc: 'Введите остаток на конец дня в форме выше — расчёт обновится автоматически.',
         colDate: 'Дата',
         colBalance: 'Остаток',
         colDelta: 'Изменение',
@@ -542,13 +581,20 @@
         toastDeletedEntry: 'Запись удалена',
         toastCleared: 'Ваш журнал очищен',
         toastCodeCopied: 'Секретный ключ комнаты скопирован!',
-        toastJoinedRoom: () => `Вы подключились к комнате партнёра`,
-        toastRoomNotFound: 'Комната с таким ключом не найдена'
+        toastJoinedRoom: 'Вы подключились к комнате партнёра',
+        toastRoomNotFound: 'Комната с таким ключом не найдена',
+        toastNoCloud: 'Нет подключения к облаку',
+        inviteShareText: (code) => `Давай вести общий дневной лимит до зарплаты вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${code}`
       },
       uk: {
         appTitle: 'Денний ліміт до ЗП',
         btnSharePartner: 'Для двох',
         btnClearAll: 'Скинути',
+        syncOnline: 'Онлайн',
+        syncLocal: 'Локально',
+        cloudErrorPrefix: 'Помилка синхронізації з хмарою:',
+        userRolePartnerRoom: (tag) => `${tag} · Кімната партнера`,
+        userRoleOwnRoom: (tag) => `${tag} · Особистий / спільний бюджет`,
         tabShared: 'Спільний',
         tabMine: 'Мій',
         tabPartner: 'Партнер',
@@ -565,9 +611,35 @@
         clearModalDesc: 'Будуть очищені лише ваші записи та резерв. Дані партнера в кімнаті залишаться без змін.',
         cancelBtn: 'Скасувати',
         confirmClearBtn: 'Так, очистити',
+        heroSharedHeadline: 'Можна витратити завтра на двох (сума лімітів за циклами)',
+        heroSharedSubWithPartner: (me, partner) => `Враховано ${me} та ${partner}`,
+        heroSharedSubSolo: (me) => `Поки враховано лише ваш бюджет (${me})`,
+        heroSharedAdviceWithPartner: 'Кожен вносить залишок за своїми рахунками — денний ліміт додається з урахуванням дати виплати кожного.',
+        heroSharedAdviceSolo: 'Підключіть другого учасника через кнопку «Для двох», щоб його ліміт додавався сюди автоматично.',
+        heroMineHeadline: 'Можна витратити завтра за вашим особистим циклом',
+        heroPartnerHeadline: (who) => `Можна витратити завтра за циклом (${who})`,
+        heroSubEntry: (date, bal) => `Залишок за ${date}: ${bal}`,
+        heroSubEmpty: 'Немає збережених записів',
+        heroAdviceMember: (who) => `Особистий цикл учасника ${who}: резерв віднімається від залишку, залишок ділиться на дні до виплати.`,
+        heroAdviceNoPartner: 'Партнер ще не приєднався до кімнати.',
+        exactPerDay: (val) => `точно: ${val} / дн.`,
+        availableSpendLabel: 'Доступно на повсякденні витрати',
+        reserveBreakdown: (bal, res) => `Залишки ${bal} − резерви ${res}`,
+        daysLeftLabel: 'Найближча виплата',
+        daysUnit: (n) => `${n} дн.`,
+        paydayLabel: (d) => `Дата ЗП: ${d}`,
+        nearestPaydayLabel: (d) => `Найближча ЗП: ${d}`,
+        cardMyContributionTitle: 'Мій особистий внесок',
+        cardPartnerContributionTitle: 'Внесок партнера',
+        cardLimitPerDayLabel: 'Ліміт / дн.',
+        cardDetailsText: (bal, days) => `Залишок: ${bal} · До ЗП: ${days} дн.`,
+        partnerNotConnectedName: 'Не підключено',
+        partnerNotConnectedDesc: 'Натисніть «Для двох» і передайте ключ',
+        partnerDefaultName: 'Партнер',
         eveningEntryTitle: 'Мій вечірній ввід залишку',
         eveningEntrySubtitle: 'Впишіть залишок за своїми рахунками — спільний ліміт перерахується сам',
         balanceInputLabel: 'Мій залишок на кінець дня *',
+        balancePlaceholder: 'Наприклад, 13400',
         presetJob1: '+ ЗП робота 1',
         presetJob2: '+ ЗП робота 2',
         noteJob1: 'ЗП робота 1',
@@ -576,6 +648,7 @@
         existingDateDefaultHint: 'Якщо на цю дату вже є запис, його буде оновлено.',
         existingDateFoundHint: (d, b) => `На ${d} уже є ваш запис (${b}) — його буде оновлено.`,
         noteInputLabel: 'Нотатка / джерело',
+        notePlaceholder: 'Наприклад: ЗП робота 1, Продукти, Моя картка',
         previewDeltaLabel: 'Очікувана зміна відносно попереднього дня:',
         previewInitialBalance: (b) => `Початковий залишок ${b}`,
         previewSpent: (a, p) => `Витрачено ${a} (з ${p})`,
@@ -591,6 +664,14 @@
         summaryLastBalanceLabel: 'Мій останній залишок',
         summaryEntriesCountLabel: 'Моїх записів',
         entriesCountUnit: (n) => `${n} дн.`,
+        journalSharedTitle: 'Спільний журнал днів',
+        journalSharedSubtitle: 'Записи обох учасників у кімнаті із зазначенням, хто вніс залишок',
+        journalMineTitle: (tag) => `Мій журнал (${tag})`,
+        journalMineSubtitle: 'Лише ваші записи залишків та ваш особистий ліміт на завтра',
+        journalPartnerTitle: (name) => `Журнал партнера (${name})`,
+        journalPartnerSubtitle: 'Записи залишків та ліміти за циклом партнера',
+        emptyJournalTitle: 'Записів поки немає',
+        emptyJournalDesc: 'Введіть залишок на кінець дня у формі вище — розрахунок оновиться автоматично.',
         colDate: 'Дата',
         colBalance: 'Залишок',
         colDelta: 'Зміна',
@@ -610,13 +691,20 @@
         toastDeletedEntry: 'Запис видалено',
         toastCleared: 'Ваш журнал очищено',
         toastCodeCopied: 'Секретний ключ кімнати скопійовано!',
-        toastJoinedRoom: () => `Ви підключилися до кімнати партнера`,
-        toastRoomNotFound: 'Кімнату з таким ключем не знайдено'
+        toastJoinedRoom: 'Ви підключилися до кімнати партнера',
+        toastRoomNotFound: 'Кімнату з таким ключем не знайдено',
+        toastNoCloud: 'Немає підключення до хмари',
+        inviteShareText: (code) => `Давай вести спільний денний ліміт до зарплати разом (кожен зі своїм циклом і залишком)! Ключ кімнати: ${code}`
       },
       en: {
         appTitle: 'Daily Payday Limit',
         btnSharePartner: 'For Two',
         btnClearAll: 'Reset',
+        syncOnline: 'Online',
+        syncLocal: 'Local',
+        cloudErrorPrefix: 'Cloud sync error:',
+        userRolePartnerRoom: (tag) => `${tag} · Partner’s room`,
+        userRoleOwnRoom: (tag) => `${tag} · Personal / shared budget`,
         tabShared: 'Shared',
         tabMine: 'Mine',
         tabPartner: 'Partner',
@@ -633,9 +721,35 @@
         clearModalDesc: 'Only your entries and reserve will be cleared. Your partner’s data stays untouched.',
         cancelBtn: 'Cancel',
         confirmClearBtn: 'Yes, clear',
+        heroSharedHeadline: 'Available to spend tomorrow together (sum of cycle limits)',
+        heroSharedSubWithPartner: (me, partner) => `Includes ${me} and ${partner}`,
+        heroSharedSubSolo: (me) => `Showing only your budget so far (${me})`,
+        heroSharedAdviceWithPartner: 'Each person enters their own balance — daily limits add up using each person’s payday date.',
+        heroSharedAdviceSolo: 'Connect a second member via «For Two» so their limit is added automatically.',
+        heroMineHeadline: 'Available to spend tomorrow on your personal cycle',
+        heroPartnerHeadline: (who) => `Available to spend tomorrow on ${who}’s cycle`,
+        heroSubEntry: (date, bal) => `Balance on ${date}: ${bal}`,
+        heroSubEmpty: 'No saved entries yet',
+        heroAdviceMember: (who) => `Personal cycle for ${who}: reserve is subtracted from balance, then divided by days left.`,
+        heroAdviceNoPartner: 'Your partner hasn’t joined the room yet.',
+        exactPerDay: (val) => `exact: ${val} / day`,
+        availableSpendLabel: 'Available for everyday spending',
+        reserveBreakdown: (bal, res) => `Balances ${bal} − reserves ${res}`,
+        daysLeftLabel: 'Next payday',
+        daysUnit: (n) => `${n} d`,
+        paydayLabel: (d) => `Payday: ${d}`,
+        nearestPaydayLabel: (d) => `Nearest payday: ${d}`,
+        cardMyContributionTitle: 'My personal share',
+        cardPartnerContributionTitle: 'Partner’s share',
+        cardLimitPerDayLabel: 'Limit / day',
+        cardDetailsText: (bal, days) => `Balance: ${bal} · Payday in: ${days} d`,
+        partnerNotConnectedName: 'Not connected',
+        partnerNotConnectedDesc: 'Tap «For Two» and share your key',
+        partnerDefaultName: 'Partner',
         eveningEntryTitle: 'My evening balance entry',
         eveningEntrySubtitle: 'Enter your own balance — the shared daily limit updates automatically',
         balanceInputLabel: 'My end-of-day balance *',
+        balancePlaceholder: 'e.g. 13400',
         presetJob1: '+ Job 1 pay',
         presetJob2: '+ Job 2 pay',
         noteJob1: 'Job 1 pay',
@@ -644,6 +758,7 @@
         existingDateDefaultHint: 'If an entry exists for this date, it will be updated.',
         existingDateFoundHint: (d, b) => `Your entry for ${d} exists (${b}) — will be updated.`,
         noteInputLabel: 'Note / source',
+        notePlaceholder: 'e.g. Job 1 pay, Groceries, My card',
         previewDeltaLabel: 'Expected change vs. previous day:',
         previewInitialBalance: (b) => `Starting balance ${b}`,
         previewSpent: (a, p) => `Spent ${a} (since ${p})`,
@@ -659,6 +774,14 @@
         summaryLastBalanceLabel: 'My latest balance',
         summaryEntriesCountLabel: 'My logged days',
         entriesCountUnit: (n) => `${n} d`,
+        journalSharedTitle: 'Shared daily log',
+        journalSharedSubtitle: 'Entries from both members in the room with author tags',
+        journalMineTitle: (tag) => `My log (${tag})`,
+        journalMineSubtitle: 'Only your balance entries and your personal limit for tomorrow',
+        journalPartnerTitle: (name) => `${name}’s log`,
+        journalPartnerSubtitle: 'Balance entries and limits on your partner’s cycle',
+        emptyJournalTitle: 'No entries yet',
+        emptyJournalDesc: 'Enter an end-of-day balance above — your limit updates automatically.',
         colDate: 'Date',
         colBalance: 'Balance',
         colDelta: 'Change',
@@ -678,8 +801,10 @@
         toastDeletedEntry: 'Entry deleted',
         toastCleared: 'Your log cleared',
         toastCodeCopied: 'Secret room key copied!',
-        toastJoinedRoom: () => `Connected to partner’s room`,
-        toastRoomNotFound: 'Room with this key was not found'
+        toastJoinedRoom: 'Connected to partner’s room',
+        toastRoomNotFound: 'Room with this key was not found',
+        toastNoCloud: 'No cloud connection',
+        inviteShareText: (code) => `Let’s track our shared daily payday limit together (each with our own cycle and balance)! Room key: ${code}`
       }
     };
 
@@ -687,26 +812,18 @@
       return (raw === 'uk' || raw === 'en' || raw === 'ru') ? raw : 'ru';
     }
 
-    function createUserProfile(lang = 'ru') {
+    function createUserProfile() {
       return {
         id: currentUser.id,
         username: currentUser.displayTag,
         paydayDate: getDefaultPaydayISO(),
         reserve: 0,
-        entries: [
-          {
-            id: `init-${currentUser.id}-1`,
-            date: TODAY_ISO,
-            balance: 15000,
-            note: lang === 'uk' ? 'Стартовий залишок' : (lang === 'en' ? 'Starting balance' : 'Стартовый остаток'),
-            updatedBy: currentUser.displayTag
-          }
-        ]
+        entries: []
       };
     }
 
     function createInitialRoomState(lang = 'ru') {
-      const me = createUserProfile(lang);
+      const me = createUserProfile();
       return {
         lang: normalizeLang(lang),
         currency: { mode: 'UAH', symbol: '₴', code: 'UAH' },
@@ -731,14 +848,16 @@
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
     }
 
-    let viewMode = 'shared'; // 'shared' | 'mine' | 'partner'
+    let viewMode = 'shared';
+    let lastSyncOnline = false;
+    let lastSyncError = '';
 
     function ensureMyProfile(roomState) {
       if (!roomState.profiles || typeof roomState.profiles !== 'object') {
         roomState.profiles = {};
       }
       if (!roomState.profiles[currentUser.id]) {
-        roomState.profiles[currentUser.id] = createUserProfile(roomState.lang);
+        roomState.profiles[currentUser.id] = createUserProfile();
       } else {
         roomState.profiles[currentUser.id].username = currentUser.displayTag;
         if (!Array.isArray(roomState.profiles[currentUser.id].entries)) {
@@ -793,27 +912,33 @@
       }, 2600);
     }
 
-    function setSyncStatus(isOnline, errorMsg = '') {
+    function applySyncStatusUI() {
       const badge = document.getElementById('syncStatusBadge');
       const dot = document.getElementById('syncStatusDot');
       const text = document.getElementById('syncStatusText');
       const errBanner = document.getElementById('firebaseErrorBanner');
       const errText = document.getElementById('firebaseErrorText');
 
-      if (isOnline) {
+      if (lastSyncOnline) {
         badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EBF5F0] text-[#2D6A4F]';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
-        text.textContent = 'Онлайн';
+        text.textContent = t('syncOnline');
         errBanner.classList.add('hidden');
       } else {
         badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700';
         dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500';
-        text.textContent = 'Локально';
-        if (errorMsg) {
-          errText.textContent = errorMsg;
+        text.textContent = t('syncLocal');
+        if (lastSyncError) {
+          errText.textContent = lastSyncError;
           errBanner.classList.remove('hidden');
         }
       }
+    }
+
+    function setSyncStatus(isOnline, errorMsg = '') {
+      lastSyncOnline = isOnline;
+      lastSyncError = errorMsg;
+      applySyncStatusUI();
     }
 
     function getCurrencySymbol() {
@@ -918,16 +1043,21 @@
         const val = t(el.getAttribute('data-i18n'));
         if (typeof val === 'string') el.textContent = val;
       });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const val = t(el.getAttribute('data-i18n-placeholder'));
+        if (typeof val === 'string') el.setAttribute('placeholder', val);
+      });
       document.querySelectorAll('.preset-note-btn').forEach(btn => {
         btn.textContent = btn.getAttribute('data-preset-key') === 'job2' ? t('presetJob2') : t('presetJob1');
       });
 
+      applySyncStatusUI();
       renderViewModeTabs();
 
       const isPartnerRoom = activeRoomId !== OWN_ROOM_ID;
       document.getElementById('tgUserDisplay').textContent = isPartnerRoom
-        ? `${currentUser.displayTag} · Комната партнёра`
-        : `${currentUser.displayTag} · Личный / общий бюджет`;
+        ? t('userRolePartnerRoom', currentUser.displayTag)
+        : t('userRoleOwnRoom', currentUser.displayTag);
       document.getElementById('authorBadge').textContent = currentUser.displayTag;
 
       const members = Array.isArray(state.members) ? state.members : [];
@@ -952,25 +1082,25 @@
       if (document.activeElement !== paydayInput) paydayInput.value = myProfile.paydayDate;
       if (document.activeElement !== reserveInput) reserveInput.value = myProfile.reserve > 0 ? String(myProfile.reserve) : '';
 
-      // Карточки раздельного вклада в режиме «Общий»
       const pairCard = document.getElementById('pairBreakdownCard');
       pairCard.classList.toggle('hidden', viewMode !== 'shared');
 
+      const partnerDisplayName = (partnerProfile && partnerProfile.username) ? partnerProfile.username : t('partnerDefaultName');
+
       document.getElementById('cardMyName').textContent = currentUser.displayTag;
-      document.getElementById('cardMyDetails').textContent = `Остаток: ${formatMoney(myStats.balance)} · До ЗП: ${myStats.daysLeft} дн.`;
+      document.getElementById('cardMyDetails').textContent = t('cardDetailsText', formatMoney(myStats.balance), myStats.daysLeft);
       document.getElementById('cardMyDailyLimit').textContent = formatMoney(Math.floor(myStats.dailyLimit));
 
       if (partnerProfile) {
-        document.getElementById('cardPartnerName').textContent = partnerProfile.username || 'Партнёр';
-        document.getElementById('cardPartnerDetails').textContent = `Остаток: ${formatMoney(partnerStats.balance)} · До ЗП: ${partnerStats.daysLeft} дн.`;
+        document.getElementById('cardPartnerName').textContent = partnerDisplayName;
+        document.getElementById('cardPartnerDetails').textContent = t('cardDetailsText', formatMoney(partnerStats.balance), partnerStats.daysLeft);
         document.getElementById('cardPartnerDailyLimit').textContent = formatMoney(Math.floor(partnerStats.dailyLimit));
       } else {
-        document.getElementById('cardPartnerName').textContent = 'Не подключён';
-        document.getElementById('cardPartnerDetails').textContent = 'Нажмите «Для двоих» и передайте ключ';
+        document.getElementById('cardPartnerName').textContent = t('partnerNotConnectedName');
+        document.getElementById('cardPartnerDetails').textContent = t('partnerNotConnectedDesc');
         document.getElementById('cardPartnerDailyLimit').textContent = formatMoney(0);
       }
 
-      // Главный герой-блок в зависимости от выбранной вкладки
       const heroLimitEl = document.getElementById('dailyLimitValue');
       const heroExactEl = document.getElementById('dailyLimitExact');
       const heroHeadlineEl = document.getElementById('dailyLimitHeadline');
@@ -992,55 +1122,53 @@
           ? partnerStats.paydayDate
           : myStats.paydayDate;
 
-        heroHeadlineEl.textContent = 'Можно потратить завтра на двоих (сумма лимитов по циклам)';
+        heroHeadlineEl.textContent = t('heroSharedHeadline');
         heroSubtitleEl.textContent = partnerProfile
-          ? `Учтены ${currentUser.displayTag} и ${partnerProfile.username || 'партнёр'}`
-          : `Пока учтён только ваш бюджет (${currentUser.displayTag})`;
+          ? t('heroSharedSubWithPartner', currentUser.displayTag, partnerDisplayName)
+          : t('heroSharedSubSolo', currentUser.displayTag);
         heroLimitEl.textContent = formatMoney(Math.floor(totalDaily));
         const hasCents = Math.abs(totalDaily - Math.round(totalDaily)) > 0.01;
-        heroExactEl.textContent = hasCents ? `точно: ${formatMoney(totalDaily, true)} / дн.` : '';
+        heroExactEl.textContent = hasCents ? t('exactPerDay', formatMoney(totalDaily, true)) : '';
         availableSpendEl.textContent = formatMoney(totalAvailable);
-        reserveBreakdownEl.textContent = `Остатки ${formatMoney(totalBalance)} − резервы ${formatMoney(totalReserve)}`;
-        daysLeftEl.textContent = `${minDays} дн.`;
+        reserveBreakdownEl.textContent = t('reserveBreakdown', formatMoney(totalBalance), formatMoney(totalReserve));
+        daysLeftEl.textContent = t('daysUnit', minDays);
         daysBadgeEl.textContent = String(minDays);
-        paydayLabelEl.textContent = `Ближайшая ЗП: ${formatDateByLang(nearestPayday)}`;
+        paydayLabelEl.textContent = t('nearestPaydayLabel', formatDateByLang(nearestPayday));
         heroAdviceEl.textContent = partnerProfile
-          ? 'Каждый вносит остаток по своим счетам — дневной лимит складывается с учётом даты выплаты каждого.'
-          : 'Подключите второго участника через кнопку «Для двоих», чтобы его лимит добавлялся сюда автоматически.';
+          ? t('heroSharedAdviceWithPartner')
+          : t('heroSharedAdviceSolo');
       } else {
         const targetProfile = viewMode === 'mine' ? myProfile : partnerProfile;
         const targetStats = viewMode === 'mine' ? myStats : partnerStats;
-        const whoLabel = viewMode === 'mine'
-          ? currentUser.displayTag
-          : (partnerProfile && partnerProfile.username ? partnerProfile.username : 'Партнёр');
+        const whoLabel = viewMode === 'mine' ? currentUser.displayTag : partnerDisplayName;
 
         heroHeadlineEl.textContent = viewMode === 'mine'
-          ? 'Можно потратить завтра по вашему личному циклу'
-          : `Можно потратить завтра по циклу (${whoLabel})`;
+          ? t('heroMineHeadline')
+          : t('heroPartnerHeadline', whoLabel);
         heroSubtitleEl.textContent = targetStats.hasEntry
-          ? `Остаток за ${formatDateByLang(targetStats.lastDate)}: ${formatMoney(targetStats.balance)}`
-          : 'Нет сохранённых записей';
+          ? t('heroSubEntry', formatDateByLang(targetStats.lastDate), formatMoney(targetStats.balance))
+          : t('heroSubEmpty');
         heroLimitEl.textContent = formatMoney(Math.floor(targetStats.dailyLimit));
         const hasCents = Math.abs(targetStats.dailyLimit - Math.round(targetStats.dailyLimit)) > 0.01;
-        heroExactEl.textContent = hasCents ? `точно: ${formatMoney(targetStats.dailyLimit, true)} / дн.` : '';
+        heroExactEl.textContent = hasCents ? t('exactPerDay', formatMoney(targetStats.dailyLimit, true)) : '';
         availableSpendEl.textContent = formatMoney(targetStats.available);
-        reserveBreakdownEl.textContent = `Остаток ${formatMoney(targetStats.balance)} − резерв ${formatMoney(targetStats.reserve)}`;
-        daysLeftEl.textContent = `${targetStats.daysLeft} дн.`;
+        reserveBreakdownEl.textContent = t('reserveBreakdown', formatMoney(targetStats.balance), formatMoney(targetStats.reserve));
+        daysLeftEl.textContent = t('daysUnit', targetStats.daysLeft);
         daysBadgeEl.textContent = String(targetStats.daysLeft);
-        paydayLabelEl.textContent = `Дата ЗП: ${formatDateByLang(targetStats.paydayDate)}`;
+        paydayLabelEl.textContent = t('paydayLabel', formatDateByLang(targetStats.paydayDate));
         heroAdviceEl.textContent = targetProfile
-          ? `Личный цикл участника ${whoLabel}: резерв вычитается из остатка, остаток делится на дни до выплаты.`
-          : 'Партнёр ещё не присоединился к комнате.';
+          ? t('heroAdviceMember', whoLabel)
+          : t('heroAdviceNoPartner');
       }
 
       document.getElementById('summaryLastBalance').textContent = formatMoney(myStats.balance);
       document.getElementById('summaryEntriesCount').textContent = t('entriesCountUnit', myStats.sortedAsc.length);
 
-      renderJournal(myStats, partnerStats, partnerProfile);
+      renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName);
       updatePreviewDelta();
     }
 
-    function renderJournal(myStats, partnerStats, partnerProfile) {
+    function renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName) {
       const journalTitleEl = document.getElementById('journalTitle');
       const journalSubtitleEl = document.getElementById('journalSubtitle');
       const emptyState = document.getElementById('emptyJournalState');
@@ -1051,8 +1179,8 @@
       let canDelete = false;
 
       if (viewMode === 'mine') {
-        journalTitleEl.textContent = `Мой журнал (${currentUser.displayTag})`;
-        journalSubtitleEl.textContent = 'Только ваши записи остатков и ваш личный лимит на завтра';
+        journalTitleEl.textContent = t('journalMineTitle', currentUser.displayTag);
+        journalSubtitleEl.textContent = t('journalMineSubtitle');
         canDelete = true;
         const asc = myStats.sortedAsc;
         rowsSource = asc.map((entry, idx) => {
@@ -1063,9 +1191,8 @@
           return { ...entry, delta, nextLimit, author: currentUser.displayTag };
         }).reverse();
       } else if (viewMode === 'partner') {
-        const pName = partnerProfile && partnerProfile.username ? partnerProfile.username : 'Партнёр';
-        journalTitleEl.textContent = `Журнал партнёра (${pName})`;
-        journalSubtitleEl.textContent = 'Записи остатков и лимиты по циклу партнёра';
+        journalTitleEl.textContent = t('journalPartnerTitle', partnerDisplayName);
+        journalSubtitleEl.textContent = t('journalPartnerSubtitle');
         canDelete = false;
         const asc = partnerStats.sortedAsc;
         rowsSource = asc.map((entry, idx) => {
@@ -1073,11 +1200,11 @@
           const delta = prev ? entry.balance - prev.balance : null;
           const days = calcDaysRemainingAfterDate(entry.date, partnerStats.paydayDate);
           const nextLimit = Math.max(0, (Number(entry.balance) || 0) - partnerStats.reserve) / days;
-          return { ...entry, delta, nextLimit, author: pName };
+          return { ...entry, delta, nextLimit, author: partnerDisplayName };
         }).reverse();
       } else {
-        journalTitleEl.textContent = 'Общий журнал дней';
-        journalSubtitleEl.textContent = 'Записи обоих участников в комнате с указанием, кто внёс остаток';
+        journalTitleEl.textContent = t('journalSharedTitle');
+        journalSubtitleEl.textContent = t('journalSharedSubtitle');
         canDelete = true;
         const myRows = myStats.sortedAsc.map(e => ({
           ...e,
@@ -1086,11 +1213,10 @@
           paydayDate: myStats.paydayDate,
           reserve: myStats.reserve
         }));
-        const pName = partnerProfile && partnerProfile.username ? partnerProfile.username : 'Партнёр';
         const partnerRows = partnerStats.sortedAsc.map(e => ({
           ...e,
           ownerId: partnerProfile ? partnerProfile.id : 'partner',
-          author: pName,
+          author: partnerDisplayName,
           paydayDate: partnerStats.paydayDate,
           reserve: partnerStats.reserve
         }));
@@ -1404,7 +1530,7 @@
     });
     document.getElementById('btnShareTgLink').addEventListener('click', () => {
       const inviteUrl = `https://t.me/${TELEGRAM_BOT_USERNAME}?startapp=${encodeURIComponent(activeRoomId)}`;
-      const shareText = `Давай вести общий дневной лимит до зарплаты вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${activeRoomId}`;
+      const shareText = t('inviteShareText', activeRoomId);
       const tgShareLink = `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(shareText)}`;
       if (tg && tg.openTelegramLink) tg.openTelegramLink(tgShareLink);
       else window.open(tgShareLink, '_blank');
@@ -1418,7 +1544,7 @@
         return;
       }
       if (!cloudApi) {
-        showToast('Нет подключения к облаку', 'error');
+        showToast(t('toastNoCloud'), 'error');
         return;
       }
       try {
@@ -1475,7 +1601,7 @@
         await connectRoom(activeRoomId);
       } catch (err) {
         console.error('Ошибка загрузки Firebase SDK:', err);
-        setSyncStatus(false, `SDK не загрузился: ${err.message}`);
+        setSyncStatus(false, `SDK: ${err.message}`);
       }
     })();
   </script>
