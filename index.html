@@ -104,6 +104,27 @@
 
   <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
 
+  <!-- МОДАЛЬНОЕ ОКНО: УВЕДОМЛЕНИЕ О СОХРАНЕНИИ -->
+  <div id="savedModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-4">
+    <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-sm w-full p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-2xl font-extrabold">
+        ✓
+      </div>
+      <div class="space-y-1">
+        <h2 id="savedModalTitle" class="text-lg font-bold text-[#1B4332]"></h2>
+        <p id="savedModalMessage" class="text-sm text-[#4A685B] tabular-nums"></p>
+      </div>
+      <button
+        id="okSavedModalBtn"
+        type="button"
+        data-i18n="okBtn"
+        class="w-full py-2.5 px-5 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition cursor-pointer"
+      >
+        Окей
+      </button>
+    </div>
+  </div>
+
   <!-- МОДАЛЬНОЕ ОКНО: ДЛЯ ДВОИХ -->
   <div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-4">
     <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-md w-full p-5 sm:p-6 space-y-4">
@@ -331,11 +352,6 @@
           <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
             <span data-i18n="saveBalanceBtn">Сохранить мой остаток</span>
           </button>
-
-          <div id="savedBanner" class="hidden items-center gap-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-xs sm:text-sm font-semibold text-[#1B4332] transition-opacity duration-200">
-            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white inline-flex items-center justify-center shrink-0 text-xs font-bold">✓</span>
-            <span id="savedBannerText" class="tabular-nums"></span>
-          </div>
         </form>
       </section>
 
@@ -562,6 +578,10 @@
         clearModalDesc: 'Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.',
         cancelBtn: 'Отмена',
         confirmClearBtn: 'Да, очистить',
+        okBtn: 'Окей',
+        savedModalTitleNew: 'Остаток сохранён',
+        savedModalTitleUpdated: 'Остаток обновлён',
+        savedModalMessage: (d, b) => `Дата: ${d} · Остаток: ${b}`,
         heroSharedHeadline: 'Можно потратить завтра на двоих (сумма лимитов по циклам)',
         heroSharedSubWithPartner: (me, partner) => `Учтены ${me} и ${partner}`,
         heroMineHeadline: 'Можно потратить завтра по вашему личному циклу',
@@ -601,7 +621,6 @@
         previewIncome: (a, p) => `Поступление +${a} (с ${p})`,
         previewNoChange: () => `Без изменений`,
         saveBalanceBtn: 'Сохранить мой остаток',
-        savedBannerText: (d, b) => `Сохранено! Остаток за ${d}: ${b}`,
         cycleSettingsTitle: 'Мой цикл до зарплаты',
         cycleSettingsSubtitle: 'Ваша дата выплаты и ваш резерв',
         settingsBadge: 'Мои настройки',
@@ -639,7 +658,7 @@
         toastCleared: 'Ваш журнал очищен',
         toastCodeCopied: 'Секретный ключ комнаты скопирован!',
         toastJoinedRoom: 'Вы подключились к комнате партнёра',
-        toastRemovedPartner: 'Партёр убран из комнаты, его данные сохранены',
+        toastRemovedPartner: 'Партнёр убран из комнаты, его данные сохранены',
         toastRoomNotFound: 'Комната с таким ключом не найдена',
         toastNoCloud: 'Нет подключения к облаку',
         inviteShareText: (code) => `Давай вести общий дневной лимит вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${code}`
@@ -671,6 +690,10 @@
         clearModalDesc: 'Будуть очищені лише ваші записи та резерв. Дані партнера в кімнаті залишаться без змін.',
         cancelBtn: 'Скасувати',
         confirmClearBtn: 'Так, очистити',
+        okBtn: 'Окей',
+        savedModalTitleNew: 'Залишок збережено',
+        savedModalTitleUpdated: 'Залишок оновлено',
+        savedModalMessage: (d, b) => `Дата: ${d} · Залишок: ${b}`,
         heroSharedHeadline: 'Можна витратити завтра на двох (сума лімітів за циклами)',
         heroSharedSubWithPartner: (me, partner) => `Враховано ${me} та ${partner}`,
         heroMineHeadline: 'Можна витратити завтра за вашим особистим циклом',
@@ -710,7 +733,6 @@
         previewIncome: (a, p) => `Надходження +${a} (з ${p})`,
         previewNoChange: () => `Без змін`,
         saveBalanceBtn: 'Зберегти мій залишок',
-        savedBannerText: (d, b) => `Збережено! Залишок за ${d}: ${b}`,
         cycleSettingsTitle: 'Мій цикл до зарплати',
         cycleSettingsSubtitle: 'Ваша дата виплати та ваш резерв',
         settingsBadge: 'Мої налаштування',
@@ -780,6 +802,10 @@
         clearModalDesc: 'Only your entries and reserve will be cleared. Your partner’s data stays untouched.',
         cancelBtn: 'Cancel',
         confirmClearBtn: 'Yes, clear',
+        okBtn: 'OK',
+        savedModalTitleNew: 'Balance saved',
+        savedModalTitleUpdated: 'Balance updated',
+        savedModalMessage: (d, b) => `Date: ${d} · Balance: ${b}`,
         heroSharedHeadline: 'Available to spend tomorrow together (sum of cycle limits)',
         heroSharedSubWithPartner: (me, partner) => `Includes ${me} and ${partner}`,
         heroMineHeadline: 'Available to spend tomorrow on your personal cycle',
@@ -819,7 +845,6 @@
         previewIncome: (a, p) => `Inflow +${a} (since ${p})`,
         previewNoChange: () => `No change`,
         saveBalanceBtn: 'Save my balance',
-        savedBannerText: (d, b) => `Saved! Balance for ${d}: ${b}`,
         cycleSettingsTitle: 'My payday cycle',
         cycleSettingsSubtitle: 'Your payday date & reserve',
         settingsBadge: 'My settings',
@@ -916,7 +941,6 @@
     let viewMode = 'mine';
     let lastSyncOnline = false;
     let lastSyncError = '';
-    let savedBannerTimer = null;
     let lastSavedSnapshot = null;
 
     function ensureMyProfile(roomState) {
@@ -978,36 +1002,32 @@
       }, 2600);
     }
 
-    function refreshSavedBannerText() {
-      const banner = document.getElementById('savedBanner');
-      const bannerText = document.getElementById('savedBannerText');
-      if (!banner || !bannerText || !lastSavedSnapshot) return;
-      bannerText.textContent = t(
-        'savedBannerText',
+    function refreshSavedModalTexts() {
+      const titleEl = document.getElementById('savedModalTitle');
+      const msgEl = document.getElementById('savedModalMessage');
+      if (!titleEl || !msgEl || !lastSavedSnapshot) return;
+      titleEl.textContent = t(lastSavedSnapshot.isUpdate ? 'savedModalTitleUpdated' : 'savedModalTitleNew');
+      msgEl.textContent = t(
+        'savedModalMessage',
         formatDateByLang(lastSavedSnapshot.dateVal),
         formatMoney(lastSavedSnapshot.numBalance)
       );
     }
 
-    function showSavedConfirmation(dateVal, numBalance) {
-      lastSavedSnapshot = { dateVal, numBalance };
-      const banner = document.getElementById('savedBanner');
-      if (!banner) return;
+    function openSavedModal(dateVal, numBalance, isUpdate) {
+      lastSavedSnapshot = { dateVal, numBalance, isUpdate };
+      refreshSavedModalTexts();
+      const modal = document.getElementById('savedModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
 
-      refreshSavedBannerText();
-      banner.classList.remove('hidden');
-      banner.classList.add('flex');
-      banner.style.opacity = '1';
-
-      if (savedBannerTimer) clearTimeout(savedBannerTimer);
-      savedBannerTimer = setTimeout(() => {
-        banner.style.opacity = '0';
-        setTimeout(() => {
-          banner.classList.add('hidden');
-          banner.classList.remove('flex');
-          lastSavedSnapshot = null;
-        }, 220);
-      }, 4500);
+    function closeSavedModal() {
+      const modal = document.getElementById('savedModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     function applySyncStatusUI() {
@@ -1194,7 +1214,7 @@
         btn.textContent = btn.getAttribute('data-preset-key') === 'job2' ? t('presetJob2') : t('presetJob1');
       });
 
-      refreshSavedBannerText();
+      refreshSavedModalTexts();
       applySyncStatusUI();
       renderViewModeTabs(hasPartner);
       renderParticipantsModal();
@@ -1586,6 +1606,8 @@
       );
     }
 
+    document.getElementById('okSavedModalBtn').addEventListener('click', closeSavedModal);
+
     document.querySelectorAll('.view-mode-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         viewMode = btn.getAttribute('data-view-mode') || 'mine';
@@ -1623,14 +1645,14 @@
       }
 
       const existingIndex = myProfile.entries.findIndex(item => item.date === dateVal);
-      if (existingIndex >= 0) {
+      const isUpdate = existingIndex >= 0;
+      if (isUpdate) {
         myProfile.entries[existingIndex] = {
           ...myProfile.entries[existingIndex],
           balance: numBalance,
           note: noteVal,
           updatedBy: currentUser.displayTag
         };
-        showToast(t('toastUpdatedEntry', formatDateByLang(dateVal)), 'success');
       } else {
         myProfile.entries.push({
           id: `entry-${currentUser.id}-${dateVal}-${Date.now()}`,
@@ -1639,7 +1661,6 @@
           note: noteVal,
           updatedBy: currentUser.displayTag
         });
-        showToast(t('toastSavedEntry', formatDateByLang(dateVal)), 'success');
       }
 
       if (tg && tg.HapticFeedback) {
@@ -1649,7 +1670,7 @@
       balanceInput.value = '';
       noteInput.value = '';
       renderAll();
-      showSavedConfirmation(dateVal, numBalance);
+      openSavedModal(dateVal, numBalance, isUpdate);
       triggerDirectLinkOnSave();
       await persistState(state);
     });
