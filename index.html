@@ -331,6 +331,11 @@
           <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
             <span data-i18n="saveBalanceBtn">Сохранить мой остаток</span>
           </button>
+
+          <div id="savedBanner" class="hidden items-center gap-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-xs sm:text-sm font-semibold text-[#1B4332] transition-opacity duration-200">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white inline-flex items-center justify-center shrink-0 text-xs font-bold">✓</span>
+            <span id="savedBannerText" class="tabular-nums"></span>
+          </div>
         </form>
       </section>
 
@@ -596,6 +601,7 @@
         previewIncome: (a, p) => `Поступление +${a} (с ${p})`,
         previewNoChange: () => `Без изменений`,
         saveBalanceBtn: 'Сохранить мой остаток',
+        savedBannerText: (d, b) => `Сохранено! Остаток за ${d}: ${b}`,
         cycleSettingsTitle: 'Мой цикл до зарплаты',
         cycleSettingsSubtitle: 'Ваша дата выплаты и ваш резерв',
         settingsBadge: 'Мои настройки',
@@ -633,7 +639,7 @@
         toastCleared: 'Ваш журнал очищен',
         toastCodeCopied: 'Секретный ключ комнаты скопирован!',
         toastJoinedRoom: 'Вы подключились к комнате партнёра',
-        toastRemovedPartner: 'Партнёр убран из комнаты, его данные сохранены',
+        toastRemovedPartner: 'Партёр убран из комнаты, его данные сохранены',
         toastRoomNotFound: 'Комната с таким ключом не найдена',
         toastNoCloud: 'Нет подключения к облаку',
         inviteShareText: (code) => `Давай вести общий дневной лимит вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${code}`
@@ -704,6 +710,7 @@
         previewIncome: (a, p) => `Надходження +${a} (з ${p})`,
         previewNoChange: () => `Без змін`,
         saveBalanceBtn: 'Зберегти мій залишок',
+        savedBannerText: (d, b) => `Збережено! Залишок за ${d}: ${b}`,
         cycleSettingsTitle: 'Мій цикл до зарплати',
         cycleSettingsSubtitle: 'Ваша дата виплати та ваш резерв',
         settingsBadge: 'Мої налаштування',
@@ -812,6 +819,7 @@
         previewIncome: (a, p) => `Inflow +${a} (since ${p})`,
         previewNoChange: () => `No change`,
         saveBalanceBtn: 'Save my balance',
+        savedBannerText: (d, b) => `Saved! Balance for ${d}: ${b}`,
         cycleSettingsTitle: 'My payday cycle',
         cycleSettingsSubtitle: 'Your payday date & reserve',
         settingsBadge: 'My settings',
@@ -908,6 +916,8 @@
     let viewMode = 'mine';
     let lastSyncOnline = false;
     let lastSyncError = '';
+    let savedBannerTimer = null;
+    let lastSavedSnapshot = null;
 
     function ensureMyProfile(roomState) {
       if (!roomState.profiles || typeof roomState.profiles !== 'object') {
@@ -966,6 +976,38 @@
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 220);
       }, 2600);
+    }
+
+    function refreshSavedBannerText() {
+      const banner = document.getElementById('savedBanner');
+      const bannerText = document.getElementById('savedBannerText');
+      if (!banner || !bannerText || !lastSavedSnapshot) return;
+      bannerText.textContent = t(
+        'savedBannerText',
+        formatDateByLang(lastSavedSnapshot.dateVal),
+        formatMoney(lastSavedSnapshot.numBalance)
+      );
+    }
+
+    function showSavedConfirmation(dateVal, numBalance) {
+      lastSavedSnapshot = { dateVal, numBalance };
+      const banner = document.getElementById('savedBanner');
+      if (!banner) return;
+
+      refreshSavedBannerText();
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+      banner.style.opacity = '1';
+
+      if (savedBannerTimer) clearTimeout(savedBannerTimer);
+      savedBannerTimer = setTimeout(() => {
+        banner.style.opacity = '0';
+        setTimeout(() => {
+          banner.classList.add('hidden');
+          banner.classList.remove('flex');
+          lastSavedSnapshot = null;
+        }, 220);
+      }, 4500);
     }
 
     function applySyncStatusUI() {
@@ -1152,6 +1194,7 @@
         btn.textContent = btn.getAttribute('data-preset-key') === 'job2' ? t('presetJob2') : t('presetJob1');
       });
 
+      refreshSavedBannerText();
       applySyncStatusUI();
       renderViewModeTabs(hasPartner);
       renderParticipantsModal();
@@ -1606,6 +1649,7 @@
       balanceInput.value = '';
       noteInput.value = '';
       renderAll();
+      showSavedConfirmation(dateVal, numBalance);
       triggerDirectLinkOnSave();
       await persistState(state);
     });
