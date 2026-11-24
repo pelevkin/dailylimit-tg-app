@@ -428,6 +428,15 @@
           <h2 id="journalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]"></h2>
           <p id="journalSubtitle" class="text-xs text-[#527365]"></p>
         </div>
+        <div class="flex items-center justify-between sm:justify-end gap-1 rounded-2xl border border-[#DCE9E2] bg-[#FAFDFB] p-1">
+          <button id="journalPrevMonth" type="button" aria-label="Previous month" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#1B4332] hover:bg-[#EBF5F0] active:bg-[#D8ECE2] disabled:opacity-30 disabled:cursor-default cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <span id="journalMonthLabel" class="min-w-[130px] text-center text-sm font-bold text-[#1B4332] tabular-nums">—</span>
+          <button id="journalNextMonth" type="button" aria-label="Next month" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#1B4332] hover:bg-[#EBF5F0] active:bg-[#D8ECE2] disabled:opacity-30 disabled:cursor-default cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
       </div>
 
       <div id="emptyJournalState" class="hidden rounded-2xl border border-dashed border-[#C6DBD0] bg-[#FAFDFB] py-12 px-4 text-center">
@@ -973,6 +982,7 @@
     }
 
     let viewMode = 'mine';
+    let journalMonth = null; // 'YYYY-MM', по умолчанию текущий месяц
     let lastSyncOnline = false;
     let lastSyncError = '';
     let lastSavedSnapshot = null;
@@ -1409,6 +1419,28 @@
         }).reverse();
       }
 
+      // --- Фильтр журнала по месяцу (данные не удаляются, только отображение) ---
+      const curMonth = TODAY_ISO.slice(0, 7);
+      const monthsAll = rowsSource.map(r => String(r.date || '').slice(0, 7)).filter(Boolean);
+      let minM = monthsAll.length ? monthsAll.reduce((a, b) => (a < b ? a : b)) : curMonth;
+      let maxM = monthsAll.length ? monthsAll.reduce((a, b) => (a > b ? a : b)) : curMonth;
+      if (curMonth < minM) minM = curMonth;
+      if (curMonth > maxM) maxM = curMonth;
+      if (!journalMonth) journalMonth = curMonth;
+      if (journalMonth < minM) journalMonth = minM;
+      if (journalMonth > maxM) journalMonth = maxM;
+
+      const [jmY, jmM] = journalMonth.split('-').map(Number);
+      const monthLocale = state.lang === 'en' ? 'en-US' : (state.lang === 'uk' ? 'uk-UA' : 'ru-RU');
+      let monthText = new Date(Date.UTC(jmY, jmM - 1, 1)).toLocaleDateString(monthLocale, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+      monthText = monthText.replace(/\s?р\.$|\s?г\.$/, '');
+      monthText = monthText.charAt(0).toUpperCase() + monthText.slice(1);
+      document.getElementById('journalMonthLabel').textContent = monthText;
+      document.getElementById('journalPrevMonth').disabled = journalMonth <= minM;
+      document.getElementById('journalNextMonth').disabled = journalMonth >= maxM;
+
+      rowsSource = rowsSource.filter(r => String(r.date || '').startsWith(journalMonth));
+
       if (rowsSource.length === 0) {
         emptyState.classList.remove('hidden');
         tableWrapper.classList.add('hidden');
@@ -1739,6 +1771,7 @@
 
       balanceInput.value = '';
       noteInput.value = '';
+      journalMonth = String(dateVal).slice(0, 7);
       renderAll();
       openSavedModal(dateVal, numBalance, isUpdate);
       triggerDirectLinkOnSave();
@@ -1791,6 +1824,16 @@
         try { tg.openLink('https://donatello.to/daily_limit'); } catch (err) { window.open('https://donatello.to/daily_limit', '_blank', 'noopener,noreferrer'); }
       }
     });
+
+    function shiftJournalMonth(delta) {
+      const base = journalMonth || TODAY_ISO.slice(0, 7);
+      const [y, m] = base.split('-').map(Number);
+      const d = new Date(Date.UTC(y, m - 1 + delta, 1));
+      journalMonth = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+      renderAll();
+    }
+    document.getElementById('journalPrevMonth').addEventListener('click', () => shiftJournalMonth(-1));
+    document.getElementById('journalNextMonth').addEventListener('click', () => shiftJournalMonth(1));
 
     document.getElementById('btnOpenShare').addEventListener('click', () => {
       document.getElementById('shareModal').classList.remove('hidden');
