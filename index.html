@@ -179,7 +179,7 @@
           </button>
         </div>
         <button id="btnLeaveSharedRoom" type="button" data-i18n="btnReturnOwnRoom" class="hidden text-[11px] text-[#0086c2] hover:underline pt-1 cursor-pointer">
-          Вернуться в свою личную комнату
+          Выйти из общей комнаты
         </button>
       </form>
     </div>
@@ -610,7 +610,10 @@
         btnRemovePartner: 'Убрать из комнаты',
         joinPartnerLabel: 'Подключиться к комнате партнёра (введите ключ):',
         btnJoinRoom: 'Войти',
-        btnReturnOwnRoom: 'Вернуться в свою личную комнату',
+        btnReturnOwnRoom: 'Выйти из общей комнаты',
+        confirmLeaveRoom: 'Выйти из общей комнаты? Ваши данные перенесутся в ваш личный профиль.',
+        confirmRemovePartner: 'Убрать партнёра? Его данные вернутся в его личный профиль.',
+        toastKickedFromRoom: 'Вас убрали из общей комнаты — ваши данные перенесены в ваш профиль',
         clearModalTitle: 'Очистить ваш журнал?',
         clearModalDesc: 'Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.',
         cancelBtn: 'Отмена',
@@ -697,7 +700,7 @@
         toastCleared: 'Ваш журнал очищен',
         toastCodeCopied: 'Секретный ключ комнаты скопирован!',
         toastJoinedRoom: 'Вы подключились к комнате партнёра',
-        toastRemovedPartner: 'Партнёр убран из комнаты, его данные сохранены',
+        toastRemovedPartner: 'Партнёр убран из комнаты, его данные вернутся в его профиль',
         toastRoomNotFound: 'Комната с таким ключом не найдена',
         toastNoCloud: 'Нет подключения к облаку',
         inviteShareText: (code) => `Давай вести общий дневной лимит вместе (каждый со своим циклом и остатком)! Ключ комнаты: ${code}`
@@ -724,7 +727,10 @@
         btnRemovePartner: 'Прибрати з кімнати',
         joinPartnerLabel: 'Підключитися до кімнати партнера (введіть ключ):',
         btnJoinRoom: 'Увійти',
-        btnReturnOwnRoom: 'Повернутися у свою особисту кімнату',
+        btnReturnOwnRoom: 'Вийти зі спільної кімнати',
+        confirmLeaveRoom: 'Вийти зі спільної кімнати? Ваші дані перенесуться у ваш особистий профіль.',
+        confirmRemovePartner: 'Прибрати партнера? Його дані повернуться в його особистий профіль.',
+        toastKickedFromRoom: 'Вас прибрали зі спільної кімнати — ваші дані перенесено у ваш профіль',
         clearModalTitle: 'Очистити ваш журнал?',
         clearModalDesc: 'Будуть очищені лише ваші записи та резерв. Дані партнера в кімнаті залишаться без змін.',
         cancelBtn: 'Скасувати',
@@ -811,7 +817,7 @@
         toastCleared: 'Ваш журнал очищено',
         toastCodeCopied: 'Секретний ключ кімнати скопійовано!',
         toastJoinedRoom: 'Ви підключилися до кімнати партнера',
-        toastRemovedPartner: 'Партнера прибрано з кімнати, його дані збережено',
+        toastRemovedPartner: 'Партнера прибрано з кімнати, його дані повернуться в його профіль',
         toastRoomNotFound: 'Кімнату з таким ключем не знайдено',
         toastNoCloud: 'Немає підключення до хмари',
         inviteShareText: (code) => `Давай вести спільний денний ліміт разом (кожен зі своїм циклом і залишком)! Ключ кімнати: ${code}`
@@ -838,7 +844,10 @@
         btnRemovePartner: 'Remove from room',
         joinPartnerLabel: 'Join partner’s room (enter key):',
         btnJoinRoom: 'Join',
-        btnReturnOwnRoom: 'Return to my personal room',
+        btnReturnOwnRoom: 'Leave shared room',
+        confirmLeaveRoom: 'Leave the shared room? Your data will be moved to your personal profile.',
+        confirmRemovePartner: 'Remove partner? Their data will go back to their personal profile.',
+        toastKickedFromRoom: 'You were removed from the shared room — your data was moved to your profile',
         clearModalTitle: 'Clear your log?',
         clearModalDesc: 'Only your entries and reserve will be cleared. Your partner’s data stays untouched.',
         cancelBtn: 'Cancel',
@@ -925,7 +934,7 @@
         toastCleared: 'Your log cleared',
         toastCodeCopied: 'Secret room key copied!',
         toastJoinedRoom: 'Connected to partner’s room',
-        toastRemovedPartner: 'Partner removed from room, their data is preserved',
+        toastRemovedPartner: 'Partner removed, their data will return to their own profile',
         toastRoomNotFound: 'Room with this key was not found',
         toastNoCloud: 'No cloud connection',
         inviteShareText: (code) => `Let’s track our shared daily payday limit together (each with our own cycle and balance)! Room key: ${code}`
@@ -1220,7 +1229,8 @@
       const container = document.getElementById('participantsList');
       container.innerHTML = members.map(m => {
         const isPartner = m.id !== currentUser.id;
-        const removeBtnHtml = isPartner
+        const canRemove = isPartner && activeRoomId === OWN_ROOM_ID;
+        const removeBtnHtml = canRemove
           ? `<button type="button" data-remove-partner-id="${escapeHtml(m.id)}" class="remove-partner-btn ml-1 px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-700 hover:bg-rose-200 text-[10px] font-bold transition cursor-pointer" title="${escapeHtml(t('btnRemovePartner'))}">✕</button>`
           : '';
         return `
@@ -1589,8 +1599,22 @@
       }
     }
 
+    function askConfirm(message) {
+      return new Promise(resolve => {
+        try {
+          if (tg && typeof tg.showConfirm === 'function') {
+            tg.showConfirm(message, ok => resolve(Boolean(ok)));
+            return;
+          }
+        } catch (e) {}
+        resolve(window.confirm(message));
+      });
+    }
+
     async function removePartnerFromRoom(partnerId) {
       if (!partnerId || partnerId === currentUser.id) return;
+      if (activeRoomId !== OWN_ROOM_ID) return; // убирать участников может только хозяин комнаты
+      if (!(await askConfirm(t('confirmRemovePartner')))) return;
 
       const nextMembers = (Array.isArray(state.members) ? state.members : []).filter(m => m.id !== partnerId);
       if (!nextMembers.some(m => m.id === currentUser.id)) {
@@ -1627,7 +1651,93 @@
       }
     }
 
-    async function connectRoom(roomId) {
+    // Возвращает мои данные из общей комнаты в мою личную комнату (записи объединяются по датам)
+    async function restoreProfileToOwnRoom(sharedProfile) {
+      if (!sharedProfile) return;
+      const me = currentUser.id;
+      let base = null;
+      let ownRemoteExists = false;
+
+      try {
+        if (cloudApi) {
+          const { db, doc, getDoc } = cloudApi;
+          const snap = await getDoc(doc(db, 'shared_budgets', OWN_ROOM_ID));
+          if (snap.exists()) {
+            ownRemoteExists = true;
+            const d = snap.data();
+            base = d.profiles && d.profiles[me] ? d.profiles[me] : null;
+          }
+        }
+      } catch (e) {}
+
+      const localOwn = loadLocalRoomState(OWN_ROOM_ID);
+      if (!base) base = localOwn.profiles[me];
+
+      const byDate = new Map();
+      (Array.isArray(base.entries) ? base.entries : []).forEach(e => byDate.set(e.date, e));
+      (Array.isArray(sharedProfile.entries) ? sharedProfile.entries : []).forEach(e => byDate.set(e.date, e));
+      const merged = {
+        ...base,
+        ...sharedProfile,
+        entries: [...byDate.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)))
+      };
+
+      localOwn.profiles[me] = merged;
+      try { localStorage.setItem(LOCAL_CACHE_PREFIX + OWN_ROOM_ID, JSON.stringify(localOwn)); } catch (e) {}
+
+      if (cloudApi && ownRemoteExists) {
+        try {
+          const { db, doc, updateDoc } = cloudApi;
+          await updateDoc(doc(db, 'shared_budgets', OWN_ROOM_ID), {
+            [`profiles.${me}`]: merged,
+            updatedAt: new Date().toISOString()
+          });
+        } catch (err) {
+          console.error('Ошибка переноса профиля в личную комнату:', err);
+        }
+      }
+    }
+
+    async function cleanupMyProfileInRoom(roomId, nextMembers) {
+      if (!cloudApi) return;
+      try {
+        const { db, doc, updateDoc, deleteField } = cloudApi;
+        const payload = { [`profiles.${currentUser.id}`]: deleteField(), updatedAt: new Date().toISOString() };
+        if (nextMembers) payload.members = nextMembers;
+        await updateDoc(doc(db, 'shared_budgets', roomId), payload);
+      } catch (err) {
+        console.error('Ошибка очистки профиля в общей комнате:', err);
+      }
+    }
+
+    async function handleRemovedFromRoom(remoteProfile) {
+      const oldRoom = activeRoomId;
+      if (oldRoom === OWN_ROOM_ID) return;
+      if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
+      const mine = remoteProfile || (state.profiles && state.profiles[currentUser.id]) || null;
+      const copy = mine ? JSON.parse(JSON.stringify(mine)) : null;
+      await restoreProfileToOwnRoom(copy);
+      await cleanupMyProfileInRoom(oldRoom, null);
+      try { localStorage.removeItem(LOCAL_CACHE_PREFIX + oldRoom); } catch (e) {}
+      viewMode = 'mine';
+      await connectRoom(OWN_ROOM_ID);
+      showToast(t('toastKickedFromRoom'), 'info');
+    }
+
+    async function leaveSharedRoom() {
+      const oldRoom = activeRoomId;
+      if (oldRoom === OWN_ROOM_ID) return;
+      const nextMembers = (Array.isArray(state.members) ? state.members : []).filter(m => m.id !== currentUser.id);
+      const mine = JSON.parse(JSON.stringify(ensureMyProfile(state)));
+      if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
+      await restoreProfileToOwnRoom(mine);
+      await cleanupMyProfileInRoom(oldRoom, nextMembers);
+      try { localStorage.removeItem(LOCAL_CACHE_PREFIX + oldRoom); } catch (e) {}
+      viewMode = 'mine';
+      await connectRoom(OWN_ROOM_ID);
+    }
+
+    async function connectRoom(roomId, seedProfile = null) {
       activeRoomId = roomId;
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
       state = loadLocalRoomState(activeRoomId);
@@ -1651,6 +1761,11 @@
           const data = snap.data();
           const members = Array.isArray(data.members) ? data.members : [];
           if (!members.some(m => m.id === currentUser.id)) {
+            // Объединение: переносим мой профиль (записи, дата зарплаты, резерв) в общую комнату
+            if (seedProfile) {
+              state.profiles = state.profiles || {};
+              state.profiles[currentUser.id] = JSON.parse(JSON.stringify(seedProfile));
+            }
             await updateDoc(roomRef, {
               members: arrayUnion({ id: currentUser.id, username: currentUser.displayTag }),
               [`profiles.${currentUser.id}`]: ensureMyProfile(state)
@@ -1670,6 +1785,11 @@
           setSyncStatus(true);
           if (!snapshot.exists()) return;
           const data = snapshot.data();
+          if (activeRoomId !== OWN_ROOM_ID && Array.isArray(data.members) && data.members.length > 0
+              && !data.members.some(m => m.id === currentUser.id)) {
+            handleRemovedFromRoom(data.profiles && data.profiles[currentUser.id] ? data.profiles[currentUser.id] : null);
+            return;
+          }
           const myLocal = ensureMyProfile(state);
           const remoteProfiles = (data.profiles && typeof data.profiles === 'object') ? data.profiles : {};
           const remoteMembers = Array.isArray(data.members) && data.members.length > 0
@@ -1874,7 +1994,10 @@
         }
         document.getElementById('shareModal').classList.add('hidden');
         document.getElementById('shareModal').classList.remove('flex');
-        await connectRoom(cleanCode);
+        if (cleanCode === activeRoomId) return;
+        if (activeRoomId !== OWN_ROOM_ID) await leaveSharedRoom();
+        const seed = JSON.parse(JSON.stringify(ensureMyProfile(state)));
+        await connectRoom(cleanCode, seed);
         showToast(t('toastJoinedRoom'), 'success');
       } catch (err) {
         showToast(t('toastRoomNotFound'), 'error');
@@ -1882,9 +2005,10 @@
     });
 
     document.getElementById('btnLeaveSharedRoom').addEventListener('click', async () => {
+      if (!(await askConfirm(t('confirmLeaveRoom')))) return;
       document.getElementById('shareModal').classList.add('hidden');
       document.getElementById('shareModal').classList.remove('flex');
-      await connectRoom(OWN_ROOM_ID);
+      await leaveSharedRoom();
     });
 
     document.getElementById('btnClearAll').addEventListener('click', () => {
@@ -1910,13 +2034,13 @@
 
     (async () => {
       try {
-        const [{ initializeApp }, { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion }] = await Promise.all([
+        const [{ initializeApp }, { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, deleteField }] = await Promise.all([
           import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
           import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
         ]);
         const app = initializeApp(FIREBASE_CONFIG);
         const db = getFirestore(app);
-        cloudApi = { db, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion };
+        cloudApi = { db, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, deleteField };
         await connectRoom(activeRoomId);
       } catch (err) {
         console.error('Ошибка загрузки Firebase SDK:', err);
