@@ -1737,7 +1737,7 @@
       await connectRoom(OWN_ROOM_ID);
     }
 
-    async function connectRoom(roomId, seedProfile = null) {
+    async function connectRoom(roomId, seedProfile = null, allowJoin = false) {
       activeRoomId = roomId;
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
       state = loadLocalRoomState(activeRoomId);
@@ -1752,6 +1752,8 @@
       }
 
       const roomRef = doc(db, 'shared_budgets', activeRoomId);
+      let wasRemoved = false;
+      let removedProfile = null;
 
       try {
         const snap = await getDoc(roomRef);
@@ -1760,7 +1762,11 @@
         } else {
           const data = snap.data();
           const members = Array.isArray(data.members) ? data.members : [];
-          if (!members.some(m => m.id === currentUser.id)) {
+          if (!members.some(m => m.id === currentUser.id) && !allowJoin && roomId !== OWN_ROOM_ID) {
+            // Меня убрали из этой комнаты, пока приложение было закрыто: заново не добавляемся
+            wasRemoved = true;
+            removedProfile = (data.profiles && data.profiles[currentUser.id]) ? data.profiles[currentUser.id] : null;
+          } else if (!members.some(m => m.id === currentUser.id)) {
             // Объединение: переносим мой профиль (записи, дата зарплаты, резерв) в общую комнату
             if (seedProfile) {
               state.profiles = state.profiles || {};
@@ -1776,6 +1782,11 @@
       } catch (err) {
         console.error('Ошибка доступа к Firestore:', err);
         setSyncStatus(false, `${err.code || err.message}`);
+        return;
+      }
+
+      if (wasRemoved) {
+        await handleRemovedFromRoom(removedProfile);
         return;
       }
 
@@ -1997,7 +2008,7 @@
         if (cleanCode === activeRoomId) return;
         if (activeRoomId !== OWN_ROOM_ID) await leaveSharedRoom();
         const seed = JSON.parse(JSON.stringify(ensureMyProfile(state)));
-        await connectRoom(cleanCode, seed);
+        await connectRoom(cleanCode, seed, true);
         showToast(t('toastJoinedRoom'), 'success');
       } catch (err) {
         showToast(t('toastRoomNotFound'), 'error');
@@ -2041,7 +2052,12 @@
         const app = initializeApp(FIREBASE_CONFIG);
         const db = getFirestore(app);
         cloudApi = { db, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, deleteField };
-        await connectRoom(activeRoomId);
+        const openedByInvite = /^FAM-[A-Z0-9]{16,32}$/.test(invitedRoom) && activeRoomId === invitedRoom && activeRoomId !== OWN_ROOM_ID;
+        let inviteSeed = null;
+        if (openedByInvite) {
+          try { inviteSeed = JSON.parse(JSON.stringify(loadLocalRoomState(OWN_ROOM_ID).profiles[currentUser.id])); } catch (e) {}
+        }
+        await connectRoom(activeRoomId, inviteSeed, openedByInvite);
       } catch (err) {
         console.error('Ошибка загрузки Firebase SDK:', err);
         setSyncStatus(false, `SDK: ${err.message}`);
