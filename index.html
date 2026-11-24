@@ -18,6 +18,8 @@
       padding-bottom: env(safe-area-inset-bottom, 16px);
     }
     .tabular-nums { font-variant-numeric: tabular-nums; }
+    @media (max-width: 639px) { #journalTableWrapper { display: none !important; } }
+    @media (min-width: 640px) { #journalCards { display: none !important; } }
     .table-scroll::-webkit-scrollbar { height: 6px; }
     .table-scroll::-webkit-scrollbar-thumb { background: #CBDCD4; border-radius: 9999px; }
   </style>
@@ -55,7 +57,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           <span data-i18n="btnSharePartner">Для двоих</span>
-          <span id="membersCountPill" class="px-1.5 rounded-md bg-white/20 text-[10px] tabular-nums">1</span>
         </button>
 
         <div class="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[#CFE0D7] bg-[#FAFDFB]">
@@ -297,6 +298,23 @@
       </div>
     </section>
 
+    <!-- ДОНАТ -->
+    <a
+      id="btnDonate"
+      href="https://donatello.to/daily_limit"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex items-center justify-between gap-3 rounded-2xl border border-[#CFE0D7] bg-white px-4 py-3 shadow-sm hover:bg-[#F4F8F6] active:bg-[#EBF5F0] transition cursor-pointer"
+    >
+      <div class="min-w-0">
+        <p data-i18n="donateBtn" class="text-sm font-bold text-[#1B4332] truncate">☕ Поддержать приложение</p>
+        <p data-i18n="donateHint" class="text-[11px] text-[#527365] truncate">Донат на развитие Daily Limit</p>
+      </div>
+      <svg class="w-5 h-5 text-[#009bde] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+
     <!-- ФОРМА ВВОДА И НАСТРОЙКИ СВОЕГО ЦИКЛА -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
       <section class="lg:col-span-7 bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm">
@@ -312,23 +330,31 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label for="balanceInput" data-i18n="balanceInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Мой остаток на конец дня *</label>
-              <div class="relative">
-                <input
-                  id="balanceInput"
-                  type="number"
-                  inputmode="decimal"
-                  step="0.01"
-                  min="0"
-                  data-i18n-placeholder="balancePlaceholder"
-                  placeholder="Например, 13400"
-                  required
-                  class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 pr-10 text-base font-semibold text-[#102A20] tabular-nums focus:outline-none focus:border-[#009bde]"
-                />
-                <span class="currency-suffix absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-[#527365]">₴</span>
-              </div>
-              <div class="mt-2 flex flex-wrap gap-1.5">
-                <button type="button" data-preset-key="job1" class="preset-note-btn px-2 py-1 text-[11px] font-medium rounded-lg bg-[#EBF5F0] text-[#1B4332] hover:bg-[#D8ECE2] cursor-pointer">+ ЗП работа 1</button>
-                <button type="button" data-preset-key="job2" class="preset-note-btn px-2 py-1 text-[11px] font-medium rounded-lg bg-[#E6F5FC] text-[#0077ab] hover:bg-[#D1EEFC] cursor-pointer">+ ЗП работа 2</button>
+              <div class="flex items-stretch gap-2">
+                <div class="relative flex-1 min-w-0">
+                  <input
+                    id="balanceInput"
+                    type="number"
+                    inputmode="decimal"
+                    step="0.01"
+                    min="0"
+                    data-i18n-placeholder="balancePlaceholder"
+                    placeholder="Например, 13400"
+                    required
+                    class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 pr-10 text-base font-semibold text-[#102A20] tabular-nums focus:outline-none focus:border-[#009bde]"
+                  />
+                  <span class="currency-suffix absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-[#527365]">₴</span>
+                </div>
+                <button
+                  id="btnDismissKeyboard"
+                  type="button"
+                  aria-label="Готово"
+                  class="shrink-0 w-12 rounded-xl bg-[#EBF5F0] border border-[#C6DBD0] text-[#1B4332] hover:bg-[#D8ECE2] active:bg-[#CBE3D6] flex items-center justify-center cursor-pointer"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
               </div>
             </div>
 
@@ -408,6 +434,8 @@
         <p data-i18n="emptyJournalTitle" class="text-sm font-semibold text-[#1B4332]">Записей пока нет</p>
         <p data-i18n="emptyJournalDesc" class="text-xs text-[#527365] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — расчёт обновится автоматически.</p>
       </div>
+
+      <div id="journalCards" class="space-y-2.5"></div>
 
       <div id="journalTableWrapper" class="table-scroll overflow-x-auto">
         <table class="w-full text-left border-collapse min-w-[740px]">
@@ -621,6 +649,8 @@
         previewIncome: (a, p) => `Поступление +${a} (с ${p})`,
         previewNoChange: () => `Без изменений`,
         saveBalanceBtn: 'Сохранить мой остаток',
+        donateBtn: '☕ Поддержать приложение',
+        donateHint: 'Донат на развитие Daily Limit',
         cycleSettingsTitle: 'Мой цикл до зарплаты',
         cycleSettingsSubtitle: 'Ваша дата выплаты и ваш резерв',
         settingsBadge: 'Мои настройки',
@@ -733,6 +763,8 @@
         previewIncome: (a, p) => `Надходження +${a} (з ${p})`,
         previewNoChange: () => `Без змін`,
         saveBalanceBtn: 'Зберегти мій залишок',
+        donateBtn: '☕ Підтримати застосунок',
+        donateHint: 'Донат на розвиток Daily Limit',
         cycleSettingsTitle: 'Мій цикл до зарплати',
         cycleSettingsSubtitle: 'Ваша дата виплати та ваш резерв',
         settingsBadge: 'Мої налаштування',
@@ -845,6 +877,8 @@
         previewIncome: (a, p) => `Inflow +${a} (since ${p})`,
         previewNoChange: () => `No change`,
         saveBalanceBtn: 'Save my balance',
+        donateBtn: '☕ Support the app',
+        donateHint: 'Donate to support Daily Limit',
         cycleSettingsTitle: 'My payday cycle',
         cycleSettingsSubtitle: 'Your payday date & reserve',
         settingsBadge: 'My settings',
@@ -1170,7 +1204,6 @@
 
     function renderParticipantsModal() {
       const members = Array.isArray(state.members) ? state.members : [];
-      document.getElementById('membersCountPill').textContent = String(members.length || 1);
       document.getElementById('roomCodeBadge').textContent = activeRoomId;
       document.getElementById('btnLeaveSharedRoom').classList.toggle('hidden', activeRoomId === OWN_ROOM_ID);
 
@@ -1209,9 +1242,6 @@
       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const val = t(el.getAttribute('data-i18n-placeholder'));
         if (typeof val === 'string') el.setAttribute('placeholder', val);
-      });
-      document.querySelectorAll('.preset-note-btn').forEach(btn => {
-        btn.textContent = btn.getAttribute('data-preset-key') === 'job2' ? t('presetJob2') : t('presetJob1');
       });
 
       refreshSavedModalTexts();
@@ -1322,6 +1352,7 @@
       const emptyState = document.getElementById('emptyJournalState');
       const tableWrapper = document.getElementById('journalTableWrapper');
       const tbody = document.getElementById('journalTableBody');
+      const cardsEl = document.getElementById('journalCards');
 
       let rowsSource = [];
       let canDelete = false;
@@ -1382,6 +1413,7 @@
         emptyState.classList.remove('hidden');
         tableWrapper.classList.add('hidden');
         tbody.innerHTML = '';
+        cardsEl.innerHTML = '';
         return;
       }
 
@@ -1417,7 +1449,40 @@
         `;
       }).join('');
 
-      tbody.querySelectorAll('.delete-entry-btn').forEach(btn => {
+      cardsEl.innerHTML = rowsSource.map(item => {
+        let deltaHtml = `<span class="text-[#7A968A] text-xs">${escapeHtml(t('firstEntryBadge'))}</span>`;
+        if (item.delta !== null) {
+          if (item.delta < 0) deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 font-semibold text-xs tabular-nums">${escapeHtml(t('spentBadge', formatMoney(Math.abs(item.delta))))}</span>`;
+          else if (item.delta > 0) deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-[#EBF5F0] text-[#1B4332] font-semibold text-xs tabular-nums">${escapeHtml(t('growthBadge', formatMoney(item.delta)))}</span>`;
+          else deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-medium text-xs tabular-nums">0</span>`;
+        }
+        const noteHtml = item.note ? escapeHtml(item.note) : `<span class="text-[#94ACA1] italic">${escapeHtml(t('noNoteText'))}</span>`;
+        const isMineEntry = item.ownerId === currentUser.id || !hasPartner || viewMode === 'mine';
+        const delHtml = (canDelete && isMineEntry)
+          ? `<button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-rose-600 bg-rose-50/60 active:bg-rose-100 cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
+          : '';
+        const showAuthor = hasPartner && viewMode !== 'mine';
+        return `
+          <div class="rounded-2xl border border-[#E2EDE7] bg-[#FAFDFB] p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-medium text-[#527365] tabular-nums">${escapeHtml(formatDateByLang(item.date))}</span>
+              ${showAuthor ? `<span class="px-2 py-0.5 rounded-md bg-[#E6F5FC] text-[#0077ab] text-xs font-medium truncate max-w-[50%]">${escapeHtml(item.author)}</span>` : ''}
+            </div>
+            <div class="mt-1 flex items-baseline justify-between gap-2">
+              <span class="text-lg font-extrabold text-[#1B4332] tabular-nums">${escapeHtml(formatMoney(item.balance))}</span>
+              <span class="text-sm font-semibold text-[#0086c2] tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextLimit))))}</span>
+            </div>
+            <div class="mt-2 flex items-center justify-between gap-2">
+              <div class="min-w-0 flex items-center gap-2">
+                ${deltaHtml}
+                <span class="text-xs text-[#3B5B4D] truncate">${noteHtml}</span>
+              </div>
+              ${delHtml}
+            </div>
+          </div>`;
+      }).join('');
+
+      document.querySelectorAll('#journalTableBody .delete-entry-btn, #journalCards .delete-entry-btn').forEach(btn => {
         btn.addEventListener('click', () => deleteMyEntry(btn.getAttribute('data-delete-id')));
       });
     }
@@ -1625,6 +1690,11 @@
     document.getElementById('dateInput').value = TODAY_ISO;
     document.getElementById('dateInput').addEventListener('change', updatePreviewDelta);
     document.getElementById('balanceInput').addEventListener('input', updatePreviewDelta);
+    document.getElementById('btnDismissKeyboard').addEventListener('click', () => {
+      const el = document.activeElement;
+      if (el && typeof el.blur === 'function') el.blur();
+      document.getElementById('balanceInput').blur();
+    });
 
     document.getElementById('entryForm').addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -1715,12 +1785,11 @@
       await persistState(state);
     });
 
-    document.querySelectorAll('.preset-note-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const noteInput = document.getElementById('noteInput');
-        noteInput.value = btn.getAttribute('data-preset-key') === 'job2' ? t('noteJob2') : t('noteJob1');
-        noteInput.focus();
-      });
+    document.getElementById('btnDonate').addEventListener('click', (e) => {
+      if (tg && typeof tg.openLink === 'function') {
+        e.preventDefault();
+        try { tg.openLink('https://donatello.to/daily_limit'); } catch (err) { window.open('https://donatello.to/daily_limit', '_blank', 'noopener,noreferrer'); }
+      }
     });
 
     document.getElementById('btnOpenShare').addEventListener('click', () => {
