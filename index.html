@@ -127,6 +127,68 @@
   </div>
 
   <!-- МОДАЛЬНОЕ ОКНО: ДЛЯ ДВОИХ -->
+  <div id="criticalModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-[#102A20]/55 backdrop-blur-[2px] p-4">
+    <div class="bg-white rounded-3xl border border-amber-200 shadow-xl max-w-sm w-full p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto text-2xl">⚠️</div>
+      <div class="space-y-1.5">
+        <h2 id="criticalTitle" class="text-lg font-bold text-[#1B4332]"></h2>
+        <p id="criticalText" class="text-sm text-[#4A685B] leading-relaxed"></p>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="criticalLaterBtn" type="button" class="py-2.5 px-3 rounded-xl border border-[#CFE0D7] text-sm font-semibold text-[#1B4332] hover:bg-[#EBF5F0] transition cursor-pointer"></button>
+        <button id="criticalOpenBtn" type="button" class="py-2.5 px-3 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition cursor-pointer"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="analyticsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-3">
+    <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-4 sm:p-6 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 data-i18n="analyticsTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Аналитика и советы</h2>
+          <p id="analyticsScope" class="text-xs text-[#527365] mt-0.5"></p>
+        </div>
+        <button id="closeAnalyticsBtn" type="button" class="p-1.5 rounded-xl text-[#527365] hover:bg-[#EBF5F0] cursor-pointer">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
+          <p data-i18n="analyticsPace" class="text-[11px] text-[#527365]">Темп трат</p>
+          <p id="anPace" class="text-base font-extrabold text-rose-700 tabular-nums">—</p>
+        </div>
+        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
+          <p data-i18n="analyticsLimit" class="text-[11px] text-[#527365]">Лимит на день</p>
+          <p id="anLimit" class="text-base font-extrabold text-[#0086c2] tabular-nums">—</p>
+        </div>
+        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
+          <p data-i18n="analyticsMonthSpent" class="text-[11px] text-[#527365]">Потрачено в этом месяце</p>
+          <p id="anMonthSpent" class="text-base font-extrabold text-[#1B4332] tabular-nums">—</p>
+        </div>
+        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
+          <p data-i18n="analyticsDaysLeft" class="text-[11px] text-[#527365]">До зарплаты</p>
+          <p id="anDaysLeft" class="text-base font-extrabold text-[#1B4332] tabular-nums">—</p>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-[#E2EDE7] p-3">
+        <p data-i18n="analyticsChartTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] mb-1">Остаток и прогноз</p>
+        <div id="anChart"></div>
+        <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#527365] mt-1">
+          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 h-0.5 bg-[#009bde]"></i><span data-i18n="legendBalance">Остаток</span></span>
+          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 border-t-2 border-dashed border-[#1B4332]"></i><span data-i18n="legendForecast">Прогноз</span></span>
+          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 border-t-2 border-dashed border-[#94ACA1]"></i><span data-i18n="legendReserve">Резерв</span></span>
+        </div>
+      </div>
+
+      <div>
+        <p data-i18n="analyticsTipsTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] mb-2">Советы</p>
+        <ul id="anTips" class="space-y-2"></ul>
+      </div>
+
+      <p data-i18n="analyticsDisclaimer" class="text-[11px] text-[#7A968A]">Это подсказки на основе ваших записей, а не финансовая консультация.</p>
+    </div>
+  </div>
+
   <div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-4">
     <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-md w-full p-5 sm:p-6 space-y-4">
       <div class="flex items-start justify-between gap-3">
@@ -246,6 +308,7 @@
           </div>
 
           <p id="dailyLimitAdvice" class="text-xs sm:text-sm text-emerald-100/85 pt-1 leading-relaxed"></p>
+          <p id="forecastLine" class="hidden text-xs sm:text-sm font-semibold leading-snug rounded-xl bg-white/12 border border-white/20 px-3 py-2 mt-2"></p>
         </div>
 
         <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
@@ -270,6 +333,9 @@
         </div>
       </div>
     </section>
+
+    <!-- АНАЛИТИКА -->
+    <button id="btnOpenAnalytics" type="button" data-i18n="analyticsBtn" class="w-full rounded-2xl border border-[#CFE0D7] bg-white px-4 py-3 text-sm font-bold text-[#1B4332] shadow-sm hover:bg-[#F4F8F6] active:bg-[#EBF5F0] transition cursor-pointer">📊 Аналитика и советы</button>
 
     <!-- СВОДКА ВДВОЁМ -->
     <section id="pairBreakdownCard" class="hidden grid-cols-1 sm:grid-cols-2 gap-4">
@@ -436,6 +502,25 @@
           <button id="journalNextMonth" type="button" aria-label="Next month" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#1B4332] hover:bg-[#EBF5F0] active:bg-[#D8ECE2] disabled:opacity-30 disabled:cursor-default cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
+        </div>
+      </div>
+
+      <div id="journalSummary" class="hidden mb-4 rounded-2xl border border-[#DCE9E2] bg-[#F7FBF9] p-3.5">
+        <p id="journalSummaryTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] mb-2">Итоги месяца</p>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="rounded-xl bg-white border border-[#E2EDE7] px-2 py-2">
+            <p id="sumSpentLabel" class="text-[10px] text-[#527365]">Потрачено</p>
+            <p id="sumSpentValue" class="text-sm font-extrabold text-rose-700 tabular-nums mt-0.5">—</p>
+          </div>
+          <div class="rounded-xl bg-white border border-[#E2EDE7] px-2 py-2">
+            <p id="sumIncomeLabel" class="text-[10px] text-[#527365]">Пополнения</p>
+            <p id="sumIncomeValue" class="text-sm font-extrabold text-[#1B4332] tabular-nums mt-0.5">—</p>
+          </div>
+          <div class="rounded-xl bg-white border border-[#E2EDE7] px-2 py-2">
+            <p id="sumBiggestLabel" class="text-[10px] text-[#527365]">Самая большая трата</p>
+            <p id="sumBiggestValue" class="text-sm font-extrabold text-[#0077ab] tabular-nums mt-0.5">—</p>
+            <p id="sumBiggestDate" class="text-[10px] text-[#7A968A] tabular-nums"></p>
+          </div>
         </div>
       </div>
 
@@ -617,6 +702,9 @@
         clearModalTitle: 'Очистить ваш журнал?',
         clearModalDesc: 'Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.',
         cancelBtn: 'Отмена',
+        btnConfirmRemove: 'Убрать',
+        btnConfirmLeave: 'Выйти',
+        forecastNeedData: 'Прогноз появится, когда у обоих будут записи минимум за 2 дня',
         confirmClearBtn: 'Да, очистить',
         okBtn: 'Окей',
         savedModalTitleNew: 'Остаток сохранён',
@@ -693,6 +781,52 @@
         noNoteText: 'Без заметки',
         perDaySuffix: (a) => `${a} / дн.`,
         deleteBtn: 'Удалить',
+        analyticsBtn: '📊 Аналитика и советы',
+        analyticsTitle: 'Аналитика и советы',
+        analyticsScopeMine: 'Ваши данные',
+        analyticsScopeShared: 'Общий режим (вдвоём)',
+        analyticsPace: 'Темп трат',
+        analyticsLimit: 'Лимит на день',
+        analyticsMonthSpent: 'Потрачено в этом месяце',
+        analyticsDaysLeft: 'До зарплаты',
+        analyticsChartTitle: 'Остаток и прогноз',
+        analyticsTipsTitle: 'Советы',
+        analyticsNoData: 'Пока мало данных — внесите остаток хотя бы за 2–3 дня.',
+        legendBalance: 'Остаток',
+        legendForecast: 'Прогноз',
+        legendReserve: 'Резерв',
+        tipFewData: 'Вносите остаток каждый вечер — когда накопится 2–3 дня записей, прогноз и советы станут точнее.',
+        tipCut: (cut, target) => `Деньги закончатся раньше зарплаты. Чтобы дотянуть, сократите траты примерно на ${cut} в день — до ${target}/день.`,
+        tipSave: (amt) => `Вы тратите заметно меньше лимита. Часть запаса (≈ ${amt}) можно отложить в резерв или копилку.`,
+        tipOnTrack: 'Вы укладываетесь в лимит — так держать. Продолжайте вносить остаток каждый вечер.',
+        tipReserve: 'Резерв не задан. Укажите сумму-«подушку», которую нельзя тратить, — она исключится из дневного лимита.',
+        tipBig: (pct) => `Одна трата составила ≈ ${pct}% расходов за месяц. Крупные покупки лучше планировать заранее.`,
+        analyticsDisclaimer: 'Это подсказки на основе ваших записей, а не финансовая консультация.',
+        critTitleV: ['Траты выходят за рамки', 'Пора притормозить', 'Деньги тают быстрее плана'],
+        critText: (pace, limit, n, d) => `Вы тратите ≈ ${pace}/день при лимите ${limit}/день. При таком темпе денег хватит ещё на ${n} дн. (до ${d}).`,
+        critOpenBtn: 'Открыть аналитику',
+        critLaterBtn: 'Позже',
+        tipOnTrackV: ['Вы укладываетесь в лимит — так держать!', 'Отличный контроль: траты в рамках плана.', 'Бюджет под контролем — продолжайте в том же духе.'],
+        tipSaveV: [(a) => `Вы тратите заметно меньше лимита. Часть запаса (≈ ${a}) можно отложить в резерв или копилку.`, (a) => `Есть запас — можно отложить ≈ ${a} на цель или «подушку безопасности».`, (a) => `Траты низкие, и запас растёт. Попробуйте отложить ≈ ${a}, пока он есть.`],
+        tipCutV: [(c, g) => `Деньги закончатся раньше зарплаты. Чтобы дотянуть, сократите траты примерно на ${c} в день — до ${g}/день.`, (c, g) => `Текущий темп слишком высокий. Постарайтесь тратить не больше ${g} в день (сейчас больше на ≈ ${c}).`, (c, g) => `Чтобы хватило до зарплаты, нужно снизить дневные траты на ≈ ${c}. Ориентир — ${g}/день.`],
+        tipLightOver: 'Темп чуть выше лимита, но запас пока позволяет — следите за дневными тратами.',
+        tipStreak: (n) => `🔥 ${n} записи подряд вы в рамках дневного лимита — отличная серия!`,
+        tipTrendUp: 'Траты в последние дни заметно выросли по сравнению с предыдущими. Проверьте, что изменилось.',
+        tipTrendDown: 'Траты в последние дни снижаются — хороший тренд!',
+        tipPaydaySoon: (n) => `До зарплаты осталось ${n} дн. — вы почти у цели.`,
+        tipPaydayTight: (n, g) => `До зарплаты ${n} дн., но денег впритык. Потерпите: держитесь в пределах ${g} в день.`,
+        tipSmallReserve: 'Резерв составляет меньше 10% остатка — он может быстро закончиться при непредвиденных расходах.',
+        tipDailyV: ['Для крупных покупок используйте «правило 24 часов»: подождите сутки перед оплатой.', 'Планируйте траты на неделю вперёд — так проще удержаться в лимите.', 'Записывайте даже мелкие траты: именно они чаще всего незаметно «съедают» бюджет.', 'Сначала откладывайте в резерв, потом тратьте остаток — а не наоборот.', 'Сравнивайте цены перед покупкой — разница за месяц может быть заметной.', 'Раз в неделю смотрите итоги месяца и спрашивайте себя: на что ушло больше всего?'],
+        editBtn: 'Изменить',
+        toastEditLoaded: 'Запись загружена в форму — измените и сохраните',
+        summaryTitle: 'Итоги месяца',
+        summarySpent: 'Потрачено',
+        summaryIncome: 'Пополнения',
+        summaryBiggest: 'Самая большая трата',
+        summaryNone: '—',
+        forecastOk: (pace, spare) => `✅ Темп трат ≈ ${pace}/день — остатка хватит до зарплаты, запас ≈ ${spare}`,
+        forecastZero: '✅ Трат почти нет — остатка хватит до зарплаты',
+        forecastWarn: (pace, n, m, d) => `⚠️ Темп трат ≈ ${pace}/день — денег хватит на ${n} из ${m} дн. (до ${d})`,
         toastInvalidBalance: 'Введите корректный остаток (0 или больше)',
         toastSavedEntry: (d) => `Ваш остаток за ${d} сохранён`,
         toastUpdatedEntry: (d) => `Ваш остаток за ${d} обновлён`,
@@ -734,6 +868,9 @@
         clearModalTitle: 'Очистити ваш журнал?',
         clearModalDesc: 'Будуть очищені лише ваші записи та резерв. Дані партнера в кімнаті залишаться без змін.',
         cancelBtn: 'Скасувати',
+        btnConfirmRemove: 'Прибрати',
+        btnConfirmLeave: 'Вийти',
+        forecastNeedData: 'Прогноз з’явиться, коли в обох буде записи мінімум за 2 дні',
         confirmClearBtn: 'Так, очистити',
         okBtn: 'Окей',
         savedModalTitleNew: 'Залишок збережено',
@@ -810,6 +947,52 @@
         noNoteText: 'Без нотатки',
         perDaySuffix: (a) => `${a} / дн.`,
         deleteBtn: 'Видалити',
+        analyticsBtn: '📊 Аналітика та поради',
+        analyticsTitle: 'Аналітика та поради',
+        analyticsScopeMine: 'Ваші дані',
+        analyticsScopeShared: 'Спільний режим (удвох)',
+        analyticsPace: 'Темп витрат',
+        analyticsLimit: 'Ліміт на день',
+        analyticsMonthSpent: 'Витрачено цього місяця',
+        analyticsDaysLeft: 'До зарплати',
+        analyticsChartTitle: 'Залишок і прогноз',
+        analyticsTipsTitle: 'Поради',
+        analyticsNoData: 'Поки мало даних — внесіть залишок хоча б за 2–3 дні.',
+        legendBalance: 'Залишок',
+        legendForecast: 'Прогноз',
+        legendReserve: 'Резерв',
+        tipFewData: 'Вносьте залишок щовечора — коли назбирається 2–3 дні записів, прогноз і поради стануть точнішими.',
+        tipCut: (cut, target) => `Гроші закінчаться раніше зарплати. Щоб дотягнути, скоротіть витрати приблизно на ${cut} на день — до ${target}/день.`,
+        tipSave: (amt) => `Ви витрачаєте помітно менше ліміту. Частину запасу (≈ ${amt}) можна відкласти в резерв або скарбничку.`,
+        tipOnTrack: 'Ви вкладаєтеся в ліміт — так тримати. Продовжуйте вносити залишок щовечора.',
+        tipReserve: 'Резерв не задано. Вкажіть суму-«подушку», яку не можна витрачати, — вона виключиться з денного ліміту.',
+        tipBig: (pct) => `Одна витрата склала ≈ ${pct}% витрат за місяць. Великі покупки краще планувати заздалегідь.`,
+        analyticsDisclaimer: 'Це підказки на основі ваших записів, а не фінансова консультація.',
+        critTitleV: ['Витрати виходять за межі', 'Час пригальмувати', 'Гроші тануть швидше за план'],
+        critText: (pace, limit, n, d) => `Ви витрачаєте ≈ ${pace}/день при ліміті ${limit}/день. За такого темпу грошей вистачить ще на ${n} дн. (до ${d}).`,
+        critOpenBtn: 'Відкрити аналітику',
+        critLaterBtn: 'Пізніше',
+        tipOnTrackV: ['Ви вкладаєтеся в ліміт — так тримати!', 'Чудовий контроль: витрати в межах плану.', 'Бюджет під контролем — продовжуйте в тому ж дусі.'],
+        tipSaveV: [(a) => `Ви витрачаєте помітно менше ліміту. Частину запасу (≈ ${a}) можна відкласти в резерв або скарбничку.`, (a) => `Є запас — можна відкласти ≈ ${a} на ціль або «подушку безпеки».`, (a) => `Витрати низькі, і запас росте. Спробуйте відкласти ≈ ${a}, поки він є.`],
+        tipCutV: [(c, g) => `Гроші закінчаться раніше зарплати. Щоб дотягнути, скоротіть витрати приблизно на ${c} на день — до ${g}/день.`, (c, g) => `Поточний темп надто високий. Намагайтеся витрачати не більше ${g} на день (зараз більше на ≈ ${c}).`, (c, g) => `Щоб вистачило до зарплати, потрібно знизити денні витрати на ≈ ${c}. Орієнтир — ${g}/день.`],
+        tipLightOver: 'Темп трохи вищий за ліміт, але запас поки дозволяє — стежте за денними витратами.',
+        tipStreak: (n) => `🔥 ${n} записи поспіль ви в межах денного ліміту — чудова серія!`,
+        tipTrendUp: 'Витрати останніх днів помітно зросли порівняно з попередніми. Перевірте, що змінилося.',
+        tipTrendDown: 'Витрати останніх днів знижуються — гарний тренд!',
+        tipPaydaySoon: (n) => `До зарплати залишилось ${n} дн. — ви майже біля мети.`,
+        tipPaydayTight: (n, g) => `До зарплати ${n} дн., але грошей упритул. Потерпіть: тримайтеся в межах ${g} на день.`,
+        tipSmallReserve: 'Резерв становить менше 10% залишку — він може швидко закінчитися при непередбачених витратах.',
+        tipDailyV: ['Для великих покупок використовуйте «правило 24 годин»: зачекайте добу перед оплатою.', 'Плануйте витрати на тиждень уперед — так легше втриматися в ліміті.', 'Записуйте навіть дрібні витрати: саме вони найчастіше непомітно «з’їдають» бюджет.', 'Спочатку відкладайте в резерв, потім витрачайте залишок — а не навпаки.', 'Порівнюйте ціни перед покупкою — різниця за місяць може бути помітною.', 'Раз на тиждень дивіться підсумки місяця й питайте себе: на що пішло найбільше?'],
+        editBtn: 'Змінити',
+        toastEditLoaded: 'Запис завантажено у форму — змініть і збережіть',
+        summaryTitle: 'Підсумки місяця',
+        summarySpent: 'Витрачено',
+        summaryIncome: 'Поповнення',
+        summaryBiggest: 'Найбільша витрата',
+        summaryNone: '—',
+        forecastOk: (pace, spare) => `✅ Темп витрат ≈ ${pace}/день — залишку вистачить до зарплати, запас ≈ ${spare}`,
+        forecastZero: '✅ Витрат майже немає — залишку вистачить до зарплати',
+        forecastWarn: (pace, n, m, d) => `⚠️ Темп витрат ≈ ${pace}/день — грошей вистачить на ${n} з ${m} дн. (до ${d})`,
         toastInvalidBalance: 'Введіть коректний залишок (0 або більше)',
         toastSavedEntry: (d) => `Ваш залишок за ${d} збережено`,
         toastUpdatedEntry: (d) => `Ваш залишок за ${d} оновлено`,
@@ -851,6 +1034,9 @@
         clearModalTitle: 'Clear your log?',
         clearModalDesc: 'Only your entries and reserve will be cleared. Your partner’s data stays untouched.',
         cancelBtn: 'Cancel',
+        btnConfirmRemove: 'Remove',
+        btnConfirmLeave: 'Leave',
+        forecastNeedData: 'The forecast will appear once both of you have entries for at least 2 days',
         confirmClearBtn: 'Yes, clear',
         okBtn: 'OK',
         savedModalTitleNew: 'Balance saved',
@@ -927,6 +1113,52 @@
         noNoteText: 'No note',
         perDaySuffix: (a) => `${a} / day`,
         deleteBtn: 'Delete',
+        analyticsBtn: '📊 Analytics & tips',
+        analyticsTitle: 'Analytics & tips',
+        analyticsScopeMine: 'Your data',
+        analyticsScopeShared: 'Shared mode (together)',
+        analyticsPace: 'Spending pace',
+        analyticsLimit: 'Daily limit',
+        analyticsMonthSpent: 'Spent this month',
+        analyticsDaysLeft: 'Until payday',
+        analyticsChartTitle: 'Balance and forecast',
+        analyticsTipsTitle: 'Tips',
+        analyticsNoData: 'Not enough data yet — log your balance for 2–3 days.',
+        legendBalance: 'Balance',
+        legendForecast: 'Forecast',
+        legendReserve: 'Reserve',
+        tipFewData: 'Log your balance every evening — after 2–3 days of entries the forecast and tips get more accurate.',
+        tipCut: (cut, target) => `Your money will run out before payday. To make it, cut spending by about ${cut} per day — down to ${target}/day.`,
+        tipSave: (amt) => `You spend noticeably less than your limit. Part of the spare (≈ ${amt}) could go to a reserve or savings.`,
+        tipOnTrack: 'You are within your limit — keep it up. Keep logging your balance every evening.',
+        tipReserve: 'No reserve set. Enter a safety cushion you will not spend — it is excluded from the daily limit.',
+        tipBig: (pct) => `One expense was ≈ ${pct}% of this month’s spending. Big purchases are best planned ahead.`,
+        analyticsDisclaimer: 'These are hints based on your entries, not financial advice.',
+        critTitleV: ['Spending is getting out of range', 'Time to slow down', 'Money is melting faster than planned'],
+        critText: (pace, limit, n, d) => `You spend ≈ ${pace}/day against a limit of ${limit}/day. At this pace your money lasts ${n} more days (until ${d}).`,
+        critOpenBtn: 'Open analytics',
+        critLaterBtn: 'Later',
+        tipOnTrackV: ['You are within your limit — keep it up!', 'Great control: spending is within plan.', 'Your budget is under control — keep going.'],
+        tipSaveV: [(a) => `You spend noticeably less than your limit. Part of the spare (≈ ${a}) could go to a reserve or savings.`, (a) => `You have a cushion — consider setting aside ≈ ${a} for a goal or safety net.`, (a) => `Spending is low and the spare is growing. Try putting aside ≈ ${a} while you can.`],
+        tipCutV: [(c, g) => `Your money will run out before payday. To make it, cut spending by about ${c} per day — down to ${g}/day.`, (c, g) => `The current pace is too high. Try to spend no more than ${g} per day (now ≈ ${c} above).`, (c, g) => `To last until payday, lower daily spending by ≈ ${c}. Target: ${g}/day.`],
+        tipLightOver: 'The pace is slightly above your limit, but the spare still covers it — watch your daily spending.',
+        tipStreak: (n) => `🔥 ${n} entries in a row within your daily limit — great streak!`,
+        tipTrendUp: 'Spending in recent days is noticeably higher than before. Check what changed.',
+        tipTrendDown: 'Spending is going down in recent days — a good trend!',
+        tipPaydaySoon: (n) => `Only ${n} days until payday — you are almost there.`,
+        tipPaydayTight: (n, g) => `${n} days to payday and money is tight. Hang in there: stay within ${g} per day.`,
+        tipSmallReserve: 'Your reserve is under 10% of your balance — unexpected costs could use it up fast.',
+        tipDailyV: ['For big purchases use the “24-hour rule”: wait a day before paying.', 'Plan your spending a week ahead — it is easier to stay within the limit.', 'Track even small expenses: they are what quietly eats a budget most often.', 'Pay yourself first: set aside the reserve, then spend the rest — not the other way round.', 'Compare prices before buying — the difference adds up over a month.', 'Once a week check your month summary and ask: what took the most?'],
+        editBtn: 'Edit',
+        toastEditLoaded: 'Entry loaded into the form — edit and save',
+        summaryTitle: 'Month summary',
+        summarySpent: 'Spent',
+        summaryIncome: 'Top-ups',
+        summaryBiggest: 'Biggest expense',
+        summaryNone: '—',
+        forecastOk: (pace, spare) => `✅ Spending ≈ ${pace}/day — your balance lasts until payday, spare ≈ ${spare}`,
+        forecastZero: '✅ Almost no spending — your balance lasts until payday',
+        forecastWarn: (pace, n, m, d) => `⚠️ Spending ≈ ${pace}/day — money lasts ${n} of ${m} days (until ${d})`,
         toastInvalidBalance: 'Enter a valid balance (0 or higher)',
         toastSavedEntry: (d) => `Saved your balance for ${d}`,
         toastUpdatedEntry: (d) => `Updated your balance for ${d}`,
@@ -1081,6 +1313,7 @@
       if (!modal) return;
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+      setTimeout(maybeShowCriticalAlert, 400);
     }
 
     function applySyncStatusUI() {
@@ -1178,6 +1411,50 @@
         lastDate,
         sortedAsc
       };
+    }
+
+    function getPace(stats) {
+      if (!stats || !stats.hasEntry || stats.sortedAsc.length < 2) return null;
+      const recent = stats.sortedAsc.slice(-8);
+      let spent = 0;
+      let days = 0;
+      for (let i = 1; i < recent.length; i++) {
+        const diff = (Number(recent[i].balance) || 0) - (Number(recent[i - 1].balance) || 0);
+        if (diff > 0) continue; // пополнение: расход за этот период неизвестен
+        days += calcDaysRemainingAfterDate(recent[i - 1].date, recent[i].date);
+        spent += -diff;
+      }
+      if (days < 2) return null;
+      return spent / days;
+    }
+
+    function addDaysISO(iso, n) {
+      const [y, m, d] = iso.split('-').map(Number);
+      const dt = new Date(Date.UTC(y, m - 1, d + n));
+      return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`;
+    }
+
+    function buildForecast(available, pace, daysLeft, lastDate) {
+      const spare = available - pace * daysLeft;
+      if (pace < 1) return { kind: 'zero', pace, spare };
+      if (spare >= 0) return { kind: 'ok', pace, spare };
+      const coverDays = Math.max(0, Math.floor(available / pace));
+      return { kind: 'warn', pace, spare, coverDays, endIso: addDaysISO(lastDate, coverDays) };
+    }
+
+    function getSpendForecast(stats) {
+      const pace = getPace(stats);
+      if (pace === null) return null;
+      return buildForecast(stats.available, pace, stats.daysLeft, stats.lastDate);
+    }
+
+    function getSharedForecast(a, b) {
+      const pa = getPace(a);
+      const pb = getPace(b);
+      if (pa === null || pb === null) return null;
+      const days = Math.min(a.daysLeft, b.daysLeft);
+      const lastDate = a.lastDate > b.lastDate ? a.lastDate : b.lastDate;
+      return buildForecast(a.available + b.available, pa + pb, days, lastDate);
     }
 
     function getPartnerProfile() {
@@ -1359,11 +1636,38 @@
           : t('heroAdviceSolo');
       }
 
+      const forecastEl = document.getElementById('forecastLine');
+      let fc = null;
+      let forecastDays = 0;
+      if (hasPartner && viewMode === 'shared') {
+        fc = getSharedForecast(myStats, partnerStats);
+        forecastDays = Math.min(myStats.daysLeft, partnerStats.daysLeft);
+      } else {
+        const fs = (hasPartner && viewMode === 'partner') ? partnerStats : myStats;
+        fc = getSpendForecast(fs);
+        forecastDays = fs.daysLeft;
+      }
+      if (!fc && hasPartner && viewMode === 'shared') {
+        forecastEl.textContent = t('forecastNeedData');
+        forecastEl.classList.remove('hidden', 'text-amber-200');
+        forecastEl.classList.add('text-emerald-50');
+      } else if (!fc) {
+        forecastEl.classList.add('hidden');
+      } else {
+        if (fc.kind === 'zero') forecastEl.textContent = t('forecastZero');
+        else if (fc.kind === 'ok') forecastEl.textContent = t('forecastOk', formatMoney(Math.round(fc.pace)), formatMoney(Math.floor(fc.spare)));
+        else forecastEl.textContent = t('forecastWarn', formatMoney(Math.round(fc.pace)), fc.coverDays, forecastDays, formatDateByLang(fc.endIso));
+        forecastEl.classList.remove('hidden');
+        forecastEl.classList.toggle('text-amber-200', fc.kind === 'warn');
+        forecastEl.classList.toggle('text-emerald-50', fc.kind !== 'warn');
+      }
+
       document.getElementById('summaryLastBalance').textContent = formatMoney(myStats.balance);
       document.getElementById('summaryEntriesCount').textContent = t('entriesCountUnit', myStats.sortedAsc.length);
 
       renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName, hasPartner);
       updatePreviewDelta();
+      if (!document.getElementById('analyticsModal').classList.contains('hidden')) renderAnalytics();
     }
 
     function renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName, hasPartner) {
@@ -1451,6 +1755,32 @@
 
       rowsSource = rowsSource.filter(r => String(r.date || '').startsWith(journalMonth));
 
+      // --- Итоги выбранного месяца ---
+      const summaryEl = document.getElementById('journalSummary');
+      if (rowsSource.length === 0) {
+        summaryEl.classList.add('hidden');
+      } else {
+        let spentSum = 0, incomeSum = 0, biggest = 0, biggestDate = '';
+        rowsSource.forEach(r => {
+          if (r.delta === null || r.delta === undefined) return;
+          if (r.delta < 0) {
+            spentSum += -r.delta;
+            if (-r.delta > biggest) { biggest = -r.delta; biggestDate = r.date; }
+          } else if (r.delta > 0) {
+            incomeSum += r.delta;
+          }
+        });
+        document.getElementById('journalSummaryTitle').textContent = t('summaryTitle');
+        document.getElementById('sumSpentLabel').textContent = t('summarySpent');
+        document.getElementById('sumIncomeLabel').textContent = t('summaryIncome');
+        document.getElementById('sumBiggestLabel').textContent = t('summaryBiggest');
+        document.getElementById('sumSpentValue').textContent = spentSum > 0 ? formatMoney(spentSum) : t('summaryNone');
+        document.getElementById('sumIncomeValue').textContent = incomeSum > 0 ? formatMoney(incomeSum) : t('summaryNone');
+        document.getElementById('sumBiggestValue').textContent = biggest > 0 ? formatMoney(biggest) : t('summaryNone');
+        document.getElementById('sumBiggestDate').textContent = biggest > 0 ? formatDateByLang(biggestDate) : '';
+        summaryEl.classList.remove('hidden');
+      }
+
       if (rowsSource.length === 0) {
         emptyState.classList.remove('hidden');
         tableWrapper.classList.add('hidden');
@@ -1475,7 +1805,7 @@
         const isMineEntry = item.ownerId === currentUser.id || !hasPartner || viewMode === 'mine';
 
         const actionHtml = (canDelete && isMineEntry)
-          ? `<button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
+          ? `<button type="button" data-edit-id="${escapeHtml(item.id)}" class="edit-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#0077ab] hover:bg-sky-50 transition cursor-pointer">${escapeHtml(t('editBtn'))}</button><button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
           : `<span class="text-xs text-[#94ACA1]">—</span>`;
 
         return `
@@ -1501,7 +1831,7 @@
         const noteHtml = item.note ? escapeHtml(item.note) : `<span class="text-[#94ACA1] italic">${escapeHtml(t('noNoteText'))}</span>`;
         const isMineEntry = item.ownerId === currentUser.id || !hasPartner || viewMode === 'mine';
         const delHtml = (canDelete && isMineEntry)
-          ? `<button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-rose-600 bg-rose-50/60 active:bg-rose-100 cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
+          ? `<button type="button" data-edit-id="${escapeHtml(item.id)}" class="edit-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-[#0077ab] bg-sky-50/70 active:bg-sky-100 cursor-pointer mr-1.5">${escapeHtml(t('editBtn'))}</button><button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-rose-600 bg-rose-50/60 active:bg-rose-100 cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
           : '';
         const showAuthor = hasPartner && viewMode !== 'mine';
         return `
@@ -1527,6 +1857,274 @@
       document.querySelectorAll('#journalTableBody .delete-entry-btn, #journalCards .delete-entry-btn').forEach(btn => {
         btn.addEventListener('click', () => deleteMyEntry(btn.getAttribute('data-delete-id')));
       });
+      document.querySelectorAll('#journalTableBody .edit-entry-btn, #journalCards .edit-entry-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadEntryIntoForm(btn.getAttribute('data-edit-id')));
+      });
+    }
+
+    // «Изменить»: заполняет форму данными записи; сохранение за ту же дату обновляет запись (как и раньше)
+    function loadEntryIntoForm(id) {
+      const entry = (ensureMyProfile(state).entries || []).find(e => String(e.id) === String(id));
+      if (!entry) return;
+      document.getElementById('dateInput').value = entry.date;
+      document.getElementById('balanceInput').value = String(entry.balance);
+      document.getElementById('noteInput').value = entry.note || '';
+      updatePreviewDelta();
+      const form = document.getElementById('entryForm');
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => { try { document.getElementById('balanceInput').focus(); } catch (e) {} }, 350);
+      showToast(t('toastEditLoaded'), 'info');
+    }
+
+    // ===================== АНАЛИТИКА =====================
+    function getMonthSpend(stats, monthPrefix) {
+      let spent = 0, big = 0;
+      const asc = stats.sortedAsc;
+      for (let i = 1; i < asc.length; i++) {
+        if (!String(asc[i].date).startsWith(monthPrefix)) continue;
+        const d = (Number(asc[i].balance) || 0) - (Number(asc[i - 1].balance) || 0);
+        if (d < 0) { spent += -d; if (-d > big) big = -d; }
+      }
+      return { spent, big };
+    }
+
+    function getAnalyticsContext() {
+      const myStats = getProfileStats(ensureMyProfile(state));
+      const partnerProfile = getPartnerProfile();
+      const hasPartner = Boolean(partnerProfile);
+      const partnerStats = getProfileStats(partnerProfile);
+      const isShared = hasPartner && viewMode === 'shared';
+      const isPartnerTab = hasPartner && viewMode === 'partner';
+      const list = isShared ? [myStats, partnerStats] : (isPartnerTab ? [partnerStats] : [myStats]);
+
+      const sum = (key) => list.reduce((a, x) => a + (Number(x[key]) || 0), 0);
+      const monthPrefix = TODAY_ISO.slice(0, 7);
+      let monthSpent = 0, monthBig = 0;
+      list.forEach(x => { const m = getMonthSpend(x, monthPrefix); monthSpent += m.spent; monthBig = Math.max(monthBig, m.big); });
+
+      const fc = isShared ? getSharedForecast(myStats, partnerStats) : getSpendForecast(list[0]);
+      const daysLeft = Math.min(...list.map(x => x.daysLeft));
+      const lastDate = list.map(x => x.lastDate).reduce((a, b) => (a > b ? a : b));
+
+      // Серия остатка (для общего режима — сумма двух, с переносом последнего значения вперёд)
+      const firstDates = list.map(x => (x.sortedAsc[0] ? x.sortedAsc[0].date : null));
+      let series = [];
+      if (list.every(x => x.hasEntry)) {
+        const startLimit = addDaysISO(lastDate, -30);
+        const allDates = [...new Set(list.flatMap(x => x.sortedAsc.map(e => e.date)))].sort();
+        const minStart = firstDates.reduce((a, b) => (a > b ? a : b));
+        allDates.filter(d => d >= minStart && d >= startLimit).forEach(d => {
+          let total = 0;
+          list.forEach(x => {
+            let v = 0;
+            x.sortedAsc.forEach(e => { if (e.date <= d) v = Number(e.balance) || 0; });
+            total += v;
+          });
+          series.push({ date: d, balance: total });
+        });
+      }
+
+      // Дневные темпы трат по последним промежуткам (только для одного профиля)
+      let rates = null;
+      if (list.length === 1 && list[0].sortedAsc.length >= 2) {
+        rates = [];
+        const asc = list[0].sortedAsc;
+        for (let i = 1; i < asc.length; i++) {
+          const diff = (Number(asc[i].balance) || 0) - (Number(asc[i - 1].balance) || 0);
+          if (diff > 0) continue;
+          rates.push(-diff / calcDaysRemainingAfterDate(asc[i - 1].date, asc[i].date));
+        }
+        rates = rates.slice(-8);
+      }
+
+      if (list.length > 1 && series.length >= 2) {
+        rates = [];
+        for (let i = 1; i < series.length; i++) {
+          const diff = series[i].balance - series[i - 1].balance;
+          if (diff > 0) continue;
+          rates.push(-diff / calcDaysRemainingAfterDate(series[i - 1].date, series[i].date));
+        }
+        rates = rates.slice(-8);
+      }
+
+      return {
+        rates,
+        scope: isShared ? t('analyticsScopeShared') : (isPartnerTab ? ((partnerProfile && partnerProfile.username) || t('partnerDefaultName')) : t('analyticsScopeMine')),
+        balance: sum('balance'),
+        reserve: sum('reserve'),
+        available: sum('available'),
+        dailyLimit: sum('dailyLimit'),
+        daysLeft, lastDate, monthSpent, monthBig, fc,
+        pace: fc ? fc.pace : null,
+        entriesCount: Math.min(...list.map(x => x.sortedAsc.length)),
+        hasEntry: list.every(x => x.hasEntry),
+        series
+      };
+    }
+
+    function buildAnalyticsChart(ctx) {
+      if (!ctx.series.length) return '';
+      const W = 340, H = 170, pl = 10, pr = 10, pt = 14, pb = 22;
+      const first = ctx.series[0].date;
+      const lastPoint = ctx.series[ctx.series.length - 1];
+      const endDate = addDaysISO(ctx.lastDate, Math.max(1, ctx.daysLeft));
+      const dayIdx = (iso) => Math.round((Date.UTC(...iso.split('-').map((v, i) => i === 1 ? Number(v) - 1 : Number(v))) - Date.UTC(...first.split('-').map((v, i) => i === 1 ? Number(v) - 1 : Number(v)))) / 86400000);
+      const totalDays = Math.max(1, dayIdx(endDate));
+      const projEnd = ctx.pace !== null ? Math.max(0, lastPoint.balance - ctx.pace * Math.max(1, ctx.daysLeft)) : null;
+      const yMax = Math.max(1, ...ctx.series.map(p => p.balance), ctx.reserve) * 1.12;
+      const X = (iso) => pl + (W - pl - pr) * (dayIdx(iso) / totalDays);
+      const Y = (v) => pt + (H - pt - pb) * (1 - Math.max(0, v) / yMax);
+
+      const pts = ctx.series.map(p => `${X(p.date).toFixed(1)},${Y(p.balance).toFixed(1)}`);
+      let svg = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-auto" role="img">`;
+      svg += `<line x1="${pl}" y1="${Y(0)}" x2="${W - pr}" y2="${Y(0)}" stroke="#DCE9E2" stroke-width="1"/>`;
+      if (ctx.reserve > 0) {
+        svg += `<line x1="${pl}" y1="${Y(ctx.reserve)}" x2="${W - pr}" y2="${Y(ctx.reserve)}" stroke="#94ACA1" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+      }
+      if (pts.length > 1) {
+        svg += `<polyline points="${pts.join(' ')}" fill="none" stroke="#009bde" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      }
+      ctx.series.forEach(p => { svg += `<circle cx="${X(p.date).toFixed(1)}" cy="${Y(p.balance).toFixed(1)}" r="2.6" fill="#009bde"/>`; });
+      if (projEnd !== null) {
+        const color = ctx.fc && ctx.fc.kind === 'warn' ? '#d97706' : '#1B4332';
+        svg += `<line x1="${X(lastPoint.date).toFixed(1)}" y1="${Y(lastPoint.balance).toFixed(1)}" x2="${X(endDate).toFixed(1)}" y2="${Y(projEnd).toFixed(1)}" stroke="${color}" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>`;
+        svg += `<circle cx="${X(endDate).toFixed(1)}" cy="${Y(projEnd).toFixed(1)}" r="3" fill="${color}"/>`;
+      }
+      svg += `<text x="${pl}" y="${H - 6}" font-size="9" fill="#527365">${escapeHtml(formatDateByLang(first))}</text>`;
+      svg += `<text x="${W - pr}" y="${H - 6}" font-size="9" fill="#527365" text-anchor="end">${escapeHtml(formatDateByLang(endDate))}</text>`;
+      svg += `<text x="${Math.min(W - pr - 2, X(lastPoint.date) + 4)}" y="${Math.max(10, Y(lastPoint.balance) - 7)}" font-size="9" font-weight="700" fill="#0077ab" text-anchor="${X(lastPoint.date) > W - 80 ? 'end' : 'start'}">${escapeHtml(formatMoney(lastPoint.balance))}</text>`;
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function dayIndexToday() {
+      const [y, m, d] = TODAY_ISO.split('-').map(Number);
+      return Math.floor(Date.UTC(y, m - 1, d) / 86400000);
+    }
+
+    function pickVariant(key, ...args) {
+      const arr = t(key);
+      if (!Array.isArray(arr) || arr.length === 0) return '';
+      const v = arr[dayIndexToday() % arr.length];
+      return typeof v === 'function' ? v(...args) : v;
+    }
+
+    // [иконка, текст, тон: warn | good | info]
+    function buildAnalyticsTips(ctx) {
+      const tips = [];
+      const fc = ctx.fc;
+      const limit = ctx.dailyLimit;
+
+      if (!fc || ctx.entriesCount < 3) tips.push(['ℹ️', t('tipFewData'), 'info']);
+
+      if (fc) {
+        if (fc.kind === 'warn') {
+          const cut = Math.max(1, Math.ceil(fc.pace - limit));
+          tips.push(['⚠️', pickVariant('tipCutV', formatMoney(cut), formatMoney(Math.floor(limit))), 'warn']);
+          if (ctx.daysLeft <= 3) tips.push(['⏳', t('tipPaydayTight', ctx.daysLeft, formatMoney(Math.floor(limit))), 'warn']);
+        } else if (fc.kind === 'zero' || fc.pace < limit * 0.6) {
+          tips.push(['💡', pickVariant('tipSaveV', formatMoney(Math.floor(Math.max(0, fc.spare) * 0.5))), 'good']);
+        } else if (fc.pace > limit) {
+          tips.push(['👀', t('tipLightOver'), 'info']);
+        } else {
+          tips.push(['✅', pickVariant('tipOnTrackV'), 'good']);
+        }
+        if (fc.kind !== 'warn' && ctx.daysLeft <= 3) tips.push(['🎯', t('tipPaydaySoon', ctx.daysLeft), 'good']);
+      }
+
+      if (ctx.rates && ctx.rates.length >= 3 && limit > 0) {
+        let streak = 0;
+        for (let i = ctx.rates.length - 1; i >= 0 && ctx.rates[i] <= limit; i--) streak++;
+        if (streak >= 3) tips.push(['🏆', t('tipStreak', streak), 'good']);
+      }
+      if (ctx.rates && ctx.rates.length >= 4) {
+        const recent = ctx.rates.slice(-3);
+        const prior = ctx.rates.slice(-6, -3);
+        if (prior.length >= 1) {
+          const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+          const r = avg(recent), p = avg(prior);
+          if (p > 0 && r > p * 1.25) tips.push(['📈', t('tipTrendUp'), 'warn']);
+          else if (p > 0 && r < p * 0.75) tips.push(['📉', t('tipTrendDown'), 'good']);
+        }
+      }
+
+      if (ctx.reserve <= 0) tips.push(['🛟', t('tipReserve'), 'info']);
+      else if (ctx.balance > 0 && ctx.reserve / ctx.balance < 0.1) tips.push(['🛟', t('tipSmallReserve'), 'info']);
+
+      if (ctx.monthSpent > 0 && ctx.monthBig / ctx.monthSpent > 0.4) {
+        tips.push(['🧾', t('tipBig', Math.round(ctx.monthBig / ctx.monthSpent * 100)), 'info']);
+      }
+
+      const limited = tips.slice(0, 5);
+      limited.push(['📘', pickVariant('tipDailyV'), 'info']);
+      return limited;
+    }
+
+    function renderAnalytics() {
+      const ctx = getAnalyticsContext();
+      document.getElementById('analyticsScope').textContent = ctx.scope;
+      document.getElementById('anPace').textContent = ctx.pace !== null ? t('perDaySuffix', formatMoney(Math.round(ctx.pace))) : '—';
+      document.getElementById('anLimit').textContent = ctx.hasEntry ? t('perDaySuffix', formatMoney(Math.floor(ctx.dailyLimit))) : '—';
+      document.getElementById('anMonthSpent').textContent = formatMoney(ctx.monthSpent);
+      document.getElementById('anDaysLeft').textContent = t('daysUnit', ctx.daysLeft);
+
+      const chart = buildAnalyticsChart(ctx);
+      document.getElementById('anChart').innerHTML = chart || `<p class="text-xs text-[#7A968A] py-6 text-center">${escapeHtml(t('analyticsNoData'))}</p>`;
+      const toneClass = {
+        warn: 'bg-amber-50 border-amber-200',
+        good: 'bg-emerald-50 border-emerald-200',
+        info: 'bg-[#F7FBF9] border-[#E2EDE7]'
+      };
+      document.getElementById('anTips').innerHTML = buildAnalyticsTips(ctx).map(([icon, text, tone]) =>
+        `<li class="flex gap-2 rounded-xl border ${toneClass[tone] || toneClass.info} px-3 py-2.5 text-sm text-[#1B4332] leading-snug"><span>${icon}</span><span>${escapeHtml(text)}</span></li>`
+      ).join('');
+    }
+
+    // ===== Предупреждение о критических тратах (не чаще раза в сутки для одной последней записи) =====
+    const CRIT_ALERT_KEY = 'daily_limit_crit_alert_v1';
+
+    function isAnyModalOpen() {
+      return Array.from(document.querySelectorAll('.fixed.inset-0')).some(el => el.id && /Modal$/.test(el.id) && !el.classList.contains('hidden'));
+    }
+
+    function maybeShowCriticalAlert() {
+      try {
+        if (isAnyModalOpen()) return;
+        const ctx = getAnalyticsContext();
+        if (!ctx.hasEntry || !ctx.fc || ctx.entriesCount < 3) return;
+        if (ctx.fc.kind !== 'warn' || ctx.pace < ctx.dailyLimit * 1.3) return;
+
+        const stamp = `${TODAY_ISO}|${ctx.lastDate}`;
+        if (localStorage.getItem(CRIT_ALERT_KEY) === stamp) return;
+        localStorage.setItem(CRIT_ALERT_KEY, stamp);
+
+        document.getElementById('criticalTitle').textContent = pickVariant('critTitleV');
+        document.getElementById('criticalText').textContent = t('critText',
+          formatMoney(Math.round(ctx.pace)), formatMoney(Math.floor(ctx.dailyLimit)), ctx.fc.coverDays, formatDateByLang(ctx.fc.endIso));
+        document.getElementById('criticalOpenBtn').textContent = t('critOpenBtn');
+        document.getElementById('criticalLaterBtn').textContent = t('critLaterBtn');
+        const m = document.getElementById('criticalModal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      } catch (e) {}
+    }
+
+    function closeCriticalAlert() {
+      const m = document.getElementById('criticalModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function openAnalytics() {
+      renderAnalytics();
+      const m = document.getElementById('analyticsModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+    function closeAnalytics() {
+      const m = document.getElementById('analyticsModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
     }
 
     function updatePreviewDelta() {
@@ -1599,11 +2197,18 @@
       }
     }
 
-    function askConfirm(message) {
+    // Подтверждение с кнопками на языке приложения (нативные кнопки Telegram берут язык самого Telegram)
+    function askConfirm(message, confirmLabel) {
       return new Promise(resolve => {
         try {
-          if (tg && typeof tg.showConfirm === 'function') {
-            tg.showConfirm(message, ok => resolve(Boolean(ok)));
+          if (tg && typeof tg.showPopup === 'function' && (!tg.isVersionAtLeast || tg.isVersionAtLeast('6.2'))) {
+            tg.showPopup({
+              message,
+              buttons: [
+                { id: 'yes', type: 'destructive', text: confirmLabel || t('okBtn') },
+                { id: 'no', type: 'default', text: t('cancelBtn') }
+              ]
+            }, (id) => resolve(id === 'yes'));
             return;
           }
         } catch (e) {}
@@ -1614,7 +2219,7 @@
     async function removePartnerFromRoom(partnerId) {
       if (!partnerId || partnerId === currentUser.id) return;
       if (activeRoomId !== OWN_ROOM_ID) return; // убирать участников может только хозяин комнаты
-      if (!(await askConfirm(t('confirmRemovePartner')))) return;
+      if (!(await askConfirm(t('confirmRemovePartner'), t('btnConfirmRemove')))) return;
 
       const nextMembers = (Array.isArray(state.members) ? state.members : []).filter(m => m.id !== partnerId);
       if (!nextMembers.some(m => m.id === currentUser.id)) {
@@ -1966,6 +2571,12 @@
     document.getElementById('journalPrevMonth').addEventListener('click', () => shiftJournalMonth(-1));
     document.getElementById('journalNextMonth').addEventListener('click', () => shiftJournalMonth(1));
 
+    document.getElementById('btnOpenAnalytics').addEventListener('click', openAnalytics);
+    document.getElementById('criticalLaterBtn').addEventListener('click', closeCriticalAlert);
+    document.getElementById('criticalOpenBtn').addEventListener('click', () => { closeCriticalAlert(); openAnalytics(); });
+    document.getElementById('closeAnalyticsBtn').addEventListener('click', closeAnalytics);
+    document.getElementById('analyticsModal').addEventListener('click', (e) => { if (e.target.id === 'analyticsModal') closeAnalytics(); });
+
     document.getElementById('btnOpenShare').addEventListener('click', () => {
       document.getElementById('shareModal').classList.remove('hidden');
       document.getElementById('shareModal').classList.add('flex');
@@ -2016,7 +2627,7 @@
     });
 
     document.getElementById('btnLeaveSharedRoom').addEventListener('click', async () => {
-      if (!(await askConfirm(t('confirmLeaveRoom')))) return;
+      if (!(await askConfirm(t('confirmLeaveRoom'), t('btnConfirmLeave')))) return;
       document.getElementById('shareModal').classList.add('hidden');
       document.getElementById('shareModal').classList.remove('flex');
       await leaveSharedRoom();
@@ -2058,6 +2669,7 @@
           try { inviteSeed = JSON.parse(JSON.stringify(loadLocalRoomState(OWN_ROOM_ID).profiles[currentUser.id])); } catch (e) {}
         }
         await connectRoom(activeRoomId, inviteSeed, openedByInvite);
+        setTimeout(maybeShowCriticalAlert, 2000);
       } catch (err) {
         console.error('Ошибка загрузки Firebase SDK:', err);
         setSyncStatus(false, `SDK: ${err.message}`);
