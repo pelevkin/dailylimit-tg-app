@@ -10,531 +10,396 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    /* Тема: подстраиваемся под Telegram (цвета, светлая/тёмная схема) */
+    (function () {
+      var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+      var root = document.documentElement;
+      function apply() {
+        try {
+          var tp = (tg && tg.themeParams) || {};
+          var dark = tg && tg.colorScheme
+            ? tg.colorScheme === 'dark'
+            : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          root.setAttribute('data-theme', dark ? 'dark' : 'light');
+          var distinct = tp.bg_color && tp.secondary_bg_color && String(tp.bg_color).toLowerCase() !== String(tp.secondary_bg_color).toLowerCase();
+          var set = function (k, v) { if (v) root.style.setProperty(k, v); else root.style.removeProperty(k); };
+          set('--card', tp.bg_color);
+          set('--bg', distinct ? tp.secondary_bg_color : null);
+          set('--label', tp.text_color);
+          set('--tint', tp.button_color || tp.link_color);
+          if (tg) {
+            if (tg.setHeaderColor) tg.setHeaderColor(distinct ? 'secondary_bg_color' : 'bg_color');
+            if (tg.setBackgroundColor) tg.setBackgroundColor(distinct ? 'secondary_bg_color' : 'bg_color');
+          }
+        } catch (e) {}
+      }
+      apply();
+      if (tg && tg.onEvent) tg.onEvent('themeChanged', apply);
+      if (window.matchMedia) {
+        try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (!tg) apply(); }); } catch (e) {}
+      }
+    })();
+  </script>
   <style>
+    /* ===== Дизайн в стиле Apple (iOS): токены ===== */
+    :root {
+      color-scheme: light;
+      --bg: #F2F2F7;
+      --card: #FFFFFF;
+      --label: #000000;
+      --tint: #007AFF;
+      --green: #34C759;  --green-text: #1E7B34;
+      --red: #FF3B30;    --red-text: #D70015;
+      --orange: #FF9500; --orange-text: #A15C00;
+      --seg-bg: rgba(118,118,128,0.12);
+      --seg-on: #FFFFFF;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #000000;
+      --card: #1C1C1E;
+      --label: #FFFFFF;
+      --tint: #0A84FF;
+      --green: #30D158;  --green-text: #32D74B;
+      --red: #FF453A;    --red-text: #FF6961;
+      --orange: #FF9F0A; --orange-text: #FFB340;
+      --seg-bg: rgba(118,118,128,0.24);
+      --seg-on: #636366;
+    }
+    :root {
+      --label2: color-mix(in srgb, var(--label) 60%, var(--card));
+      --label3: color-mix(in srgb, var(--label) 40%, var(--card));
+      --fill:   color-mix(in srgb, var(--label) 5%, var(--card));
+      --fill2:  color-mix(in srgb, var(--label) 11%, var(--card));
+      --sep:    color-mix(in srgb, var(--label) 10%, transparent);
+      --sep2:   color-mix(in srgb, var(--label) 22%, transparent);
+      --tint-hover: color-mix(in srgb, var(--tint) 86%, #000);
+      --tint-bg:    color-mix(in srgb, var(--tint) 13%, transparent);
+      --green-bg:   color-mix(in srgb, var(--green) 16%, transparent);
+      --green-bd:   color-mix(in srgb, var(--green) 35%, transparent);
+      --red-bg:     color-mix(in srgb, var(--red) 12%, transparent);
+      --red-bg2:    color-mix(in srgb, var(--red) 22%, transparent);
+      --red-bd:     color-mix(in srgb, var(--red) 35%, transparent);
+      --red-hover:  color-mix(in srgb, var(--red) 85%, #000);
+      --orange-bg:  color-mix(in srgb, var(--orange) 16%, transparent);
+      --orange-bd:  color-mix(in srgb, var(--orange) 40%, transparent);
+      --bar:        color-mix(in srgb, var(--card) 78%, transparent);
+      --hero-a: var(--tint);
+      --hero-b: color-mix(in srgb, var(--tint) 62%, #5E5CE6);
+      --hero-c: #5E5CE6;
+    }
+    @supports not (color: color-mix(in srgb, red, blue)) {
+      :root {
+        --label2: #6C6C70; --label3: #8E8E93; --fill: #F2F2F7; --fill2: #E5E5EA;
+        --sep: rgba(60,60,67,0.12); --sep2: rgba(60,60,67,0.3);
+        --tint-hover: #0062CC; --tint-bg: rgba(0,122,255,0.13);
+        --green-bg: rgba(52,199,89,0.16); --green-bd: rgba(52,199,89,0.35);
+        --red-bg: rgba(255,59,48,0.12); --red-bg2: rgba(255,59,48,0.22); --red-bd: rgba(255,59,48,0.35); --red-hover: #D9302A;
+        --orange-bg: rgba(255,149,0,0.16); --orange-bd: rgba(255,149,0,0.4);
+        --bar: rgba(255,255,255,0.8);
+        --hero-b: #3A6FEA;
+      }
+      :root[data-theme="dark"] {
+        --label2: #AEAEB2; --label3: #8E8E93; --fill: #2C2C2E; --fill2: #3A3A3C;
+        --sep: rgba(255,255,255,0.12); --sep2: rgba(255,255,255,0.28); --bar: rgba(28,28,30,0.8);
+      }
+    }
+
+    /* ===== Основа ===== */
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #F4F8F6;
-      color: #102A20;
-      padding-bottom: env(safe-area-inset-bottom, 16px);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, "Segoe UI", Roboto, system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--label);
+      letter-spacing: -0.011em;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
     }
     .tabular-nums { font-variant-numeric: tabular-nums; }
     @media (max-width: 639px) { #journalTableWrapper { display: none !important; } }
     @media (min-width: 640px) { #journalCards { display: none !important; } }
     .table-scroll::-webkit-scrollbar { height: 6px; }
-    .table-scroll::-webkit-scrollbar-thumb { background: #CBDCD4; border-radius: 9999px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: var(--sep2); border-radius: 9999px; }
+
+    /* ===== Каркас ===== */
+    .app { max-width: 760px; margin: 0 auto; padding: 6px 16px calc(132px + env(safe-area-inset-bottom, 0px)); }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: var(--bar);
+      -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px);
+      border-bottom: 0.5px solid var(--sep);
+    }
+    .topbar-in { max-width: 760px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .appicon { width: 36px; height: 36px; border-radius: 11px; background: var(--tint); color: #fff; display: grid; place-items: center; flex: none; }
+    .apptitle { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+    .cap { font-size: 12px; color: var(--label2); }
+    .pill-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; flex: none;
+      background: var(--tint-bg); color: var(--tint); font-size: 13px; font-weight: 600;
+    }
+    .ttl { font-size: 34px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; margin: 14px 2px 6px; }
+    .sub { font-size: 14px; color: var(--label2); margin: 0 2px; }
+    .glabel { font-size: 12.5px; font-weight: 500; color: var(--label2); text-transform: uppercase; letter-spacing: 0.03em; margin: 22px 16px 7px; }
+
+    /* ===== Сегмент (Общий / Мой / Партнёр) ===== */
+    #viewModeSwitcher { margin-top: 12px; width: 100%; }
+    #viewModeSwitcher .view-mode-btn { flex: 1 1 0 !important; min-height: 34px; border-radius: 9px; font-size: 13px; }
+
+    /* ===== Главный экран ===== */
+    .hero { position: relative; isolation: isolate; text-align: center; padding: 22px 4px 8px; }
+    .hero::before {
+      content: ""; position: absolute; inset: -6px -24px auto; height: 300px; z-index: -1; pointer-events: none;
+      background: radial-gradient(56% 62% at 50% 38%, color-mix(in srgb, var(--tint) 22%, transparent), transparent 72%);
+    }
+    .chip { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; background: var(--fill2); font-size: 12px; font-weight: 500; color: var(--label2); }
+    .chip:empty { display: none; }
+    #dailyLimitHeadline { font-size: 15px; font-weight: 500; color: var(--label2); margin-top: 14px; }
+    #dailyLimitValue { display: block; font-size: clamp(60px, 19vw, 96px); font-weight: 700; letter-spacing: -0.05em; line-height: 1.02; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    #dailyLimitExact { display: block; font-size: 13px; color: var(--label3); margin-top: 2px; }
+    #dailyLimitAdvice { font-size: 14px; line-height: 1.45; color: var(--label2); margin: 12px auto 0; max-width: 460px; }
+    .status { display: block; text-align: left; border-radius: 16px; padding: 12px 16px; font-size: 13.5px; line-height: 1.4; font-weight: 600; margin-top: 14px; }
+    .status[data-kind="ok"]   { background: var(--green-bg);  color: var(--green-text); }
+    .status[data-kind="warn"] { background: var(--orange-bg); color: var(--orange-text); }
+    .status[data-kind="info"] { background: var(--fill2);     color: var(--label2); }
+
+    .tile { background: var(--card); border-radius: 20px; padding: 16px; min-width: 0; }
+    .tile .k { font-size: 12.5px; color: var(--label2); }
+    .tile .v { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .tile .n { font-size: 11.5px; color: var(--label3); margin-top: 2px; }
+    .ring { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--tint); background: var(--tint-bg); flex: none; }
+
+    .group { background: var(--card); border-radius: 20px; overflow: hidden; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; min-height: 52px; font-size: 16px; width: 100%; text-align: left; }
+    .row + .row { border-top: 0.5px solid var(--sep); }
+    .row .lbl { display: flex; align-items: center; gap: 12px; min-width: 0; color: var(--label); }
+    .row .val { color: var(--label2); font-variant-numeric: tabular-nums; text-align: right; }
+    .row-ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-size: 16px; flex: none; }
+    .row.danger .lbl { color: var(--red-text); }
+    .chev { width: 16px; height: 16px; color: var(--label3); flex: none; }
+    .row input[type="date"], .row input[type="number"], .row select {
+      background: transparent !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important;
+      text-align: right; color: var(--tint) !important; font-size: 16px !important; font-weight: 500; padding: 0 !important; width: auto; max-width: 60%;
+    }
+    .row select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+
+    /* ===== Журнал ===== */
+    .monthnav { display: flex; align-items: center; justify-content: space-between; background: var(--card); border-radius: 16px; padding: 4px; margin-top: 14px; }
+    .monthnav button { width: 44px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--tint); }
+    .monthnav button:disabled { opacity: 0.28; }
+    .monthnav span { font-size: 16px; font-weight: 600; }
+    #journalSummary { background: var(--card) !important; border: 0 !important; border-radius: 20px !important; margin-top: 14px; }
+    #emptyJournalState { background: var(--card) !important; border-radius: 20px !important; margin-top: 14px; }
+    #journalCards { margin-top: 14px; }
+    #journalTableWrapper { background: var(--card); border-radius: 20px; margin-top: 14px; padding: 6px 10px; }
+
+    /* ===== Поля ввода (лист «Добавить остаток») ===== */
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--label2); margin: 0 4px 6px; }
+    .field input[type="text"], .field input[type="number"], .field input[type="date"] {
+      width: 100%; background: var(--fill) !important; color: var(--label) !important;
+      border: 1.5px solid transparent !important; border-radius: 14px; min-height: 50px; padding: 0 14px;
+      font-size: 17px !important; transition: border-color .15s, box-shadow .15s;
+    }
+    .field input::placeholder { color: var(--label3); }
+    .field input:focus { outline: none; border-color: var(--tint) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 18%, transparent); }
+    .btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 54px; border-radius: 16px; background: var(--tint); color: #fff; font-size: 17px; font-weight: 600; }
+    .btn-primary:hover { background: var(--tint-hover); }
+    .btn-round { width: 50px; min-height: 50px; border-radius: 14px; background: var(--fill2); color: var(--label); display: grid; place-items: center; flex: none; }
+
+    /* ===== Листы и окна ===== */
+    .sheet-overlay { position: fixed; inset: 0; z-index: 50; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0.42); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+    .sheet-overlay.flex { display: flex; }
+    .sheet { width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; background: var(--card); border-radius: 28px 28px 0 0; padding: 10px 20px calc(24px + env(safe-area-inset-bottom, 0px)); }
+    @media (min-width: 640px) { .sheet-overlay { align-items: center; } .sheet { border-radius: 28px; padding-bottom: 24px; } }
+    .grabber { width: 40px; height: 5px; border-radius: 3px; background: var(--sep2); margin: 0 auto 14px; }
+    @keyframes sheetUp { from { transform: translateY(36px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .sheet, .sheet-panel { animation: sheetUp .28s cubic-bezier(.2,.8,.2,1); }
+
+    /* ===== Плавающая панель вкладок ===== */
+    .tabbar {
+      position: fixed; z-index: 40; left: 50%; transform: translateX(-50%);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+      width: min(calc(100vw - 24px), 440px); height: 66px; padding: 0 6px;
+      display: grid; grid-template-columns: repeat(5, 1fr); align-items: center;
+      background: var(--bar); border: 0.5px solid var(--sep); border-radius: 33px;
+      -webkit-backdrop-filter: saturate(180%) blur(26px); backdrop-filter: saturate(180%) blur(26px);
+      box-shadow: 0 10px 34px rgba(0,0,0,0.16);
+    }
+    .tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 54px; margin: 0 2px; border-radius: 27px; font-size: 10.5px; font-weight: 600; color: var(--label2); }
+    .tab svg { width: 24px; height: 24px; }
+    .tab.active { color: var(--tint); background: var(--tint-bg); }
+    .tab-add { width: 54px; height: 54px; margin: 0 auto; border-radius: 50%; background: var(--tint); color: #fff; display: grid; place-items: center; box-shadow: 0 8px 20px color-mix(in srgb, var(--tint) 45%, transparent); }
+    .tab-add svg { width: 26px; height: 26px; }
+
+    #toastContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); z-index: 70; display: flex; flex-direction: column; gap: 8px; width: min(92vw, 420px); pointer-events: none; }
+
+    /* ===== Общие перекрытия утилит ===== */
+    html body .rounded-3xl { border-radius: 22px; }
+    html body .rounded-2xl { border-radius: 16px; }
+    html body .rounded-xl  { border-radius: 12px; }
+    html body .rounded-lg  { border-radius: 9px; }
+    html body .shadow-sm   { box-shadow: none; }
+    html body .shadow-xl   { box-shadow: 0 24px 64px rgba(0,0,0,0.28); }
+    html body select { color: var(--label); }
+    html body select option { background: var(--card); color: var(--label); }
+    html body button, html body a[id] { transition: transform .12s ease, background-color .15s ease, opacity .15s ease; }
+    html body button:active, html body a[id]:active { transform: scale(0.97); }
+    html body .tabbar .tab:active { transform: scale(0.94); }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
   </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-[#009bde]/20 selection:text-[#1B4332]">
+<body class="min-h-screen antialiased">
 
-  <!-- Верхняя панель -->
-  <header class="bg-white/95 backdrop-blur border-b border-[#DCE9E2] sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-2.5">
+  <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
+  <header class="topbar">
+    <div class="topbar-in">
       <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-9 h-9 rounded-xl bg-[#1B4332] text-white flex items-center justify-center shrink-0 shadow-sm">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div class="appicon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.8l.9.6c1.2.8 3.1.8 4.2 0 1.3-.9 1.3-2.4 0-3.3-.6-.4-1.4-.6-2.1-.6s-1.5-.2-2.1-.6c-1.3-.9-1.3-2.4 0-3.3 1.1-.8 3-.8 4.2 0l.9.6M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-2">
-            <h1 data-i18n="appTitle" class="text-sm sm:text-base font-bold text-[#1B4332] truncate">Дневной лимит до ЗП</h1>
-            <span id="syncStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700">
-              <span id="syncStatusDot" class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <h1 data-i18n="appTitle" class="apptitle truncate">Дневной лимит до ЗП</h1>
+            <span id="syncStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[color:var(--orange-bg)] text-[color:var(--orange-text)]">
+              <span id="syncStatusDot" class="w-1.5 h-1.5 rounded-full bg-[color:var(--orange)]"></span>
               <span id="syncStatusText">...</span>
             </span>
           </div>
-          <p id="tgUserDisplay" class="text-[11px] text-[#527365] truncate">...</p>
+          <p id="tgUserDisplay" class="cap truncate">...</p>
         </div>
       </div>
-
-      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-        <button
-          id="btnOpenShare"
-          type="button"
-          class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-[#009bde] text-white hover:bg-[#0086c2] transition flex items-center gap-1.5 shadow-sm cursor-pointer"
-        >
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span data-i18n="btnSharePartner">Для двоих</span>
-        </button>
-
-        <div class="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[#CFE0D7] bg-[#FAFDFB]">
-          <select id="headerLangSelect" class="bg-transparent text-xs font-bold text-[#1B4332] focus:outline-none cursor-pointer">
-            <option value="ru">RU</option>
-            <option value="uk">UA</option>
-            <option value="en">EN</option>
-          </select>
-        </div>
-
-        <div class="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[#CFE0D7] bg-[#FAFDFB]">
-          <select id="headerCurrencySelect" class="bg-transparent text-xs font-bold text-[#1B4332] focus:outline-none cursor-pointer">
-            <option value="UAH">₴ 🇺🇦</option>
-            <option value="USD">$ 🇺🇸</option>
-            <option value="EUR">€ 🇪🇺</option>
-            <option value="PLN">zł 🇵🇱</option>
-            <option value="GBP">Kč 🇨🇿</option>
-            <option value="RUB">₽ 🧟</option>
-          </select>
-        </div>
-
-        <button
-          id="btnClearAll"
-          type="button"
-          data-i18n="btnClearAll"
-          class="px-2.5 py-1.5 text-xs font-medium rounded-xl border border-rose-200 bg-rose-50/70 text-rose-700 hover:bg-rose-100 transition cursor-pointer"
-        >
-          Сброс
-        </button>
-
-        <a
-          id="btnDeveloperLink"
-          href="https://t.me/pelevkin"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="px-2.5 py-1.5 text-xs font-medium rounded-xl border border-[#CFE0D7] bg-[#FAFDFB] text-[#1B4332] hover:bg-[#EBF5F0] transition inline-flex items-center gap-1 cursor-pointer"
-        >
-          <svg class="w-3.5 h-3.5 text-[#009bde]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-          </svg>
-          <span data-i18n="btnDeveloper">Разработчик</span>
-        </a>
-      </div>
+      <button id="btnOpenShare" type="button" class="pill-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 11a4 4 0 100-8 4 4 0 000 8zM21 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
+        <span data-i18n="btnSharePartner">Для двоих</span>
+      </button>
     </div>
   </header>
 
-  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
+  <div id="toastContainer"></div>
 
-  <!-- МОДАЛЬНОЕ ОКНО: УВЕДОМЛЕНИЕ О СОХРАНЕНИИ -->
-  <div id="savedModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-4">
-    <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-sm w-full p-6 text-center space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-2xl font-extrabold">
-        ✓
-      </div>
-      <div class="space-y-1">
-        <h2 id="savedModalTitle" class="text-lg font-bold text-[#1B4332]"></h2>
-        <p id="savedModalMessage" class="text-sm text-[#4A685B] tabular-nums"></p>
-      </div>
-      <button
-        id="okSavedModalBtn"
-        type="button"
-        data-i18n="okBtn"
-        class="w-full py-2.5 px-5 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition cursor-pointer"
-      >
-        Окей
-      </button>
-    </div>
-  </div>
+  <main class="app">
 
-  <!-- МОДАЛЬНОЕ ОКНО: ДЛЯ ДВОИХ -->
-  <div id="criticalModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-[#102A20]/55 backdrop-blur-[2px] p-4">
-    <div class="bg-white rounded-3xl border border-amber-200 shadow-xl max-w-sm w-full p-6 text-center space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto text-2xl">⚠️</div>
-      <div class="space-y-1.5">
-        <h2 id="criticalTitle" class="text-lg font-bold text-[#1B4332]"></h2>
-        <p id="criticalText" class="text-sm text-[#4A685B] leading-relaxed"></p>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="criticalLaterBtn" type="button" class="py-2.5 px-3 rounded-xl border border-[#CFE0D7] text-sm font-semibold text-[#1B4332] hover:bg-[#EBF5F0] transition cursor-pointer"></button>
-        <button id="criticalOpenBtn" type="button" class="py-2.5 px-3 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition cursor-pointer"></button>
-      </div>
-    </div>
-  </div>
-
-  <div id="analyticsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-3">
-    <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-4 sm:p-6 space-y-4">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h2 data-i18n="analyticsTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Аналитика и советы</h2>
-          <p id="analyticsScope" class="text-xs text-[#527365] mt-0.5"></p>
-        </div>
-        <button id="closeAnalyticsBtn" type="button" class="p-1.5 rounded-xl text-[#527365] hover:bg-[#EBF5F0] cursor-pointer">✕</button>
+    <!-- ================= СЕГОДНЯ ================= -->
+    <section data-view="today">
+      <div id="firebaseErrorBanner" class="hidden rounded-2xl bg-[color:var(--red-bg)] border border-[color:var(--red-bd)] px-4 py-3 text-xs text-[color:var(--red-text)] mt-3">
+        <strong data-i18n="cloudErrorPrefix">Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
-          <p data-i18n="analyticsPace" class="text-[11px] text-[#527365]">Темп трат</p>
-          <p id="anPace" class="text-base font-extrabold text-rose-700 tabular-nums">—</p>
+      <h2 data-i18n="tabToday" class="ttl">Сегодня</h2>
+
+      <div id="viewModeSwitcher" class="hidden bg-[color:var(--seg-bg)] rounded-xl p-1 gap-1">
+        <button type="button" data-view-mode="shared" class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer bg-[color:var(--seg-on)] text-[color:var(--label)] shadow-sm"><span data-i18n="tabShared">Общий</span></button>
+        <button type="button" data-view-mode="mine" class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer text-[color:var(--label2)]"><span data-i18n="tabMine">Мой</span></button>
+        <button type="button" data-view-mode="partner" class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer text-[color:var(--label2)]"><span data-i18n="tabPartner">Партнёр</span></button>
+      </div>
+
+      <div class="hero">
+        <span id="heroSubtitle" class="chip"></span>
+        <p id="dailyLimitHeadline"></p>
+        <span id="dailyLimitValue" class="tabular-nums">0 ₴</span>
+        <span id="dailyLimitExact" class="tabular-nums"></span>
+        <p id="dailyLimitAdvice"></p>
+        <p id="forecastLine" class="status hidden" data-kind="info"></p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mt-5">
+        <div class="tile">
+          <p data-i18n="availableSpendLabel" class="k">Доступно на повседневные траты</p>
+          <p id="availableSpendValue" class="v">0 ₴</p>
+          <p id="reserveBreakdownText" class="n tabular-nums"></p>
         </div>
-        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
-          <p data-i18n="analyticsLimit" class="text-[11px] text-[#527365]">Лимит на день</p>
-          <p id="anLimit" class="text-base font-extrabold text-[#0086c2] tabular-nums">—</p>
-        </div>
-        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
-          <p data-i18n="analyticsMonthSpent" class="text-[11px] text-[#527365]">Потрачено в этом месяце</p>
-          <p id="anMonthSpent" class="text-base font-extrabold text-[#1B4332] tabular-nums">—</p>
-        </div>
-        <div class="rounded-xl bg-[#F4F8F6] border border-[#E2EDE7] px-3 py-2.5">
-          <p data-i18n="analyticsDaysLeft" class="text-[11px] text-[#527365]">До зарплаты</p>
-          <p id="anDaysLeft" class="text-base font-extrabold text-[#1B4332] tabular-nums">—</p>
+        <div class="tile">
+          <div class="flex items-start justify-between gap-2">
+            <p data-i18n="daysLeftLabel" class="k">Ближайшая выплата</p>
+            <span id="daysBadgeNumber" class="ring">0</span>
+          </div>
+          <p id="daysLeftValue" class="v">0 дн.</p>
+          <p id="paydayDateLabel" class="n"></p>
         </div>
       </div>
 
-      <div class="rounded-2xl border border-[#E2EDE7] p-3">
-        <p data-i18n="analyticsChartTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] mb-1">Остаток и прогноз</p>
-        <div id="anChart"></div>
-        <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#527365] mt-1">
-          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 h-0.5 bg-[#009bde]"></i><span data-i18n="legendBalance">Остаток</span></span>
-          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 border-t-2 border-dashed border-[#1B4332]"></i><span data-i18n="legendForecast">Прогноз</span></span>
-          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 border-t-2 border-dashed border-[#94ACA1]"></i><span data-i18n="legendReserve">Резерв</span></span>
+      <section id="pairBreakdownCard" class="hidden grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+        <div class="tile">
+          <span data-i18n="cardMyContributionTitle" class="k block uppercase tracking-wider text-[11px]">Мой личный вклад</span>
+          <p id="cardMyName" class="text-[17px] font-semibold truncate mt-1">@user</p>
+          <p id="cardMyDetails" class="n tabular-nums"></p>
+          <div class="flex items-baseline justify-between mt-3">
+            <span data-i18n="cardLimitPerDayLabel" class="k">Лимит / дн.</span>
+            <span id="cardMyDailyLimit" class="text-[20px] font-bold tabular-nums">0 ₴</span>
+          </div>
         </div>
-      </div>
-
-      <div>
-        <p data-i18n="analyticsTipsTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] mb-2">Советы</p>
-        <ul id="anTips" class="space-y-2"></ul>
-      </div>
-
-      <p data-i18n="analyticsDisclaimer" class="text-[11px] text-[#7A968A]">Это подсказки на основе ваших записей, а не финансовая консультация.</p>
-    </div>
-  </div>
-
-  <div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/50 backdrop-blur-[2px] p-4">
-    <div class="bg-white rounded-3xl border border-[#DCE9E2] shadow-xl max-w-md w-full p-5 sm:p-6 space-y-4">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h2 data-i18n="shareModalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Совместный бюджет для двоих</h2>
-          <p data-i18n="shareModalSubtitle" class="text-xs text-[#527365] mt-0.5">
-            У каждого свой остаток и цикл до ЗП, а сверху считается общий лимит
-          </p>
+        <div class="tile">
+          <span data-i18n="cardPartnerContributionTitle" class="k block uppercase tracking-wider text-[11px]" style="color:var(--tint)">Вклад партнёра</span>
+          <p id="cardPartnerName" class="text-[17px] font-semibold truncate mt-1"></p>
+          <p id="cardPartnerDetails" class="n tabular-nums"></p>
+          <div class="flex items-baseline justify-between mt-3">
+            <span data-i18n="cardLimitPerDayLabel" class="k">Лимит / дн.</span>
+            <span id="cardPartnerDailyLimit" class="text-[20px] font-bold tabular-nums" style="color:var(--tint)">0 ₴</span>
+          </div>
         </div>
-        <button id="closeShareModalBtn" type="button" class="p-1.5 rounded-xl text-[#527365] hover:bg-[#EBF5F0] cursor-pointer">✕</button>
-      </div>
+      </section>
 
-      <div class="rounded-2xl bg-[#F4F8F6] border border-[#DCE9E2] p-4 space-y-2.5">
-        <div class="flex items-center justify-between gap-2">
-          <span data-i18n="yourRoomCodeLabel" class="text-xs font-semibold text-[#527365]">Секретный ключ комнаты:</span>
-          <span id="roomCodeBadge" class="font-mono text-xs sm:text-sm font-extrabold tracking-wider text-[#1B4332] bg-white px-2.5 py-1 rounded-lg border border-[#CFE0D7] select-all">—</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button id="btnCopyRoomCode" type="button" data-i18n="btnCopyCode" class="py-2 px-3 rounded-xl bg-white border border-[#CFE0D7] text-xs font-semibold text-[#1B4332] hover:bg-[#EBF5F0] transition cursor-pointer">
-            Скопировать ключ
-          </button>
-          <button id="btnShareTgLink" type="button" data-i18n="btnSendTgInvite" class="py-2 px-3 rounded-xl bg-[#009bde] text-xs font-semibold text-white hover:bg-[#0086c2] transition cursor-pointer">
-            Отправить в Telegram
-          </button>
-        </div>
-      </div>
-
-      <div>
-        <p data-i18n="participantsLabel" class="text-xs font-semibold text-[#1B4332] mb-2">Участники комнаты:</p>
-        <div id="participantsList" class="flex flex-wrap gap-1.5"></div>
-      </div>
-
-      <hr class="border-[#E6F0EB]" />
-
-      <form id="joinRoomForm" class="space-y-2.5">
-        <label for="partnerRoomInput" data-i18n="joinPartnerLabel" class="block text-xs font-semibold text-[#1B4332]">
-          Подключиться к комнате партнёра (введите ключ):
-        </label>
-        <div class="flex gap-2">
-          <input
-            id="partnerRoomInput"
-            type="text"
-            maxlength="36"
-            placeholder="FAM-8K4P9X2M7Q1W5Z3R"
-            class="flex-1 rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3 py-2 text-xs sm:text-sm font-mono uppercase text-[#102A20] focus:outline-none focus:border-[#009bde]"
-          />
-          <button type="submit" data-i18n="btnJoinRoom" class="px-4 py-2 rounded-xl bg-[#1B4332] text-white text-xs font-semibold hover:bg-[#2D6A4F] transition cursor-pointer">
-            Войти
-          </button>
-        </div>
-        <button id="btnLeaveSharedRoom" type="button" data-i18n="btnReturnOwnRoom" class="hidden text-[11px] text-[#0086c2] hover:underline pt-1 cursor-pointer">
-          Выйти из общей комнаты
+      <div class="group mt-5">
+        <button id="btnOpenAnalytics" type="button" class="row">
+          <span class="lbl"><span class="row-ico" style="background:var(--tint)">📊</span><span data-i18n="analyticsBtn">📊 Аналитика и советы</span></span>
+          <svg class="chev" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
         </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- МОДАЛЬНОЕ ОКНО: ОЧИСТКА -->
-  <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#102A20]/40 backdrop-blur-[2px] p-4">
-    <div class="bg-white rounded-2xl border border-[#DCE9E2] shadow-xl max-w-md w-full p-6">
-      <h2 data-i18n="clearModalTitle" class="text-base font-bold text-[#1B4332]">Очистить ваш журнал?</h2>
-      <p data-i18n="clearModalDesc" class="mt-2 text-sm text-[#4A685B] leading-relaxed">
-        Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.
-      </p>
-      <div class="mt-5 flex items-center justify-end gap-2.5">
-        <button id="cancelClearBtn" type="button" data-i18n="cancelBtn" class="px-4 py-2 text-sm font-medium rounded-xl border border-[#CFE0D7] text-[#2D6A4F] hover:bg-[#EBF5F0] cursor-pointer">Отмена</button>
-        <button id="confirmClearBtn" type="button" data-i18n="confirmClearBtn" class="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 text-white hover:bg-rose-700 cursor-pointer">Да, очистить</button>
-      </div>
-    </div>
-  </div>
-
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-5 space-y-5">
-    <div id="firebaseErrorBanner" class="hidden rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs text-rose-800">
-      <strong data-i18n="cloudErrorPrefix">Ошибка синхронизации с облаком:</strong> <span id="firebaseErrorText">—</span>
-    </div>
-
-    <!-- Переключатель режимов: Общий / Мой / Партнёр (только когда есть партнёр) -->
-    <div id="viewModeSwitcher" class="hidden bg-white rounded-2xl border border-[#DCE9E2] p-1.5 shadow-sm flex-wrap gap-1 w-full sm:w-auto">
-      <button
-        type="button"
-        data-view-mode="shared"
-        class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-[#1B4332] text-white shadow-sm"
-      >
-        <span data-i18n="tabShared">Общий</span>
-      </button>
-      <button
-        type="button"
-        data-view-mode="mine"
-        class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-[#3B5B4D] hover:bg-[#EBF5F0]"
-      >
-        <span data-i18n="tabMine">Мой</span>
-      </button>
-      <button
-        type="button"
-        data-view-mode="partner"
-        class="view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-[#3B5B4D] hover:bg-[#EBF5F0]"
-      >
-        <span data-i18n="tabPartner">Партнёр</span>
-      </button>
-    </div>
-
-    <!-- ГЛАВНАЯ КАРТОЧКА -->
-    <section class="rounded-3xl bg-gradient-to-br from-[#1B4332] via-[#23543F] to-[#2D6A4F] text-white p-5 sm:p-8 shadow-lg relative overflow-hidden">
-      <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
-        <div class="lg:col-span-7 space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-medium text-emerald-100">
-            <span class="w-2 h-2 rounded-full bg-[#38BDF8]"></span>
-            <span id="heroSubtitle"></span>
-          </div>
-
-          <p id="dailyLimitHeadline" class="text-sm sm:text-base text-emerald-100/90 font-medium pt-1"></p>
-
-          <div class="flex items-baseline gap-3 flex-wrap">
-            <span id="dailyLimitValue" class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight tabular-nums text-white">0 ₴</span>
-            <span id="dailyLimitExact" class="text-xs sm:text-sm text-emerald-200/80 tabular-nums"></span>
-          </div>
-
-          <p id="dailyLimitAdvice" class="text-xs sm:text-sm text-emerald-100/85 pt-1 leading-relaxed"></p>
-          <p id="forecastLine" class="hidden text-xs sm:text-sm font-semibold leading-snug rounded-xl bg-white/12 border border-white/20 px-3 py-2 mt-2"></p>
-        </div>
-
-        <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-          <div class="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4 flex items-center justify-between gap-3">
-            <div>
-              <p data-i18n="availableSpendLabel" class="text-xs text-emerald-100/80 font-medium">Доступно на повседневные траты</p>
-              <p id="availableSpendValue" class="text-xl sm:text-2xl font-bold tabular-nums text-white mt-0.5">0 ₴</p>
-              <p id="reserveBreakdownText" class="text-[11px] text-emerald-200/75 tabular-nums mt-0.5"></p>
-            </div>
-          </div>
-
-          <div class="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 p-4 flex items-center justify-between gap-3">
-            <div>
-              <p data-i18n="daysLeftLabel" class="text-xs text-emerald-100/80 font-medium">Ближайшая выплата</p>
-              <p id="daysLeftValue" class="text-xl sm:text-2xl font-bold tabular-nums text-white mt-0.5">0 дн.</p>
-              <p id="paydayDateLabel" class="text-[11px] text-emerald-200/75 mt-0.5"></p>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0 text-emerald-100 font-bold text-sm tabular-nums">
-              <span id="daysBadgeNumber">0</span>
-            </div>
-          </div>
-        </div>
+        <a id="btnDonate" href="https://donatello.to/daily_limit" target="_blank" rel="noopener noreferrer" class="row">
+          <span class="lbl min-w-0"><span class="row-ico" style="background:var(--orange)">☕</span>
+            <span class="min-w-0"><span data-i18n="donateBtn" class="block truncate">☕ Поддержать приложение</span><span data-i18n="donateHint" class="block cap truncate">Донат на развитие Daily Limit</span></span>
+          </span>
+          <svg class="chev" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </a>
       </div>
     </section>
 
-    <!-- АНАЛИТИКА -->
-    <button id="btnOpenAnalytics" type="button" data-i18n="analyticsBtn" class="w-full rounded-2xl border border-[#CFE0D7] bg-white px-4 py-3 text-sm font-bold text-[#1B4332] shadow-sm hover:bg-[#F4F8F6] active:bg-[#EBF5F0] transition cursor-pointer">📊 Аналитика и советы</button>
+    <!-- ================= ЖУРНАЛ ================= -->
+    <section data-view="journal" class="hidden">
+      <h2 id="journalTitle" class="ttl"></h2>
+      <p id="journalSubtitle" class="sub"></p>
 
-    <!-- СВОДКА ВДВОЁМ -->
-    <section id="pairBreakdownCard" class="hidden grid-cols-1 sm:grid-cols-2 gap-4">
-      <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
-        <div class="min-w-0">
-          <span data-i18n="cardMyContributionTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] block">Мой личный вклад</span>
-          <p id="cardMyName" class="text-sm font-bold text-[#1B4332] truncate">@user</p>
-          <p id="cardMyDetails" class="text-xs text-[#527365] tabular-nums mt-0.5"></p>
-        </div>
-        <div class="text-right shrink-0">
-          <span data-i18n="cardLimitPerDayLabel" class="text-[11px] text-[#527365] block">Лимит / дн.</span>
-          <span id="cardMyDailyLimit" class="text-lg font-extrabold text-[#1B4332] tabular-nums">0 ₴</span>
-        </div>
+      <div class="monthnav">
+        <button id="journalPrevMonth" type="button" aria-label="Previous month">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <span id="journalMonthLabel" class="tabular-nums">—</span>
+        <button id="journalNextMonth" type="button" aria-label="Next month">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </button>
       </div>
 
-      <div class="bg-white rounded-2xl border border-[#DCE9E2] p-4 shadow-sm flex items-center justify-between gap-3">
-        <div class="min-w-0">
-          <span data-i18n="cardPartnerContributionTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#0077ab] block">Вклад партнёра</span>
-          <p id="cardPartnerName" class="text-sm font-bold text-[#1B4332] truncate"></p>
-          <p id="cardPartnerDetails" class="text-xs text-[#527365] tabular-nums mt-0.5"></p>
-        </div>
-        <div class="text-right shrink-0">
-          <span data-i18n="cardLimitPerDayLabel" class="text-[11px] text-[#527365] block">Лимит / дн.</span>
-          <span id="cardPartnerDailyLimit" class="text-lg font-extrabold text-[#0086c2] tabular-nums">0 ₴</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ДОНАТ -->
-    <a
-      id="btnDonate"
-      href="https://donatello.to/daily_limit"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex items-center justify-between gap-3 rounded-2xl border border-[#CFE0D7] bg-white px-4 py-3 shadow-sm hover:bg-[#F4F8F6] active:bg-[#EBF5F0] transition cursor-pointer"
-    >
-      <div class="min-w-0">
-        <p data-i18n="donateBtn" class="text-sm font-bold text-[#1B4332] truncate">☕ Поддержать приложение</p>
-        <p data-i18n="donateHint" class="text-[11px] text-[#527365] truncate">Донат на развитие Daily Limit</p>
-      </div>
-      <svg class="w-5 h-5 text-[#009bde] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-      </svg>
-    </a>
-
-    <!-- ФОРМА ВВОДА И НАСТРОЙКИ СВОЕГО ЦИКЛА -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-      <section class="lg:col-span-7 bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm">
-        <div class="flex items-center justify-between gap-2 mb-4">
-          <div>
-            <h2 data-i18n="eveningEntryTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Мой вечерний ввод остатка</h2>
-            <p data-i18n="eveningEntrySubtitle" class="text-xs text-[#527365]">Впишите остаток по своим счетам — общий лимит пересчитается сам</p>
-          </div>
-          <span id="authorBadge" class="px-2.5 py-1 rounded-lg bg-[#EBF5F0] text-[#2D6A4F] text-xs font-semibold truncate max-w-[140px]">@user</span>
-        </div>
-
-        <form id="entryForm" class="space-y-4" novalidate>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="balanceInput" data-i18n="balanceInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Мой остаток на конец дня *</label>
-              <div class="flex items-stretch gap-2">
-                <div class="relative flex-1 min-w-0">
-                  <input
-                    id="balanceInput"
-                    type="number"
-                    inputmode="decimal"
-                    step="0.01"
-                    min="0"
-                    data-i18n-placeholder="balancePlaceholder"
-                    placeholder="Например, 13400"
-                    required
-                    class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 pr-10 text-base font-semibold text-[#102A20] tabular-nums focus:outline-none focus:border-[#009bde]"
-                  />
-                  <span class="currency-suffix absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-[#527365]">₴</span>
-                </div>
-                <button
-                  id="btnDismissKeyboard"
-                  type="button"
-                  aria-label="Готово"
-                  class="shrink-0 w-12 rounded-xl bg-[#EBF5F0] border border-[#C6DBD0] text-[#1B4332] hover:bg-[#D8ECE2] active:bg-[#CBE3D6] flex items-center justify-center cursor-pointer"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label for="dateInput" data-i18n="dateInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Дата записи</label>
-              <input id="dateInput" type="date" required class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm font-medium text-[#102A20] focus:outline-none focus:border-[#009bde]" />
-              <p id="existingDateHint" data-i18n="existingDateDefaultHint" class="mt-2 text-[11px] text-[#527365]">Если на эту дату уже есть запись, она будет обновлена.</p>
-            </div>
-          </div>
-
-          <div>
-            <label for="noteInput" data-i18n="noteInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Заметка / источник</label>
-            <input id="noteInput" type="text" maxlength="120" data-i18n-placeholder="notePlaceholder" placeholder="Например: ЗП работа 1, Продукты, Моя карта" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm text-[#102A20] focus:outline-none focus:border-[#009bde]" />
-          </div>
-
-          <div class="rounded-2xl bg-[#F4F8F6] border border-[#E0ECE6] px-4 py-3 flex items-center justify-between gap-2 text-xs">
-            <span data-i18n="previewDeltaLabel" class="text-[#527365]">Ожидаемое изменение к предыдущему дню:</span>
-            <span id="previewDeltaValue" class="font-semibold text-[#1B4332] tabular-nums">—</span>
-          </div>
-
-          <button type="submit" class="w-full py-3 px-5 rounded-xl bg-[#009bde] hover:bg-[#0086c2] text-white font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
-            <span data-i18n="saveBalanceBtn">Сохранить мой остаток</span>
-          </button>
-        </form>
-      </section>
-
-      <section class="lg:col-span-5 bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between gap-2 mb-4">
-            <div>
-              <h2 data-i18n="cycleSettingsTitle" class="text-base sm:text-lg font-bold text-[#1B4332]">Мой цикл до зарплаты</h2>
-              <p data-i18n="cycleSettingsSubtitle" class="text-xs text-[#527365]">Ваша дата выплаты и ваш резерв</p>
-            </div>
-            <span data-i18n="settingsBadge" class="px-2.5 py-1 rounded-lg bg-[#E6F5FC] text-[#0086c2] text-xs font-semibold">Мои настройки</span>
-          </div>
-
-          <div class="space-y-4">
-            <div>
-              <label for="paydayInput" data-i18n="paydayInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Дата моей следующей зарплаты</label>
-              <input id="paydayInput" type="date" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 text-sm font-medium text-[#102A20] focus:outline-none focus:border-[#009bde]" />
-            </div>
-
-            <div>
-              <label for="reserveInput" data-i18n="reserveInputLabel" class="block text-xs font-semibold text-[#1B4332] mb-1.5">Мой резерв на обязательные платежи</label>
-              <div class="relative">
-                <input id="reserveInput" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0" class="w-full rounded-xl border border-[#C6DBD0] bg-[#FAFDFB] px-3.5 py-2.5 pr-10 text-sm font-semibold text-[#102A20] tabular-nums focus:outline-none focus:border-[#009bde]" />
-                <span class="currency-suffix absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-[#527365]">₴</span>
-              </div>
-              <p data-i18n="reserveHint" class="mt-1.5 text-[11px] text-[#527365]">Аренда, коммуналка, связь — вычитается из вашего остатка.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-5 pt-4 border-t border-[#E6F0EB] grid grid-cols-2 gap-3 text-xs">
-          <div class="rounded-2xl bg-[#F4F8F6] p-3">
-            <span data-i18n="summaryLastBalanceLabel" class="text-[#527365] block">Мой последний остаток</span>
-            <span id="summaryLastBalance" class="text-sm font-bold text-[#1B4332] tabular-nums mt-0.5 block">0 ₴</span>
-          </div>
-          <div class="rounded-2xl bg-[#F4F8F6] p-3">
-            <span data-i18n="summaryEntriesCountLabel" class="text-[#527365] block">Моих записей</span>
-            <span id="summaryEntriesCount" class="text-sm font-bold text-[#1B4332] tabular-nums mt-0.5 block">0 дн.</span>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- ЖУРНАЛ ДНЕЙ -->
-    <section class="bg-white rounded-3xl border border-[#DCE9E2] p-5 sm:p-6 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-        <div>
-          <h2 id="journalTitle" class="text-base sm:text-lg font-bold text-[#1B4332]"></h2>
-          <p id="journalSubtitle" class="text-xs text-[#527365]"></p>
-        </div>
-        <div class="flex items-center justify-between sm:justify-end gap-1 rounded-2xl border border-[#DCE9E2] bg-[#FAFDFB] p-1">
-          <button id="journalPrevMonth" type="button" aria-label="Previous month" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#1B4332] hover:bg-[#EBF5F0] active:bg-[#D8ECE2] disabled:opacity-30 disabled:cursor-default cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
-          </button>
-          <span id="journalMonthLabel" class="min-w-[130px] text-center text-sm font-bold text-[#1B4332] tabular-nums">—</span>
-          <button id="journalNextMonth" type="button" aria-label="Next month" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#1B4332] hover:bg-[#EBF5F0] active:bg-[#D8ECE2] disabled:opacity-30 disabled:cursor-default cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-          </button>
-        </div>
-      </div>
-
-      <div id="journalSummary" class="hidden mb-4 rounded-2xl border border-[#DCE9E2] bg-[#F7FBF9] p-3.5">
-        <p id="journalSummaryTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[#527365] mb-2">Итоги месяца</p>
+      <div id="journalSummary" class="hidden mb-4 rounded-2xl border border-[color:var(--sep)] bg-[color:var(--fill)] p-3.5">
+        <p id="journalSummaryTitle" class="text-[11px] font-semibold uppercase tracking-wider text-[color:var(--label2)] mb-2">Итоги месяца</p>
         <div class="grid grid-cols-3 gap-2 text-center">
-          <div class="rounded-xl bg-white border border-[#E2EDE7] px-2 py-2">
-            <p id="sumSpentLabel" class="text-[10px] text-[#527365]">Потрачено</p>
-            <p id="sumSpentValue" class="text-sm font-extrabold text-rose-700 tabular-nums mt-0.5">—</p>
+          <div class="rounded-xl bg-[color:var(--card)] border border-[color:var(--sep)] px-2 py-2">
+            <p id="sumSpentLabel" class="text-[10px] text-[color:var(--label2)]">Потрачено</p>
+            <p id="sumSpentValue" class="text-sm font-extrabold text-[color:var(--red-text)] tabular-nums mt-0.5">—</p>
           </div>
-          <div class="rounded-xl bg-white border border-[#E2EDE7] px-2 py-2">
-            <p id="sumIncomeLabel" class="text-[10px] text-[#527365]">Пополнения</p>
-            <p id="sumIncomeValue" class="text-sm font-extrabold text-[#1B4332] tabular-nums mt-0.5">—</p>
+          <div class="rounded-xl bg-[color:var(--card)] border border-[color:var(--sep)] px-2 py-2">
+            <p id="sumIncomeLabel" class="text-[10px] text-[color:var(--label2)]">Пополнения</p>
+            <p id="sumIncomeValue" class="text-sm font-extrabold text-[color:var(--label)] tabular-nums mt-0.5">—</p>
           </div>
-          <div class="rounded-xl bg-white border border-[#E2EDE7] px-2 py-2">
-            <p id="sumBiggestLabel" class="text-[10px] text-[#527365]">Самая большая трата</p>
-            <p id="sumBiggestValue" class="text-sm font-extrabold text-[#0077ab] tabular-nums mt-0.5">—</p>
-            <p id="sumBiggestDate" class="text-[10px] text-[#7A968A] tabular-nums"></p>
+          <div class="rounded-xl bg-[color:var(--card)] border border-[color:var(--sep)] px-2 py-2">
+            <p id="sumBiggestLabel" class="text-[10px] text-[color:var(--label2)]">Самая большая трата</p>
+            <p id="sumBiggestValue" class="text-sm font-extrabold text-[color:var(--tint)] tabular-nums mt-0.5">—</p>
+            <p id="sumBiggestDate" class="text-[10px] text-[color:var(--label3)] tabular-nums"></p>
           </div>
         </div>
       </div>
 
-      <div id="emptyJournalState" class="hidden rounded-2xl border border-dashed border-[#C6DBD0] bg-[#FAFDFB] py-12 px-4 text-center">
-        <p data-i18n="emptyJournalTitle" class="text-sm font-semibold text-[#1B4332]">Записей пока нет</p>
-        <p data-i18n="emptyJournalDesc" class="text-xs text-[#527365] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — расчёт обновится автоматически.</p>
+      <div id="emptyJournalState" class="hidden rounded-2xl border border-dashed border-[color:var(--sep2)] bg-[color:var(--fill)] py-12 px-4 text-center">
+        <p data-i18n="emptyJournalTitle" class="text-sm font-semibold text-[color:var(--label)]">Записей пока нет</p>
+        <p data-i18n="emptyJournalDesc" class="text-xs text-[color:var(--label2)] mt-1 max-w-md mx-auto">Введите остаток на конец дня в форме выше — расчёт обновится автоматически.</p>
       </div>
 
       <div id="journalCards" class="space-y-2.5"></div>
 
       <div id="journalTableWrapper" class="table-scroll overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[740px]">
+        <table class="w-full text-left border-collapse min-w-[680px]">
           <thead>
-            <tr class="border-b border-[#E2EDE7] text-[11px] font-semibold uppercase tracking-wider text-[#527365]">
+            <tr class="border-b border-[color:var(--sep)] text-[11px] font-semibold uppercase tracking-wider text-[color:var(--label2)]">
               <th data-i18n="colDate" class="py-3 px-3">Дата</th>
               <th data-i18n="colBalance" class="py-3 px-3 text-right">Остаток</th>
               <th data-i18n="colDelta" class="py-3 px-3 text-right">Изменение</th>
@@ -544,11 +409,288 @@
               <th data-i18n="colAction" class="py-3 px-3 text-right">Действие</th>
             </tr>
           </thead>
-          <tbody id="journalTableBody" class="divide-y divide-[#EEF5F1] text-sm"></tbody>
+          <tbody id="journalTableBody" class="divide-y divide-[color:var(--sep)] text-sm"></tbody>
         </table>
       </div>
     </section>
+
+    <!-- ================= АНАЛИТИКА ================= -->
+    <section data-view="analytics" class="hidden">
+      <h2 data-i18n="analyticsTitle" class="ttl">Аналитика и советы</h2>
+      <p id="analyticsScope" class="sub"></p>
+
+      <div class="grid grid-cols-2 gap-3 mt-4">
+        <div class="tile"><p data-i18n="analyticsPace" class="k">Темп трат</p><p id="anPace" class="v" style="color:var(--red-text)">—</p></div>
+        <div class="tile"><p data-i18n="analyticsLimit" class="k">Лимит на день</p><p id="anLimit" class="v" style="color:var(--tint)">—</p></div>
+        <div class="tile"><p data-i18n="analyticsMonthSpent" class="k">Потрачено в этом месяце</p><p id="anMonthSpent" class="v">—</p></div>
+        <div class="tile"><p data-i18n="analyticsDaysLeft" class="k">До зарплаты</p><p id="anDaysLeft" class="v">—</p></div>
+      </div>
+
+      <div class="tile mt-3">
+        <p data-i18n="analyticsChartTitle" class="k font-semibold uppercase tracking-wider text-[11px] mb-1">Остаток и прогноз</p>
+        <div id="anChart"></div>
+        <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] mt-1" style="color:var(--label2)">
+          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 h-0.5 bg-[color:var(--tint)]"></i><span data-i18n="legendBalance">Остаток</span></span>
+          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 border-t-2 border-dashed border-[color:var(--green)]"></i><span data-i18n="legendForecast">Прогноз</span></span>
+          <span class="inline-flex items-center gap-1"><i class="inline-block w-4 border-t-2 border-dashed border-[color:var(--sep2)]"></i><span data-i18n="legendReserve">Резерв</span></span>
+        </div>
+      </div>
+
+      <p data-i18n="analyticsTipsTitle" class="glabel">Советы</p>
+      <ul id="anTips" class="space-y-2"></ul>
+      <p data-i18n="analyticsDisclaimer" class="cap mt-4 px-2" style="color:var(--label3)">Это подсказки на основе ваших записей, а не финансовая консультация.</p>
+    </section>
+
+    <!-- ================= ЕЩЁ ================= -->
+    <section data-view="more" class="hidden">
+      <h2 data-i18n="tabMore" class="ttl">Ещё</h2>
+
+      <p data-i18n="cycleSettingsTitle" class="glabel">Мой цикл до зарплаты</p>
+      <div class="group">
+        <label for="paydayInput" class="row">
+          <span class="lbl"><span class="row-ico" style="background:var(--green)">📅</span><span data-i18n="paydayInputLabel">Дата моей следующей зарплаты</span></span>
+          <input id="paydayInput" type="date" />
+        </label>
+        <label for="reserveInput" class="row">
+          <span class="lbl"><span class="row-ico" style="background:var(--orange)">🛟</span><span data-i18n="reserveInputLabel">Мой резерв на обязательные платежи</span></span>
+          <span class="inline-flex items-center gap-1" style="color:var(--tint)">
+            <input id="reserveInput" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0" style="width:96px" class="tabular-nums" />
+            <span class="currency-suffix text-[15px]">₴</span>
+          </span>
+        </label>
+        <div class="row">
+          <span data-i18n="summaryLastBalanceLabel" class="lbl">Мой последний остаток</span>
+          <span id="summaryLastBalance" class="val">0 ₴</span>
+        </div>
+        <div class="row">
+          <span data-i18n="summaryEntriesCountLabel" class="lbl">Моих записей</span>
+          <span id="summaryEntriesCount" class="val">0 дн.</span>
+        </div>
+      </div>
+      <p data-i18n="reserveHint" class="cap mt-2 px-4">Аренда, коммуналка, связь — вычитается из вашего остатка.</p>
+
+      <p data-i18n="groupApp" class="glabel">Приложение</p>
+      <div class="group">
+        <label for="headerLangSelect" class="row">
+          <span class="lbl"><span class="row-ico" style="background:#5E5CE6">🌐</span><span data-i18n="labelLanguage">Язык</span></span>
+          <select id="headerLangSelect">
+            <option value="ru">Русский</option>
+            <option value="uk">Українська</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <label for="headerCurrencySelect" class="row">
+          <span class="lbl"><span class="row-ico" style="background:var(--green)">💱</span><span data-i18n="labelCurrency">Валюта</span></span>
+          <select id="headerCurrencySelect">
+            <option value="UAH">₴ 🇺🇦</option>
+            <option value="USD">$ 🇺🇸</option>
+            <option value="EUR">€ 🇪🇺</option>
+            <option value="PLN">zł 🇵🇱</option>
+            <option value="GBP">Kč 🇨🇿</option>
+            <option value="RUB">₽ 🧟</option>
+          </select>
+        </label>
+      </div>
+
+      <p data-i18n="groupTogether" class="glabel">Совместный бюджет</p>
+      <div class="group">
+        <button type="button" class="row" data-proxy-click="btnOpenShare">
+          <span class="lbl"><span class="row-ico" style="background:var(--tint)">👥</span><span data-i18n="btnSharePartner">Для двоих</span></span>
+          <svg class="chev" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+
+      <p data-i18n="groupAbout" class="glabel">О приложении</p>
+      <div class="group">
+        <a id="btnDeveloperLink" href="https://t.me/pelevkin" target="_blank" rel="noopener noreferrer" class="row">
+          <span class="lbl"><span class="row-ico" style="background:#2AABEE">✈️</span><span data-i18n="btnDeveloper">Разработчик</span></span>
+          <svg class="chev" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </a>
+        <button id="btnClearAll" type="button" class="row danger">
+          <span class="lbl"><span class="row-ico" style="background:var(--red)">🗑</span><span data-i18n="btnClearAll">Сброс</span></span>
+        </button>
+      </div>
+    </section>
   </main>
+
+  <!-- ===== ПЛАВАЮЩАЯ ПАНЕЛЬ ВКЛАДОК ===== -->
+  <nav class="tabbar" aria-label="Navigation">
+    <button type="button" class="tab active" data-tab="today">
+      <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" /></svg>
+      <span data-i18n="tabToday">Сегодня</span>
+    </button>
+    <button type="button" class="tab" data-tab="journal">
+      <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" /></svg>
+      <span data-i18n="tabJournal">Журнал</span>
+    </button>
+    <button id="btnAddEntry" type="button" class="tab-add" aria-label="+">
+      <svg fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" /></svg>
+    </button>
+    <button type="button" class="tab" data-tab="analytics">
+      <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+      <span data-i18n="tabAnalytics">Аналитика</span>
+    </button>
+    <button type="button" class="tab" data-tab="more">
+      <svg fill="currentColor" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></svg>
+      <span data-i18n="tabMore">Ещё</span>
+    </button>
+  </nav>
+
+  <!-- ===== ЛИСТ: ДОБАВИТЬ ОСТАТОК ===== -->
+  <div id="entrySheetModal" class="sheet-overlay hidden">
+    <div class="sheet">
+      <div class="grabber"></div>
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div class="min-w-0">
+          <h2 data-i18n="eveningEntryTitle" class="text-[22px] font-bold tracking-tight">Мой вечерний ввод остатка</h2>
+          <p data-i18n="eveningEntrySubtitle" class="cap mt-0.5">Впишите остаток по своим счетам — общий лимит пересчитается сам</p>
+        </div>
+        <button id="btnCloseEntrySheet" type="button" aria-label="Close" class="btn-round" style="width:34px;min-height:34px;border-radius:50%;color:var(--label2)">✕</button>
+      </div>
+      <span id="authorBadge" class="chip mb-4">@user</span>
+
+      <form id="entryForm" class="space-y-4 field" novalidate>
+        <div>
+          <label for="balanceInput" data-i18n="balanceInputLabel">Мой остаток на конец дня *</label>
+          <div class="flex items-stretch gap-2">
+            <div class="relative flex-1 min-w-0">
+              <input id="balanceInput" type="number" inputmode="decimal" step="0.01" min="0" data-i18n-placeholder="balancePlaceholder" placeholder="Например, 13400" required class="pr-10 font-semibold tabular-nums" />
+              <span class="currency-suffix absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium" style="color:var(--label2)">₴</span>
+            </div>
+            <button id="btnDismissKeyboard" type="button" aria-label="Готово" class="btn-round">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="dateInput" data-i18n="dateInputLabel">Дата записи</label>
+          <input id="dateInput" type="date" required />
+          <p id="existingDateHint" data-i18n="existingDateDefaultHint" class="cap mt-2 px-1">Если на эту дату уже есть запись, она будет обновлена.</p>
+        </div>
+        <div>
+          <label for="noteInput" data-i18n="noteInputLabel">Заметка / источник</label>
+          <input id="noteInput" type="text" maxlength="120" data-i18n-placeholder="notePlaceholder" placeholder="Например: ЗП работа 1, Продукты, Моя карта" />
+        </div>
+        <div class="flex items-center justify-between rounded-2xl px-4 py-3 text-sm" style="background:var(--fill)">
+          <span data-i18n="previewDeltaLabel" style="color:var(--label2)">Ожидаемое изменение к предыдущему дню:</span>
+          <span id="previewDeltaValue" class="font-semibold text-[color:var(--label)] tabular-nums">—</span>
+        </div>
+        <button type="submit" class="btn-primary cursor-pointer">
+          <span data-i18n="saveBalanceBtn">Сохранить мой остаток</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- МОДАЛЬНОЕ ОКНО: УВЕДОМЛЕНИЕ О СОХРАНЕНИИ -->
+  <div id="savedModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[color:rgba(0,0,0,0.42)] backdrop-blur-[2px] p-4">
+    <div class="bg-[color:var(--card)] rounded-3xl border border-[color:var(--sep)] shadow-xl max-w-sm w-full p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-[color:var(--green-bg)] text-[color:var(--green-text)] flex items-center justify-center mx-auto text-2xl font-extrabold">
+        ✓
+      </div>
+      <div class="space-y-1">
+        <h2 id="savedModalTitle" class="text-lg font-bold text-[color:var(--label)]"></h2>
+        <p id="savedModalMessage" class="text-sm text-[color:var(--label2)] tabular-nums"></p>
+      </div>
+      <button
+        id="okSavedModalBtn"
+        type="button"
+        data-i18n="okBtn"
+        class="w-full py-2.5 px-5 rounded-xl bg-[color:var(--tint)] hover:bg-[color:var(--tint-hover)] text-white font-semibold text-sm shadow-sm transition cursor-pointer"
+      >
+        Окей
+      </button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ДЛЯ ДВОИХ -->
+  <div id="criticalModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-[color:rgba(0,0,0,0.5)] backdrop-blur-[2px] p-4">
+    <div class="bg-[color:var(--card)] rounded-3xl border border-[color:var(--orange-bd)] shadow-xl max-w-sm w-full p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-[color:var(--orange-bg)] text-[color:var(--orange-text)] flex items-center justify-center mx-auto text-2xl">⚠️</div>
+      <div class="space-y-1.5">
+        <h2 id="criticalTitle" class="text-lg font-bold text-[color:var(--label)]"></h2>
+        <p id="criticalText" class="text-sm text-[color:var(--label2)] leading-relaxed"></p>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="criticalLaterBtn" type="button" class="py-2.5 px-3 rounded-xl border border-[color:var(--sep)] text-sm font-semibold text-[color:var(--label)] hover:bg-[color:var(--fill)] transition cursor-pointer"></button>
+        <button id="criticalOpenBtn" type="button" class="py-2.5 px-3 rounded-xl bg-[color:var(--tint)] hover:bg-[color:var(--tint-hover)] text-white font-semibold text-sm shadow-sm transition cursor-pointer"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="shareModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-[color:rgba(0,0,0,0.42)] backdrop-blur-[2px] p-0 sm:p-4">
+    <div class="sheet-panel bg-[color:var(--card)] rounded-t-[28px] rounded-b-none sm:rounded-3xl shadow-xl max-w-md w-full max-h-[92vh] overflow-y-auto p-5 sm:p-6 pb-8 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 data-i18n="shareModalTitle" class="text-base sm:text-lg font-bold text-[color:var(--label)]">Совместный бюджет для двоих</h2>
+          <p data-i18n="shareModalSubtitle" class="text-xs text-[color:var(--label2)] mt-0.5">
+            У каждого свой остаток и цикл до ЗП, а сверху считается общий лимит
+          </p>
+        </div>
+        <button id="closeShareModalBtn" type="button" class="p-1.5 rounded-xl text-[color:var(--label2)] hover:bg-[color:var(--fill)] cursor-pointer">✕</button>
+      </div>
+
+      <div class="rounded-2xl bg-[color:var(--fill)] border border-[color:var(--sep)] p-4 space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <span data-i18n="yourRoomCodeLabel" class="text-xs font-semibold text-[color:var(--label2)]">Секретный ключ комнаты:</span>
+          <span id="roomCodeBadge" class="font-mono text-xs sm:text-sm font-extrabold tracking-wider text-[color:var(--label)] bg-[color:var(--card)] px-2.5 py-1 rounded-lg border border-[color:var(--sep)] select-all">—</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button id="btnCopyRoomCode" type="button" data-i18n="btnCopyCode" class="py-2 px-3 rounded-xl bg-[color:var(--card)] border border-[color:var(--sep)] text-xs font-semibold text-[color:var(--label)] hover:bg-[color:var(--fill)] transition cursor-pointer">
+            Скопировать ключ
+          </button>
+          <button id="btnShareTgLink" type="button" data-i18n="btnSendTgInvite" class="py-2 px-3 rounded-xl bg-[color:var(--tint)] text-xs font-semibold text-white hover:bg-[color:var(--tint-hover)] transition cursor-pointer">
+            Отправить в Telegram
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <p data-i18n="participantsLabel" class="text-xs font-semibold text-[color:var(--label)] mb-2">Участники комнаты:</p>
+        <div id="participantsList" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <hr class="border-[color:var(--sep)]" />
+
+      <form id="joinRoomForm" class="space-y-2.5">
+        <label for="partnerRoomInput" data-i18n="joinPartnerLabel" class="block text-xs font-semibold text-[color:var(--label)]">
+          Подключиться к комнате партнёра (введите ключ):
+        </label>
+        <div class="flex gap-2">
+          <input
+            id="partnerRoomInput"
+            type="text"
+            maxlength="36"
+            placeholder="FAM-8K4P9X2M7Q1W5Z3R"
+            class="flex-1 rounded-xl border border-[color:var(--sep)] bg-[color:var(--fill)] px-3 py-2 text-xs sm:text-sm font-mono uppercase text-[color:var(--label)] focus:outline-none focus:border-[color:var(--tint)]"
+          />
+          <button type="submit" data-i18n="btnJoinRoom" class="px-4 py-2 rounded-xl bg-[color:var(--tint)] text-white text-xs font-semibold hover:bg-[color:var(--tint-hover)] transition cursor-pointer">
+            Войти
+          </button>
+        </div>
+        <button id="btnLeaveSharedRoom" type="button" data-i18n="btnReturnOwnRoom" class="hidden text-[11px] text-[color:var(--tint)] hover:underline pt-1 cursor-pointer">
+          Выйти из общей комнаты
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ОЧИСТКА -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[color:rgba(0,0,0,0.36)] backdrop-blur-[2px] p-4">
+    <div class="bg-[color:var(--card)] rounded-2xl border border-[color:var(--sep)] shadow-xl max-w-md w-full p-6">
+      <h2 data-i18n="clearModalTitle" class="text-base font-bold text-[color:var(--label)]">Очистить ваш журнал?</h2>
+      <p data-i18n="clearModalDesc" class="mt-2 text-sm text-[color:var(--label2)] leading-relaxed">
+        Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.
+      </p>
+      <div class="mt-5 flex items-center justify-end gap-2.5">
+        <button id="cancelClearBtn" type="button" data-i18n="cancelBtn" class="px-4 py-2 text-sm font-medium rounded-xl border border-[color:var(--sep)] text-[color:var(--tint)] hover:bg-[color:var(--fill)] cursor-pointer">Отмена</button>
+        <button id="confirmClearBtn" type="button" data-i18n="confirmClearBtn" class="px-4 py-2 text-sm font-semibold rounded-xl bg-[color:var(--red)] text-white hover:bg-[color:var(--red-hover)] cursor-pointer">Да, очистить</button>
+      </div>
+    </div>
+  </div>
+
 
   <script type="module">
     const FIREBASE_CONFIG = {
@@ -569,7 +711,6 @@
       try {
         tg.ready();
         tg.expand();
-        if (tg.setHeaderColor) tg.setHeaderColor('#FFFFFF');
         if (tg.setBackgroundColor) tg.setBackgroundColor('#F4F8F6');
       } catch (e) {}
     }
@@ -702,6 +843,15 @@
         clearModalTitle: 'Очистить ваш журнал?',
         clearModalDesc: 'Будут очищены только ваши записи и резерв. Данные партнёра в комнате останутся без изменений.',
         cancelBtn: 'Отмена',
+        tabToday: 'Сегодня',
+        tabJournal: 'Журнал',
+        tabAnalytics: 'Аналитика',
+        tabMore: 'Ещё',
+        groupApp: 'Приложение',
+        labelLanguage: 'Язык',
+        labelCurrency: 'Валюта',
+        groupTogether: 'Совместный бюджет',
+        groupAbout: 'О приложении',
         btnConfirmRemove: 'Убрать',
         btnConfirmLeave: 'Выйти',
         forecastNeedData: 'Прогноз появится, когда у обоих будут записи минимум за 2 дня',
@@ -767,7 +917,7 @@
         journalPartnerTitle: (name) => `Журнал партнёра (${name})`,
         journalPartnerSubtitle: 'Записи остатков и лимиты по циклу партнёра',
         emptyJournalTitle: 'Записей пока нет',
-        emptyJournalDesc: 'Введите остаток на конец дня в форме выше — расчёт обновится автоматически.',
+        emptyJournalDesc: 'Нажмите «+» внизу и введите остаток на конец дня — расчёт обновится автоматически.',
         colDate: 'Дата',
         colBalance: 'Остаток',
         colDelta: 'Изменение',
@@ -868,6 +1018,15 @@
         clearModalTitle: 'Очистити ваш журнал?',
         clearModalDesc: 'Будуть очищені лише ваші записи та резерв. Дані партнера в кімнаті залишаться без змін.',
         cancelBtn: 'Скасувати',
+        tabToday: 'Сьогодні',
+        tabJournal: 'Журнал',
+        tabAnalytics: 'Аналітика',
+        tabMore: 'Ще',
+        groupApp: 'Застосунок',
+        labelLanguage: 'Мова',
+        labelCurrency: 'Валюта',
+        groupTogether: 'Спільний бюджет',
+        groupAbout: 'Про застосунок',
         btnConfirmRemove: 'Прибрати',
         btnConfirmLeave: 'Вийти',
         forecastNeedData: 'Прогноз з’явиться, коли в обох буде записи мінімум за 2 дні',
@@ -933,7 +1092,7 @@
         journalPartnerTitle: (name) => `Журнал партнера (${name})`,
         journalPartnerSubtitle: 'Записи залишків та ліміти за циклом партнера',
         emptyJournalTitle: 'Записів поки немає',
-        emptyJournalDesc: 'Введіть залишок на кінець дня у формі вище — розрахунок оновиться автоматично.',
+        emptyJournalDesc: 'Натисніть «+» внизу та введіть залишок на кінець дня — розрахунок оновиться автоматично.',
         colDate: 'Дата',
         colBalance: 'Залишок',
         colDelta: 'Зміна',
@@ -1034,6 +1193,15 @@
         clearModalTitle: 'Clear your log?',
         clearModalDesc: 'Only your entries and reserve will be cleared. Your partner’s data stays untouched.',
         cancelBtn: 'Cancel',
+        tabToday: 'Today',
+        tabJournal: 'Log',
+        tabAnalytics: 'Insights',
+        tabMore: 'More',
+        groupApp: 'App',
+        labelLanguage: 'Language',
+        labelCurrency: 'Currency',
+        groupTogether: 'Shared budget',
+        groupAbout: 'About',
         btnConfirmRemove: 'Remove',
         btnConfirmLeave: 'Leave',
         forecastNeedData: 'The forecast will appear once both of you have entries for at least 2 days',
@@ -1099,7 +1267,7 @@
         journalPartnerTitle: (name) => `${name}’s log`,
         journalPartnerSubtitle: 'Balance entries and limits on your partner’s cycle',
         emptyJournalTitle: 'No entries yet',
-        emptyJournalDesc: 'Enter an end-of-day balance above — your limit updates automatically.',
+        emptyJournalDesc: 'Tap “+” below and enter your end-of-day balance — the calculation updates automatically.',
         colDate: 'Date',
         colBalance: 'Balance',
         colDelta: 'Change',
@@ -1277,8 +1445,8 @@
       const container = document.getElementById('toastContainer');
       if (!container) return;
       const toast = document.createElement('div');
-      const styles = type === 'error' ? 'bg-rose-600 text-white' : (type === 'success' ? 'bg-[#1B4332] text-white' : 'bg-[#102A20] text-white');
-      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg text-xs sm:text-sm font-medium transition-all duration-200 ${styles}`;
+      const styles = type === 'error' ? 'bg-[color:var(--red)] text-white' : 'bg-[color:rgba(44,44,46,0.94)] text-white';
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-medium transition-all duration-200 backdrop-blur ${styles}`;
       toast.textContent = message;
       container.appendChild(toast);
       setTimeout(() => {
@@ -1301,6 +1469,7 @@
 
     function openSavedModal(dateVal, numBalance, isUpdate) {
       lastSavedSnapshot = { dateVal, numBalance, isUpdate };
+      closeEntrySheet();
       refreshSavedModalTexts();
       const modal = document.getElementById('savedModal');
       if (!modal) return;
@@ -1324,13 +1493,13 @@
       const errText = document.getElementById('firebaseErrorText');
 
       if (lastSyncOnline) {
-        badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EBF5F0] text-[#2D6A4F]';
-        dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
+        badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[color:var(--fill)] text-[color:var(--tint)]';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[color:var(--green)] animate-pulse';
         text.textContent = t('syncOnline');
         errBanner.classList.add('hidden');
       } else {
-        badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700';
-        dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500';
+        badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[color:var(--orange-bg)] text-[color:var(--orange-text)]';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[color:var(--orange)]';
         text.textContent = t('syncLocal');
         if (lastSyncError) {
           errText.textContent = lastSyncError;
@@ -1493,8 +1662,8 @@
         const mode = btn.getAttribute('data-view-mode');
         const active = mode === viewMode;
         btn.className = active
-          ? 'view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-[#1B4332] text-white shadow-sm'
-          : 'view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-[#3B5B4D] hover:bg-[#EBF5F0]';
+          ? 'view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer bg-[color:var(--seg-on)] text-[color:var(--label)] shadow-sm'
+          : 'view-mode-btn flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer text-[color:var(--label2)]';
       });
     }
 
@@ -1508,11 +1677,11 @@
         const isPartner = m.id !== currentUser.id;
         const canRemove = isPartner && activeRoomId === OWN_ROOM_ID;
         const removeBtnHtml = canRemove
-          ? `<button type="button" data-remove-partner-id="${escapeHtml(m.id)}" class="remove-partner-btn ml-1 px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-700 hover:bg-rose-200 text-[10px] font-bold transition cursor-pointer" title="${escapeHtml(t('btnRemovePartner'))}">✕</button>`
+          ? `<button type="button" data-remove-partner-id="${escapeHtml(m.id)}" class="remove-partner-btn ml-1 px-1.5 py-0.5 rounded-md bg-[color:var(--red-bg2)] text-[color:var(--red-text)] hover:bg-[color:var(--red-bg2)] text-[10px] font-bold transition cursor-pointer" title="${escapeHtml(t('btnRemovePartner'))}">✕</button>`
           : '';
         return `
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#EBF5F0] text-[#1B4332] text-xs font-semibold">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#2D6A4F]"></span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[color:var(--fill)] text-[color:var(--label)] text-xs font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-[color:var(--tint-hover)]"></span>
             ${escapeHtml(m.username || m.id)}
             ${removeBtnHtml}
           </span>
@@ -1649,8 +1818,8 @@
       }
       if (!fc && hasPartner && viewMode === 'shared') {
         forecastEl.textContent = t('forecastNeedData');
-        forecastEl.classList.remove('hidden', 'text-amber-200');
-        forecastEl.classList.add('text-emerald-50');
+        forecastEl.classList.remove('hidden');
+        forecastEl.setAttribute('data-kind', 'info');
       } else if (!fc) {
         forecastEl.classList.add('hidden');
       } else {
@@ -1658,8 +1827,7 @@
         else if (fc.kind === 'ok') forecastEl.textContent = t('forecastOk', formatMoney(Math.round(fc.pace)), formatMoney(Math.floor(fc.spare)));
         else forecastEl.textContent = t('forecastWarn', formatMoney(Math.round(fc.pace)), fc.coverDays, forecastDays, formatDateByLang(fc.endIso));
         forecastEl.classList.remove('hidden');
-        forecastEl.classList.toggle('text-amber-200', fc.kind === 'warn');
-        forecastEl.classList.toggle('text-emerald-50', fc.kind !== 'warn');
+        forecastEl.setAttribute('data-kind', fc.kind === 'warn' ? 'warn' : 'ok');
       }
 
       document.getElementById('summaryLastBalance').textContent = formatMoney(myStats.balance);
@@ -1667,7 +1835,7 @@
 
       renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName, hasPartner);
       updatePreviewDelta();
-      if (!document.getElementById('analyticsModal').classList.contains('hidden')) renderAnalytics();
+      if (currentTab === 'analytics') renderAnalytics();
     }
 
     function renderJournal(myStats, partnerStats, partnerProfile, partnerDisplayName, hasPartner) {
@@ -1793,61 +1961,61 @@
       tableWrapper.classList.remove('hidden');
 
       tbody.innerHTML = rowsSource.map(item => {
-        let deltaHtml = `<span class="text-[#7A968A] text-xs">${escapeHtml(t('firstEntryBadge'))}</span>`;
+        let deltaHtml = `<span class="text-[color:var(--label3)] text-xs">${escapeHtml(t('firstEntryBadge'))}</span>`;
         if (item.delta !== null) {
-          if (item.delta < 0) deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 font-semibold text-xs tabular-nums">${escapeHtml(t('spentBadge', formatMoney(Math.abs(item.delta))))}</span>`;
-          else if (item.delta > 0) deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-[#EBF5F0] text-[#1B4332] font-semibold text-xs tabular-nums">${escapeHtml(t('growthBadge', formatMoney(item.delta)))}</span>`;
-          else deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-medium text-xs tabular-nums">0</span>`;
+          if (item.delta < 0) deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-[color:var(--red-bg)] text-[color:var(--red-text)] font-semibold text-xs tabular-nums">${escapeHtml(t('spentBadge', formatMoney(Math.abs(item.delta))))}</span>`;
+          else if (item.delta > 0) deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-[color:var(--green-bg)] text-[color:var(--green-text)] font-semibold text-xs tabular-nums">${escapeHtml(t('growthBadge', formatMoney(item.delta)))}</span>`;
+          else deltaHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-[color:var(--fill)] text-[color:var(--label2)] font-medium text-xs tabular-nums">0</span>`;
         }
 
-        const safeNote = item.note ? escapeHtml(item.note) : `<span class="text-[#94ACA1] italic">${escapeHtml(t('noNoteText'))}</span>`;
-        const authorTag = `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#E6F5FC] text-[#0077ab] text-xs font-medium">${escapeHtml(item.author)}</span>`;
+        const safeNote = item.note ? escapeHtml(item.note) : `<span class="text-[color:var(--label3)] italic">${escapeHtml(t('noNoteText'))}</span>`;
+        const authorTag = `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-[color:var(--tint-bg)] text-[color:var(--tint)] text-xs font-medium">${escapeHtml(item.author)}</span>`;
         const isMineEntry = item.ownerId === currentUser.id || !hasPartner || viewMode === 'mine';
 
         const actionHtml = (canDelete && isMineEntry)
-          ? `<button type="button" data-edit-id="${escapeHtml(item.id)}" class="edit-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#0077ab] hover:bg-sky-50 transition cursor-pointer">${escapeHtml(t('editBtn'))}</button><button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
-          : `<span class="text-xs text-[#94ACA1]">—</span>`;
+          ? `<button type="button" data-edit-id="${escapeHtml(item.id)}" class="edit-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[color:var(--tint)] hover:bg-[color:var(--tint-bg)] transition cursor-pointer">${escapeHtml(t('editBtn'))}</button><button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[color:var(--red-text)] hover:bg-[color:var(--red-bg)] transition cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
+          : `<span class="text-xs text-[color:var(--label3)]">—</span>`;
 
         return `
-          <tr class="hover:bg-[#F7FBF9] transition">
-            <td class="py-3.5 px-3 font-medium text-[#102A20] whitespace-nowrap tabular-nums">${escapeHtml(formatDateByLang(item.date))}</td>
-            <td class="py-3.5 px-3 text-right font-bold text-[#1B4332] whitespace-nowrap tabular-nums">${escapeHtml(formatMoney(item.balance))}</td>
+          <tr class="hover:bg-[color:var(--fill)] transition">
+            <td class="py-3.5 px-3 font-medium text-[color:var(--label)] whitespace-nowrap tabular-nums">${escapeHtml(formatDateByLang(item.date))}</td>
+            <td class="py-3.5 px-3 text-right font-bold text-[color:var(--label)] whitespace-nowrap tabular-nums">${escapeHtml(formatMoney(item.balance))}</td>
             <td class="py-3.5 px-3 text-right whitespace-nowrap">${deltaHtml}</td>
-            <td class="py-3.5 px-3 text-right font-semibold text-[#0086c2] whitespace-nowrap tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextLimit))))}</td>
+            <td class="py-3.5 px-3 text-right font-semibold text-[color:var(--tint)] whitespace-nowrap tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextLimit))))}</td>
             <td class="py-3.5 px-3 whitespace-nowrap">${authorTag}</td>
-            <td class="py-3.5 px-3 text-[#3B5B4D] max-w-[200px] truncate">${safeNote}</td>
+            <td class="py-3.5 px-3 text-[color:var(--label2)] max-w-[200px] truncate">${safeNote}</td>
             <td class="py-3.5 px-3 text-right whitespace-nowrap">${actionHtml}</td>
           </tr>
         `;
       }).join('');
 
       cardsEl.innerHTML = rowsSource.map(item => {
-        let deltaHtml = `<span class="text-[#7A968A] text-xs">${escapeHtml(t('firstEntryBadge'))}</span>`;
+        let deltaHtml = `<span class="text-[color:var(--label3)] text-xs">${escapeHtml(t('firstEntryBadge'))}</span>`;
         if (item.delta !== null) {
-          if (item.delta < 0) deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 font-semibold text-xs tabular-nums">${escapeHtml(t('spentBadge', formatMoney(Math.abs(item.delta))))}</span>`;
-          else if (item.delta > 0) deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-[#EBF5F0] text-[#1B4332] font-semibold text-xs tabular-nums">${escapeHtml(t('growthBadge', formatMoney(item.delta)))}</span>`;
-          else deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-medium text-xs tabular-nums">0</span>`;
+          if (item.delta < 0) deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-[color:var(--red-bg)] text-[color:var(--red-text)] font-semibold text-xs tabular-nums">${escapeHtml(t('spentBadge', formatMoney(Math.abs(item.delta))))}</span>`;
+          else if (item.delta > 0) deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-[color:var(--green-bg)] text-[color:var(--green-text)] font-semibold text-xs tabular-nums">${escapeHtml(t('growthBadge', formatMoney(item.delta)))}</span>`;
+          else deltaHtml = `<span class="px-2 py-0.5 rounded-lg bg-[color:var(--fill)] text-[color:var(--label2)] font-medium text-xs tabular-nums">0</span>`;
         }
-        const noteHtml = item.note ? escapeHtml(item.note) : `<span class="text-[#94ACA1] italic">${escapeHtml(t('noNoteText'))}</span>`;
+        const noteHtml = item.note ? escapeHtml(item.note) : `<span class="text-[color:var(--label3)] italic">${escapeHtml(t('noNoteText'))}</span>`;
         const isMineEntry = item.ownerId === currentUser.id || !hasPartner || viewMode === 'mine';
         const delHtml = (canDelete && isMineEntry)
-          ? `<button type="button" data-edit-id="${escapeHtml(item.id)}" class="edit-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-[#0077ab] bg-sky-50/70 active:bg-sky-100 cursor-pointer mr-1.5">${escapeHtml(t('editBtn'))}</button><button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-rose-600 bg-rose-50/60 active:bg-rose-100 cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
+          ? `<button type="button" data-edit-id="${escapeHtml(item.id)}" class="edit-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-[color:var(--tint)] bg-[color:color-mix(in_srgb,var(--tint-bg)_70%,transparent)] active:bg-[color:var(--tint-bg)] cursor-pointer mr-1.5">${escapeHtml(t('editBtn'))}</button><button type="button" data-delete-id="${escapeHtml(item.id)}" class="delete-entry-btn px-3 py-2 rounded-lg text-xs font-medium text-[color:var(--red-text)] bg-[color:color-mix(in_srgb,var(--red-bg)_60%,transparent)] active:bg-[color:var(--red-bg2)] cursor-pointer">${escapeHtml(t('deleteBtn'))}</button>`
           : '';
         const showAuthor = hasPartner && viewMode !== 'mine';
         return `
-          <div class="rounded-2xl border border-[#E2EDE7] bg-[#FAFDFB] p-3.5">
+          <div class="rounded-2xl border border-[color:var(--sep)] bg-[color:var(--fill)] p-3.5">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-medium text-[#527365] tabular-nums">${escapeHtml(formatDateByLang(item.date))}</span>
-              ${showAuthor ? `<span class="px-2 py-0.5 rounded-md bg-[#E6F5FC] text-[#0077ab] text-xs font-medium truncate max-w-[50%]">${escapeHtml(item.author)}</span>` : ''}
+              <span class="text-xs font-medium text-[color:var(--label2)] tabular-nums">${escapeHtml(formatDateByLang(item.date))}</span>
+              ${showAuthor ? `<span class="px-2 py-0.5 rounded-md bg-[color:var(--tint-bg)] text-[color:var(--tint)] text-xs font-medium truncate max-w-[50%]">${escapeHtml(item.author)}</span>` : ''}
             </div>
             <div class="mt-1 flex items-baseline justify-between gap-2">
-              <span class="text-lg font-extrabold text-[#1B4332] tabular-nums">${escapeHtml(formatMoney(item.balance))}</span>
-              <span class="text-sm font-semibold text-[#0086c2] tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextLimit))))}</span>
+              <span class="text-lg font-extrabold text-[color:var(--label)] tabular-nums">${escapeHtml(formatMoney(item.balance))}</span>
+              <span class="text-sm font-semibold text-[color:var(--tint)] tabular-nums">${escapeHtml(t('perDaySuffix', formatMoney(Math.floor(item.nextLimit))))}</span>
             </div>
             <div class="mt-2 flex items-center justify-between gap-2">
               <div class="min-w-0 flex items-center gap-2">
                 ${deltaHtml}
-                <span class="text-xs text-[#3B5B4D] truncate">${noteHtml}</span>
+                <span class="text-xs text-[color:var(--label2)] truncate">${noteHtml}</span>
               </div>
               ${delHtml}
             </div>
@@ -1870,9 +2038,8 @@
       document.getElementById('balanceInput').value = String(entry.balance);
       document.getElementById('noteInput').value = entry.note || '';
       updatePreviewDelta();
-      const form = document.getElementById('entryForm');
-      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => { try { document.getElementById('balanceInput').focus(); } catch (e) {} }, 350);
+      openEntrySheet();
+      setTimeout(() => { try { document.getElementById('balanceInput').focus(); } catch (e) {} }, 400);
       showToast(t('toastEditLoaded'), 'info');
     }
 
@@ -1977,22 +2144,22 @@
 
       const pts = ctx.series.map(p => `${X(p.date).toFixed(1)},${Y(p.balance).toFixed(1)}`);
       let svg = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-auto" role="img">`;
-      svg += `<line x1="${pl}" y1="${Y(0)}" x2="${W - pr}" y2="${Y(0)}" stroke="#DCE9E2" stroke-width="1"/>`;
+      svg += `<line x1="${pl}" y1="${Y(0)}" x2="${W - pr}" y2="${Y(0)}" stroke="var(--sep2)" stroke-width="1"/>`;
       if (ctx.reserve > 0) {
-        svg += `<line x1="${pl}" y1="${Y(ctx.reserve)}" x2="${W - pr}" y2="${Y(ctx.reserve)}" stroke="#94ACA1" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+        svg += `<line x1="${pl}" y1="${Y(ctx.reserve)}" x2="${W - pr}" y2="${Y(ctx.reserve)}" stroke="var(--label3)" stroke-width="1.2" stroke-dasharray="4 3"/>`;
       }
       if (pts.length > 1) {
-        svg += `<polyline points="${pts.join(' ')}" fill="none" stroke="#009bde" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+        svg += `<polyline points="${pts.join(' ')}" fill="none" stroke="var(--tint)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
       }
-      ctx.series.forEach(p => { svg += `<circle cx="${X(p.date).toFixed(1)}" cy="${Y(p.balance).toFixed(1)}" r="2.6" fill="#009bde"/>`; });
+      ctx.series.forEach(p => { svg += `<circle cx="${X(p.date).toFixed(1)}" cy="${Y(p.balance).toFixed(1)}" r="2.6" fill="var(--tint)"/>`; });
       if (projEnd !== null) {
-        const color = ctx.fc && ctx.fc.kind === 'warn' ? '#d97706' : '#1B4332';
+        const color = ctx.fc && ctx.fc.kind === 'warn' ? 'var(--orange)' : 'var(--green)';
         svg += `<line x1="${X(lastPoint.date).toFixed(1)}" y1="${Y(lastPoint.balance).toFixed(1)}" x2="${X(endDate).toFixed(1)}" y2="${Y(projEnd).toFixed(1)}" stroke="${color}" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>`;
         svg += `<circle cx="${X(endDate).toFixed(1)}" cy="${Y(projEnd).toFixed(1)}" r="3" fill="${color}"/>`;
       }
-      svg += `<text x="${pl}" y="${H - 6}" font-size="9" fill="#527365">${escapeHtml(formatDateByLang(first))}</text>`;
-      svg += `<text x="${W - pr}" y="${H - 6}" font-size="9" fill="#527365" text-anchor="end">${escapeHtml(formatDateByLang(endDate))}</text>`;
-      svg += `<text x="${Math.min(W - pr - 2, X(lastPoint.date) + 4)}" y="${Math.max(10, Y(lastPoint.balance) - 7)}" font-size="9" font-weight="700" fill="#0077ab" text-anchor="${X(lastPoint.date) > W - 80 ? 'end' : 'start'}">${escapeHtml(formatMoney(lastPoint.balance))}</text>`;
+      svg += `<text x="${pl}" y="${H - 6}" font-size="9" fill="var(--label2)">${escapeHtml(formatDateByLang(first))}</text>`;
+      svg += `<text x="${W - pr}" y="${H - 6}" font-size="9" fill="var(--label2)" text-anchor="end">${escapeHtml(formatDateByLang(endDate))}</text>`;
+      svg += `<text x="${Math.min(W - pr - 2, X(lastPoint.date) + 4)}" y="${Math.max(10, Y(lastPoint.balance) - 7)}" font-size="9" font-weight="700" fill="var(--tint)" text-anchor="${X(lastPoint.date) > W - 80 ? 'end' : 'start'}">${escapeHtml(formatMoney(lastPoint.balance))}</text>`;
       svg += `</svg>`;
       return svg;
     }
@@ -2069,14 +2236,14 @@
       document.getElementById('anDaysLeft').textContent = t('daysUnit', ctx.daysLeft);
 
       const chart = buildAnalyticsChart(ctx);
-      document.getElementById('anChart').innerHTML = chart || `<p class="text-xs text-[#7A968A] py-6 text-center">${escapeHtml(t('analyticsNoData'))}</p>`;
+      document.getElementById('anChart').innerHTML = chart || `<p class="text-xs text-[color:var(--label3)] py-6 text-center">${escapeHtml(t('analyticsNoData'))}</p>`;
       const toneClass = {
-        warn: 'bg-amber-50 border-amber-200',
-        good: 'bg-emerald-50 border-emerald-200',
-        info: 'bg-[#F7FBF9] border-[#E2EDE7]'
+        warn: 'bg-[color:var(--orange-bg)] border-[color:var(--orange-bd)]',
+        good: 'bg-[color:var(--green-bg)] border-[color:var(--green-bd)]',
+        info: 'bg-[color:var(--fill)] border-[color:var(--sep)]'
       };
       document.getElementById('anTips').innerHTML = buildAnalyticsTips(ctx).map(([icon, text, tone]) =>
-        `<li class="flex gap-2 rounded-xl border ${toneClass[tone] || toneClass.info} px-3 py-2.5 text-sm text-[#1B4332] leading-snug"><span>${icon}</span><span>${escapeHtml(text)}</span></li>`
+        `<li class="flex gap-2 rounded-xl border ${toneClass[tone] || toneClass.info} px-3 py-2.5 text-sm text-[color:var(--label)] leading-snug"><span>${icon}</span><span>${escapeHtml(text)}</span></li>`
       ).join('');
     }
 
@@ -2115,17 +2282,34 @@
       m.classList.remove('flex');
     }
 
-    function openAnalytics() {
-      renderAnalytics();
-      const m = document.getElementById('analyticsModal');
+    // ===================== НАВИГАЦИЯ (вкладки) И ЛИСТ ВВОДА =====================
+    let currentTab = 'today';
+
+    function switchTab(name) {
+      currentTab = name;
+      document.querySelectorAll('[data-view]').forEach(v => v.classList.toggle('hidden', v.getAttribute('data-view') !== name));
+      document.querySelectorAll('.tab[data-tab]').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === name));
+      window.scrollTo({ top: 0 });
+      if (name === 'analytics') renderAnalytics();
+    }
+
+    function openEntrySheet() {
+      const m = document.getElementById('entrySheetModal');
       m.classList.remove('hidden');
       m.classList.add('flex');
+      updatePreviewDelta();
     }
-    function closeAnalytics() {
-      const m = document.getElementById('analyticsModal');
+
+    function closeEntrySheet() {
+      const m = document.getElementById('entrySheetModal');
+      if (!m) return;
       m.classList.add('hidden');
       m.classList.remove('flex');
+      try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) {}
     }
+
+    function openAnalytics() { switchTab('analytics'); }
+    function closeAnalytics() { switchTab('today'); }
 
     function updatePreviewDelta() {
       const myProfile = ensureMyProfile(state);
@@ -2144,7 +2328,7 @@
       const rawVal = balanceInput.value.trim();
       if (rawVal === '' || !Number.isFinite(Number(rawVal))) {
         previewEl.textContent = '—';
-        previewEl.className = 'font-semibold text-[#527365] tabular-nums';
+        previewEl.className = 'font-semibold text-[color:var(--label2)] tabular-nums';
         return;
       }
 
@@ -2154,20 +2338,20 @@
 
       if (!prevEntry) {
         previewEl.textContent = t('previewInitialBalance', formatMoney(newBalance));
-        previewEl.className = 'font-semibold text-[#1B4332] tabular-nums';
+        previewEl.className = 'font-semibold text-[color:var(--label)] tabular-nums';
         return;
       }
 
       const diff = newBalance - prevEntry.balance;
       if (diff < 0) {
         previewEl.textContent = t('previewSpent', formatMoney(Math.abs(diff)), formatDateByLang(prevEntry.date));
-        previewEl.className = 'font-semibold text-rose-600 tabular-nums';
+        previewEl.className = 'font-semibold text-[color:var(--red-text)] tabular-nums';
       } else if (diff > 0) {
         previewEl.textContent = t('previewIncome', formatMoney(diff), formatDateByLang(prevEntry.date));
-        previewEl.className = 'font-semibold text-[#2D6A4F] tabular-nums';
+        previewEl.className = 'font-semibold text-[color:var(--tint)] tabular-nums';
       } else {
         previewEl.textContent = t('previewNoChange', formatMoney(0));
-        previewEl.className = 'font-semibold text-slate-600 tabular-nums';
+        previewEl.className = 'font-semibold text-[color:var(--label2)] tabular-nums';
       }
     }
 
@@ -2574,8 +2758,11 @@
     document.getElementById('btnOpenAnalytics').addEventListener('click', openAnalytics);
     document.getElementById('criticalLaterBtn').addEventListener('click', closeCriticalAlert);
     document.getElementById('criticalOpenBtn').addEventListener('click', () => { closeCriticalAlert(); openAnalytics(); });
-    document.getElementById('closeAnalyticsBtn').addEventListener('click', closeAnalytics);
-    document.getElementById('analyticsModal').addEventListener('click', (e) => { if (e.target.id === 'analyticsModal') closeAnalytics(); });
+    document.querySelectorAll('.tab[data-tab]').forEach(b => b.addEventListener('click', () => switchTab(b.getAttribute('data-tab'))));
+    document.getElementById('btnAddEntry').addEventListener('click', openEntrySheet);
+    document.getElementById('btnCloseEntrySheet').addEventListener('click', closeEntrySheet);
+    document.getElementById('entrySheetModal').addEventListener('click', (e) => { if (e.target.id === 'entrySheetModal') closeEntrySheet(); });
+    document.querySelectorAll('[data-proxy-click]').forEach(el => el.addEventListener('click', () => document.getElementById(el.getAttribute('data-proxy-click')).click()));
 
     document.getElementById('btnOpenShare').addEventListener('click', () => {
       document.getElementById('shareModal').classList.remove('hidden');
