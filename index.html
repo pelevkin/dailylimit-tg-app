@@ -755,7 +755,7 @@
   </div>
 
 
-  <script type="module">
+  <script id="appSource" type="text/plain">
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyDxUw4lGcD3LbvaSNXlR5bpK2uf5RM6HB0",
       authDomain: "dailylimit-ec286.firebaseapp.com",
@@ -840,7 +840,23 @@
       return saved;
     }
 
+    // ===== Резервная копия ключей комнаты в облаке Telegram (CloudStorage) =====
+    const tgCloud = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.CloudStorage &&
+      (!window.Telegram.WebApp.isVersionAtLeast || window.Telegram.WebApp.isVersionAtLeast('6.9')) &&
+      window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.CloudStorage : null;
+    function cloudSet(key, value) {
+      try { if (tgCloud) tgCloud.setItem(key, String(value), function () {}); } catch (e) {}
+    }
+
     const OWN_ROOM_ID = getOrCreateSecretRoomId(currentUser.id);
+    // Кладём ключ в облако, только если там ещё нет валидного (первый записавший побеждает)
+    if (tgCloud) {
+      try {
+        tgCloud.getItem('room_key', function (err, val) {
+          if (err || !val || !/^FAM-[A-Z0-9]{16,32}$/.test(val)) cloudSet('room_key', OWN_ROOM_ID);
+        });
+      } catch (e) {}
+    }
     const ACTIVE_ROOM_KEY = `payday_tg_active_room_v2_${currentUser.id}`;
     const LOCAL_CACHE_PREFIX = 'payday_tg_cache_v3_';
 
@@ -2652,6 +2668,7 @@
     async function connectRoom(roomId, seedProfile = null, allowJoin = false) {
       activeRoomId = roomId;
       localStorage.setItem(ACTIVE_ROOM_KEY, activeRoomId);
+      cloudSet('active_room', activeRoomId);
       state = loadLocalRoomState(activeRoomId);
       renderAll();
 
@@ -2983,6 +3000,53 @@
         console.error('Ошибка загрузки Firebase SDK:', err);
         setSyncStatus(false, `SDK: ${err.message}`);
       }
+    })();
+  </script>
+  <script>
+    /* Восстановление ключа комнаты из облака Telegram (CloudStorage) на новом устройстве.
+       Если на этом устройстве ключ уже есть — ничего не трогаем и стартуем сразу. */
+    (function () {
+      var started = false;
+      function start() {
+        if (started) return;
+        started = true;
+        var s = document.createElement('script');
+        s.type = 'module';
+        s.textContent = document.getElementById('appSource').textContent;
+        document.body.appendChild(s);
+      }
+      try {
+        var tg = window.Telegram && window.Telegram.WebApp;
+        var user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+        var cloud = tg && tg.CloudStorage;
+        var okVersion = !tg || !tg.isVersionAtLeast || tg.isVersionAtLeast('6.9');
+        if (!user || !cloud || !okVersion) { start(); return; }
+
+        var RE = /^FAM-[A-Z0-9]{16,32}$/;
+        var secretKey = 'payday_secret_room_v2_' + user.id;
+        var activeKey = 'payday_tg_active_room_v2_' + user.id;
+        var have = localStorage.getItem(secretKey);
+        if (have && RE.test(have)) { start(); return; }
+
+        var timer = setTimeout(start, 2000); /* страховка: не зависаем, если облако не ответило */
+        cloud.getItem('room_key', function (err, val) {
+          if (started) return;
+          try {
+            if (!err && val && RE.test(val)) {
+              localStorage.setItem(secretKey, val);
+              if (!localStorage.getItem(activeKey)) {
+                cloud.getItem('active_room', function (e2, v2) {
+                  if (started) return;
+                  try { if (!e2 && v2 && RE.test(v2)) localStorage.setItem(activeKey, v2); } catch (x) {}
+                  clearTimeout(timer); start();
+                });
+                return;
+              }
+            }
+          } catch (x) {}
+          clearTimeout(timer); start();
+        });
+      } catch (e) { start(); }
     })();
   </script>
 </body>
